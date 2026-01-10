@@ -1,0 +1,26 @@
+FROM node:22-alpine AS base
+
+# تثبيت أي مكتبات نظام لازمة (compat)
+RUN apk add --no-cache libc6-compat
+
+# مجلد العمل داخل الحاوية
+WORKDIR /app
+
+# نسخ ملفات package
+COPY package*.json ./
+
+# تثبيت dependencies بشكل نظيف
+RUN npm ci --legacy-peer-deps
+
+# نسخ باقي ملفات المشروع
+COPY . .
+
+# بناء المشروع (Next.js / React)
+RUN npm run build
+
+# تعيين المنفذ الذي ستستمع عليه Cloud Run
+ENV PORT 8080
+EXPOSE 8080
+
+# أمر تشغيل المشروع (Next.js production)
+CMD ["npm", "run", "start"]
