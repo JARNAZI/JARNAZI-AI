@@ -32,7 +32,7 @@ type Message = {
 };
 
 // --- MAIN CLIENT COMPONENT ---
-export default function DebateClient({ dict, lang }: { dict: unknown; lang: string }) {
+export default function DebateClient({ dict, lang }: { dict: any; lang: string }) {
     const params = useParams();
     const router = useRouter();
     const debateId = params.id as string;
@@ -72,12 +72,14 @@ export default function DebateClient({ dict, lang }: { dict: unknown; lang: stri
         }
     };
 
-        const [profileInfo, setProfileInfo] = useState<{ token_balance_cents: number } | null>(null);
-const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
+    const [profileInfo, setProfileInfo] = useState<{ token_balance_cents: number } | null>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
 
     const [showFinalOnly, setShowFinalOnly] = useState(true);
     // NOTE: These states existed in an earlier iteration of the UI but were unused.
     // Keeping unused state triggers build-breaking ESLint errors on Netlify/Next.js.
+    const [debateTopic, setDebateTopic] = useState<string>('');
+    const [initializingCouncil, setInitializingCouncil] = useState(false);
 
     // Attachments State
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -98,6 +100,9 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
     const [imageGenerating, setImageGenerating] = useState(false);
     const [lastImageAssetUrl, setLastImageAssetUrl] = useState<string | null>(null);
 
+    const pendingImageEstimatedTokens = 0;
+    const pendingVideoEstimatedTokens = 0;
+
     const bottomRef = useRef<HTMLDivElement>(null);
 
     // Initial Load
@@ -112,7 +117,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
                         .select('token_balance_cents')
                         .eq('id', user.id)
                         .maybeSingle();
-                    if (p) setProfileInfo({ token_balance_cents: Number((p as unknown).token_balance_cents || 0) });
+                    if (p) setProfileInfo({ token_balance_cents: Number((p as any).token_balance_cents || 0) });
                 }
             } catch {
                 // ignore
@@ -123,9 +128,9 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
 
             const { data: turns } = await supabase.from('debate_turns').select('*').eq('debate_id', debateId).order('created_at', { ascending: true });
             if (turns && turns.length > 0) {
-                setMessages(turns.map((t: unknown) => ({
+                setMessages(turns.map((t: any) => ({
                     id: t.id,
-                    role: (t.role as unknown) || (() => {
+                    role: (t.role as any) || (() => {
                         const name = t.ai_name_snapshot || '';
                         if (name === 'User') return 'user';
                         if (name.toLowerCase().includes('leader')) return 'agreement';
@@ -134,7 +139,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
                     name: t.ai_name_snapshot || (t.role === 'user' ? 'User' : 'Council'),
                     content: t.content,
                     timestamp: new Date(t.created_at).getTime(),
-                    phase: (t.meta?.phase as unknown) || ((t.role === 'agreement') ? 'consensus' : (t.role === 'assistant' ? 'independent' : 'system')),
+                    phase: (t.meta?.phase as any) || ((t.role === 'agreement') ? 'consensus' : (t.role === 'assistant' ? 'independent' : 'system')),
                     meta: t.meta || {}
                 })));
             } else {
@@ -152,7 +157,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
                         if (prev.find(p => p.id === newTurn.id)) return prev;
                         return [...prev, {
                             id: newTurn.id,
-                            role: (newTurn.role as unknown) || (() => {
+                            role: (newTurn.role as any) || (() => {
                                 const name = newTurn.ai_name_snapshot || '';
                                 if (name === 'User') return 'user';
                                 if (name.toLowerCase().includes('leader')) return 'agreement';
@@ -161,7 +166,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
                             name: newTurn.ai_name_snapshot || (newTurn.role === 'user' ? 'User' : 'Council'),
                             content: newTurn.content,
                             timestamp: Date.now(),
-                            phase: (newTurn.meta?.phase as unknown) || ((newTurn.role === 'agreement') ? 'consensus' : (newTurn.role === 'assistant' ? 'independent' : 'system')),
+                            phase: (newTurn.meta?.phase as any) || ((newTurn.role === 'agreement') ? 'consensus' : (newTurn.role === 'assistant' ? 'independent' : 'system')),
                             meta: newTurn.meta || {}
                         }];
                     });
@@ -249,7 +254,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
     };
 
     const openImageGeneration = () => {
-        const fc = [...messages].reverse().find((m: unknown) => m.role === 'agreement' || m.phase === 'consensus');
+        const fc = [...messages].reverse().find((m: any) => m.role === 'agreement' || m.phase === 'consensus');
         if (!fc) {
             alert(dict?.debate?.needConsensus || 'Generate an answer first, then you can generate media from the final consensus.');
             return;
@@ -261,7 +266,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
     };
 
     const openVideoGeneration = () => {
-        const fc = [...messages].reverse().find((m: unknown) => m.role === 'agreement' || m.phase === 'consensus');
+        const fc = [...messages].reverse().find((m: any) => m.role === 'agreement' || m.phase === 'consensus');
         if (!fc) {
             alert(dict?.debate?.needConsensus || 'Generate an answer first, then you can generate media from the final consensus.');
             return;
@@ -301,7 +306,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
                 name: 'System',
                 content: j.asset?.public_url ? 'Image generated successfully. It will be deleted after 3 days.' : 'Image generation started.',
                 timestamp: Date.now(),
-            } as unknown]));
+            } as any]));
             if (j.asset?.public_url) setLastImageAssetUrl(j.asset.public_url);
 
             setIsImageModalOpen(false);
@@ -342,7 +347,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
                 name: 'System',
                 content: j.asset?.public_url ? 'Video generated successfully.' : 'Video generation started. Your video will appear here when ready.',
                 timestamp: Date.now(),
-            } as unknown]));
+            } as any]));
             if (j.asset?.public_url) setLastVideoAssetUrl(j.asset.public_url);
 
             // Clear inputs
@@ -401,89 +406,89 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
                         <Menu className="w-5 h-5" />
                     </button>
 
-{/* Top-right dropdown menu */}
-{isMenuOpen && (
-    <div
-        className={`absolute right-4 top-16 w-72 rounded-2xl border ${isDarkMode ? 'bg-zinc-950 border-white/10' : 'bg-white border-gray-200'} shadow-2xl overflow-hidden`}
-    >
-        <div className={`px-4 py-3 ${isDarkMode ? 'bg-zinc-900/60' : 'bg-gray-50'} flex items-center justify-between`}>
-            <span className={`text-xs font-black tracking-wider ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{dict?.debate?.menu || 'MENU'}</span>
-            <button
-                onClick={() => setIsMenuOpen(false)}
-                className={`px-3 py-1 rounded-full text-xs font-bold ${isDarkMode ? 'bg-zinc-800 hover:bg-zinc-700 text-white' : 'bg-white hover:bg-gray-100 text-gray-800'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}
-            >
-                {dict?.common?.close || 'Close'}
-            </button>
-        </div>
+                    {/* Top-right dropdown menu */}
+                    {isMenuOpen && (
+                        <div
+                            className={`absolute right-4 top-16 w-72 rounded-2xl border ${isDarkMode ? 'bg-zinc-950 border-white/10' : 'bg-white border-gray-200'} shadow-2xl overflow-hidden`}
+                        >
+                            <div className={`px-4 py-3 ${isDarkMode ? 'bg-zinc-900/60' : 'bg-gray-50'} flex items-center justify-between`}>
+                                <span className={`text-xs font-black tracking-wider ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{dict?.debate?.menu || 'MENU'}</span>
+                                <button
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={`px-3 py-1 rounded-full text-xs font-bold ${isDarkMode ? 'bg-zinc-800 hover:bg-zinc-700 text-white' : 'bg-white hover:bg-gray-100 text-gray-800'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}
+                                >
+                                    {dict?.common?.close || 'Close'}
+                                </button>
+                            </div>
 
-        <div className="p-2">
-            <Link href={`/${lang}/buy-tokens`} onClick={() => setIsMenuOpen(false)} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
-                <CreditCard className="w-5 h-5 text-indigo-500" />
-                <span className="font-bold uppercase tracking-wider text-xs">{dict?.debate?.buyTokens || dict?.common?.buyTokens || 'Buy Tokens'}</span>
-            </Link>
+                            <div className="p-2">
+                                <Link href={`/${lang}/buy-tokens`} onClick={() => setIsMenuOpen(false)} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
+                                    <CreditCard className="w-5 h-5 text-indigo-500" />
+                                    <span className="font-bold uppercase tracking-wider text-xs">{dict?.debate?.buyTokens || dict?.common?.buyTokens || 'Buy Tokens'}</span>
+                                </Link>
 
-            <Link href={`/${lang}/profile`} onClick={() => setIsMenuOpen(false)} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
-                <User className="w-5 h-5 text-emerald-500" />
-                <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.profile || dict?.debate?.editProfile || 'Edit Profile'}</span>
-            </Link>
+                                <Link href={`/${lang}/profile`} onClick={() => setIsMenuOpen(false)} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
+                                    <User className="w-5 h-5 text-emerald-500" />
+                                    <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.profile || dict?.debate?.editProfile || 'Edit Profile'}</span>
+                                </Link>
 
-            <Link href={`/${lang}/contact`} onClick={() => setIsMenuOpen(false)} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
-                <Mail className="w-5 h-5 text-sky-500" />
-                <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.contact || dict?.debate?.contactUs || 'Contact'}</span>
-            </Link>
+                                <Link href={`/${lang}/contact`} onClick={() => setIsMenuOpen(false)} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
+                                    <Mail className="w-5 h-5 text-sky-500" />
+                                    <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.contact || dict?.debate?.contactUs || 'Contact'}</span>
+                                </Link>
 
-            <div className={`my-2 border-t ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`} />
+                                <div className={`my-2 border-t ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`} />
 
-            <button onClick={handleLangToggle} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
-                <Globe className="w-5 h-5 text-indigo-500" />
-                <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.language || dict?.debate?.language || 'Language'}</span>
-                <span className={`ml-auto text-[10px] font-black px-2 py-1 rounded-full ${isDarkMode ? 'bg-zinc-800 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{lang === 'en' ? 'EN' : 'AR'}</span>
-            </button>
+                                <button onClick={handleLangToggle} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
+                                    <Globe className="w-5 h-5 text-indigo-500" />
+                                    <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.language || dict?.debate?.language || 'Language'}</span>
+                                    <span className={`ml-auto text-[10px] font-black px-2 py-1 rounded-full ${isDarkMode ? 'bg-zinc-800 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{lang === 'en' ? 'EN' : 'AR'}</span>
+                                </button>
 
-            <button
-                onClick={() => setShowFinalOnly(v => !v)}
-                className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}
-            >
-                <MessageSquare className="w-5 h-5 text-emerald-500" />
-                <span className="font-bold uppercase tracking-wider text-xs">
-                    {showFinalOnly ? (dict?.debate?.showDiscussion || 'Show Discussion') : (dict?.debate?.hideDiscussion || 'Hide Discussion')}
-                </span>
-            </button>
+                                <button
+                                    onClick={() => setShowFinalOnly(v => !v)}
+                                    className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}
+                                >
+                                    <MessageSquare className="w-5 h-5 text-emerald-500" />
+                                    <span className="font-bold uppercase tracking-wider text-xs">
+                                        {showFinalOnly ? (dict?.debate?.showDiscussion || 'Show Discussion') : (dict?.debate?.hideDiscussion || 'Hide Discussion')}
+                                    </span>
+                                </button>
 
-            <button onClick={() => setTheme(isDarkMode ? 'light' : 'dark')} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
-                {isDarkMode ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-indigo-600" />}
-                <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.theme || dict?.debate?.theme || 'Theme'}</span>
-            </button>
+                                <button onClick={() => setTheme(isDarkMode ? 'light' : 'dark')} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
+                                    {isDarkMode ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-indigo-600" />}
+                                    <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.theme || dict?.debate?.theme || 'Theme'}</span>
+                                </button>
 
-            <div className={`my-2 border-t ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`} />
+                                <div className={`my-2 border-t ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`} />
 
-            <div className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'text-zinc-200' : 'text-gray-800'}`}>
-                <Coins className="w-5 h-5 text-amber-400" />
-                <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-wider">{dict?.debate?.currentPlan || 'Current Plan'}</span>
-                    <span className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {dict?.common?.tokens || 'Tokens'}:
-                        <span className={`ml-2 text-[10px] font-black px-2 py-1 rounded-full ${isDarkMode ? 'bg-zinc-800 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>
-                            {(profileInfo?.token_balance_cents ?? 0)}
-                        </span>
-                    </span>
-                </div>
-            </div>
+                                <div className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'text-zinc-200' : 'text-gray-800'}`}>
+                                    <Coins className="w-5 h-5 text-amber-400" />
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-black uppercase tracking-wider">{dict?.debate?.currentPlan || 'Current Plan'}</span>
+                                        <span className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            {dict?.common?.tokens || 'Tokens'}:
+                                            <span className={`ml-2 text-[10px] font-black px-2 py-1 rounded-full ${isDarkMode ? 'bg-zinc-800 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>
+                                                {(profileInfo?.token_balance_cents ?? 0)}
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
 
-            <div className={`my-2 border-t ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`} />
+                                <div className={`my-2 border-t ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`} />
 
-            <button onClick={handleLogout} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
-                <LogOut className="w-5 h-5 text-gray-500" />
-                <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.logout || 'Logout'}</span>
-            </button>
+                                <button onClick={handleLogout} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-200' : 'hover:bg-gray-100 text-gray-800'}`}>
+                                    <LogOut className="w-5 h-5 text-gray-500" />
+                                    <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.logout || 'Logout'}</span>
+                                </button>
 
-            <button onClick={handleDeleteAccount} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-red-950/40 text-red-300' : 'hover:bg-red-50 text-red-700'}`}>
-                <Trash2 className="w-5 h-5 text-red-500" />
-                <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.deleteAccount || dict?.debate?.deleteAccount || 'Delete Account'}</span>
-            </button>
-        </div>
-    </div>
-)}
+                                <button onClick={handleDeleteAccount} className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl ${isDarkMode ? 'hover:bg-red-950/40 text-red-300' : 'hover:bg-red-50 text-red-700'}`}>
+                                    <Trash2 className="w-5 h-5 text-red-500" />
+                                    <span className="font-bold uppercase tracking-wider text-xs">{dict?.common?.deleteAccount || dict?.debate?.deleteAccount || 'Delete Account'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                 </div>
             </header>
@@ -491,234 +496,234 @@ const [isMenuOpen, setIsMenuOpen] = useState(false); // top-right dropdown
             {/* CONTENT */}
             <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
 
-            <aside className={`w-full md:w-[380px] flex-none overflow-y-auto ${isDarkMode ? 'bg-zinc-950 border-white/10' : 'bg-white border-gray-200'} border-t md:border-t-0 md:border-r p-4`}>
-                <div className="flex flex-col gap-4">
+                <aside className={`w-full md:w-[380px] flex-none overflow-y-auto ${isDarkMode ? 'bg-zinc-950 border-white/10' : 'bg-white border-gray-200'} border-t md:border-t-0 md:border-r p-4`}>
+                    <div className="flex flex-col gap-4">
 
 
-                    {/* Toolstrip */}
-                    <div className={`flex items-center gap-1 overflow-x-auto pb-2 no-scrollbar ${isDarkMode ? 'border-zinc-800' : 'border-gray-200'} border-b mb-1`}>
-                        <button
-                            onClick={() => setIsMathMode(false)}
-                            className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all w-16 group ${!isMathMode ? (isDarkMode ? 'text-indigo-400' : 'text-indigo-600') : 'opacity-50'}`}
-                        >
-                            <div className={`p-2 rounded-full border transition-colors ${!isMathMode ? (isDarkMode ? 'bg-indigo-500/20 border-indigo-500/50' : 'bg-indigo-100 border-indigo-200') : (isDarkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-300')}`}>
-                                <Type className="w-5 h-5" />
-                            </div>
-                            <span className="text-[9px] font-bold uppercase tracking-wider">Text</span>
-                        </button>
-
-                        <button
-                            onClick={() => setIsMathMode(true)}
-                            className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all w-16 group ${isMathMode ? (isDarkMode ? 'text-indigo-400' : 'text-indigo-600') : 'opacity-50'}`}
-                        >
-                            <div className={`p-2 rounded-full border transition-colors ${isMathMode ? (isDarkMode ? 'bg-indigo-500/20 border-indigo-500/50' : 'bg-indigo-100 border-indigo-200') : (isDarkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-300')}`}>
-                                <Sigma className="w-5 h-5" />
-                            </div>
-                            <span className="text-[9px] font-bold uppercase tracking-wider">Math</span>
-                        </button>
-
-                        {isMathMode && (
+                        {/* Toolstrip */}
+                        <div className={`flex items-center gap-1 overflow-x-auto pb-2 no-scrollbar ${isDarkMode ? 'border-zinc-800' : 'border-gray-200'} border-b mb-1`}>
                             <button
-                                onClick={() => {
-                                    if (window.mathVirtualKeyboard.visible) window.mathVirtualKeyboard.hide();
-                                    else window.mathVirtualKeyboard.show();
-                                }}
-                                className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all w-16 group text-emerald-500 hover:bg-emerald-500/10`}
-                                title="Toggle Virtual Keyboard"
+                                onClick={() => setIsMathMode(false)}
+                                className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all w-16 group ${!isMathMode ? (isDarkMode ? 'text-indigo-400' : 'text-indigo-600') : 'opacity-50'}`}
                             >
-                                <div className={`p-2 rounded-full border border-emerald-500/30 bg-emerald-500/10`}>
-                                    <Keyboard className="w-5 h-5" />
+                                <div className={`p-2 rounded-full border transition-colors ${!isMathMode ? (isDarkMode ? 'bg-indigo-500/20 border-indigo-500/50' : 'bg-indigo-100 border-indigo-200') : (isDarkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-300')}`}>
+                                    <Type className="w-5 h-5" />
                                 </div>
-                                <span className="text-[9px] font-bold uppercase tracking-wider">Keys</span>
+                                <span className="text-[9px] font-bold uppercase tracking-wider">Text</span>
                             </button>
+
+                            <button
+                                onClick={() => setIsMathMode(true)}
+                                className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all w-16 group ${isMathMode ? (isDarkMode ? 'text-indigo-400' : 'text-indigo-600') : 'opacity-50'}`}
+                            >
+                                <div className={`p-2 rounded-full border transition-colors ${isMathMode ? (isDarkMode ? 'bg-indigo-500/20 border-indigo-500/50' : 'bg-indigo-100 border-indigo-200') : (isDarkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-300')}`}>
+                                    <Sigma className="w-5 h-5" />
+                                </div>
+                                <span className="text-[9px] font-bold uppercase tracking-wider">Math</span>
+                            </button>
+
+                            {isMathMode && (
+                                <button
+                                    onClick={() => {
+                                        if ((window as any).mathVirtualKeyboard.visible) (window as any).mathVirtualKeyboard.hide();
+                                        else (window as any).mathVirtualKeyboard.show();
+                                    }}
+                                    className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all w-16 group text-emerald-500 hover:bg-emerald-500/10`}
+                                    title="Toggle Virtual Keyboard"
+                                >
+                                    <div className={`p-2 rounded-full border border-emerald-500/30 bg-emerald-500/10`}>
+                                        <Keyboard className="w-5 h-5" />
+                                    </div>
+                                    <span className="text-[9px] font-bold uppercase tracking-wider">Keys</span>
+                                </button>
+                            )}
+
+                            <div className={`w-px h-8 ${isDarkMode ? 'bg-zinc-800' : 'bg-gray-300'} mx-2`} />
+
+                            <MediaUploader label="File" icon={FileText} accept="*" onFileSelected={setSelectedFile} />
+                            <MediaUploader label="Image" icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
+                            <MediaUploader label="Video" icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
+                            <AudioRecorder onRecordingComplete={setRecordedAudio} />
+                        </div>
+
+                        {/* Previews */}
+                        {(selectedFile || recordedAudio) && (
+                            <div className={`flex items-center gap-2 p-2 ${isDarkMode ? 'bg-zinc-800/30' : 'bg-gray-200'} rounded-xl`}>
+                                {selectedFile && <FilePreview file={selectedFile} onRemove={() => setSelectedFile(null)} />}
+                                {recordedAudio && <AudioPreview url={URL.createObjectURL(recordedAudio)} onRemove={() => setRecordedAudio(null)} />}
+                            </div>
                         )}
 
-                        <div className={`w-px h-8 ${isDarkMode ? 'bg-zinc-800' : 'bg-gray-300'} mx-2`} />
+                        {/* Input Field */}
+                        <div className="flex items-end gap-3">
+                            <div className={`flex-1 ${isDarkMode ? 'bg-black border-zinc-700' : 'bg-white border-gray-300'} border rounded-xl p-3 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500/50 transition-all`}>
+                                {isMathMode ? (
+                                    <MathInput
+                                        value={inputContent}
+                                        onChange={setInputContent}
+                                        placeholder="Enter complex mathematical formula..."
+                                    />
+                                ) : (
+                                    <textarea
+                                        value={inputContent}
+                                        onChange={(e) => setInputContent(e.target.value)}
+                                        placeholder={dict?.debate?.placeholder || "Enter your argument..."}
+                                        className={`w-full bg-transparent border-none ${isDarkMode ? 'text-white' : 'text-gray-900'} outline-none resize-none min-h-[48px] max-h-32 placeholder:text-zinc-500 font-medium`}
+                                        rows={1}
+                                        onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+                                    />
+                                )}
+                            </div>
+                            <button
+                                onClick={handleSend}
+                                disabled={!inputContent.trim() && !selectedFile && !recordedAudio}
+                                className="p-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:hover:bg-indigo-600 text-white rounded-xl shadow-lg transition-all"
+                            >
+                                <Send className="w-5 h-5" />
+                            </button>
+                        </div>
 
-                        <MediaUploader label="File" icon={FileText} accept="*" onFileSelected={setSelectedFile} />
-                        <MediaUploader label="Image" icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
-                        <MediaUploader label="Video" icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
-                        <AudioRecorder onRecordingComplete={setRecordedAudio} />
                     </div>
-
-                    {/* Previews */}
-                    {(selectedFile || recordedAudio) && (
-                        <div className={`flex items-center gap-2 p-2 ${isDarkMode ? 'bg-zinc-800/30' : 'bg-gray-200'} rounded-xl`}>
-                            {selectedFile && <FilePreview file={selectedFile} onRemove={() => setSelectedFile(null)} />}
-                            {recordedAudio && <AudioPreview url={URL.createObjectURL(recordedAudio)} onRemove={() => setRecordedAudio(null)} />}
-                        </div>
-                    )}
-
-                    {/* Input Field */}
-                    <div className="flex items-end gap-3">
-                        <div className={`flex-1 ${isDarkMode ? 'bg-black border-zinc-700' : 'bg-white border-gray-300'} border rounded-xl p-3 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500/50 transition-all`}>
-                            {isMathMode ? (
-                                <MathInput
-                                    value={inputContent}
-                                    onChange={setInputContent}
-                                    placeholder="Enter complex mathematical formula..."
-                                />
-                            ) : (
-                                <textarea
-                                    value={inputContent}
-                                    onChange={(e) => setInputContent(e.target.value)}
-                                    placeholder={dict?.debate?.placeholder || "Enter your argument..."}
-                                    className={`w-full bg-transparent border-none ${isDarkMode ? 'text-white' : 'text-gray-900'} outline-none resize-none min-h-[48px] max-h-32 placeholder:text-zinc-500 font-medium`}
-                                    rows={1}
-                                    onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                                />
-                            )}
-                        </div>
-                        <button
-                            onClick={handleSend}
-                            disabled={!inputContent.trim() && !selectedFile && !recordedAudio}
-                            className="p-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:hover:bg-indigo-600 text-white rounded-xl shadow-lg transition-all"
-                        >
-                            <Send className="w-5 h-5" />
-                        </button>
-                    </div>
-                
-                </div>
-            </aside>
-<main className={`flex-1 overflow-y-auto ${isDarkMode ? 'bg-[#050505]' : 'bg-white'} p-4 transition-colors`}>
-                <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
-                    {lastVideoAssetUrl && (
-                        <div className={`rounded-2xl overflow-hidden border ${isDarkMode ? 'border-white/10 bg-black' : 'border-gray-200 bg-white'} shadow-sm`}>
-                            <div className={`px-4 py-2 text-xs font-black uppercase tracking-wider ${isDarkMode ? 'bg-zinc-900/60 text-zinc-200' : 'bg-gray-50 text-gray-700'}`}>
-                                {dict?.debate?.videoPlayerTitle || 'Video Player'}
+                </aside>
+                <main className={`flex-1 overflow-y-auto ${isDarkMode ? 'bg-[#050505]' : 'bg-white'} p-4 transition-colors`}>
+                    <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
+                        {lastVideoAssetUrl && (
+                            <div className={`rounded-2xl overflow-hidden border ${isDarkMode ? 'border-white/10 bg-black' : 'border-gray-200 bg-white'} shadow-sm`}>
+                                <div className={`px-4 py-2 text-xs font-black uppercase tracking-wider ${isDarkMode ? 'bg-zinc-900/60 text-zinc-200' : 'bg-gray-50 text-gray-700'}`}>
+                                    {dict?.debate?.videoPlayerTitle || 'Video Player'}
+                                </div>
+                                <video src={lastVideoAssetUrl} controls className="w-full h-auto" />
                             </div>
-                            <video src={lastVideoAssetUrl} controls className="w-full h-auto" />
-                        </div>
-                    )}
+                        )}
 
-                    {lastImageAssetUrl && (
-                        <div className={`rounded-2xl overflow-hidden border ${isDarkMode ? 'border-white/10 bg-black' : 'border-gray-200 bg-white'} shadow-sm`}>
-                            <div className={`px-4 py-2 text-xs font-black uppercase tracking-wider ${isDarkMode ? 'bg-zinc-900/60 text-zinc-200' : 'bg-gray-50 text-gray-700'}`}>
-                                {dict?.debate?.imagePreviewTitle || 'Image Preview'}
+                        {lastImageAssetUrl && (
+                            <div className={`rounded-2xl overflow-hidden border ${isDarkMode ? 'border-white/10 bg-black' : 'border-gray-200 bg-white'} shadow-sm`}>
+                                <div className={`px-4 py-2 text-xs font-black uppercase tracking-wider ${isDarkMode ? 'bg-zinc-900/60 text-zinc-200' : 'bg-gray-50 text-gray-700'}`}>
+                                    {dict?.debate?.imagePreviewTitle || 'Image Preview'}
+                                </div>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={lastImageAssetUrl} alt="Generated" className="w-full h-auto" />
                             </div>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={lastImageAssetUrl} alt="Generated" className="w-full h-auto" />
-                        </div>
-                    )}
-                    
-{showFinalOnly ? (
-                        finalConsensus ? (
-                            <div className="flex w-full justify-start">
-                                <div className="flex flex-col max-w-[90%] items-start">
-                                    <span className="text-[10px] uppercase font-bold opacity-50 mb-1 px-1">{dict?.debate?.finalConsensus || 'Final Consensus'}</span>
-                                    <div className={`p-5 rounded-2xl text-sm leading-relaxed ${isDarkMode ? 'bg-zinc-800/60 text-zinc-100 border border-white/10' : 'bg-white text-gray-900 border border-gray-200'} shadow-sm`}>
-                                        <MathDisplay content={finalConsensus.content} />
-                                        {usedAis.length > 0 && (
-                                            <div className={`mt-4 text-[10px] font-bold uppercase tracking-wider opacity-70 ${isDarkMode ? 'text-zinc-300' : 'text-gray-600'}`}>
-                                                {dict?.debate?.usedAis || 'Used AIs'}: {usedAis.join(', ')}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex items-center gap-2 mt-2 px-1 opacity-60 hover:opacity-100 transition-opacity">
-                                        <button onClick={() => navigator.clipboard.writeText(finalConsensus.content)} className="flex items-center gap-1 text-[10px] opacity-70 hover:opacity-100 uppercase tracking-wider font-bold transition-opacity" title="Copy Content">
-                                            <Copy className="w-3 h-3" /> Copy
-                                        </button>
-                                        <button onClick={() => handlePrint(finalConsensus.content)} className="flex items-center gap-1 text-[10px] opacity-70 hover:opacity-100 uppercase tracking-wider font-bold">
-                                            <Printer className="w-3 h-3" /> Print
-                                        </button>
-                                        <button onClick={openImageGeneration} className="flex items-center gap-1 text-[10px] opacity-70 hover:opacity-100 uppercase tracking-wider font-bold">
-                                            <ImageIcon className="w-3 h-3" /> {dict?.common?.generateImage || 'Generate Image'}
-                                        </button>
-                                        <button onClick={openVideoGeneration} className="flex items-center gap-1 text-[10px] opacity-70 hover:opacity-100 uppercase tracking-wider font-bold">
-                                            <Video className="w-3 h-3" /> {dict?.common?.generateVideo || 'Generate Video'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className={`text-sm opacity-60 ${isDarkMode ? 'text-zinc-300' : 'text-gray-600'}`}>{dict?.debate?.noConsensusYet || 'No final answer yet.'}</div>
-                        )
-                    ) : (
-                        <>
-                            {/* Independent Answers */}
-                            {independentMsgs.length > 0 && (
-                                <div className="flex flex-col gap-3">
-                                    <div className={`text-xs font-black uppercase tracking-wider ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>
-                                        {dict?.debate?.independentAnswers || 'Independent Answers'}
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        {Object.entries(independentMsgs.reduce((acc: unknown, m) => {
-                                            acc[m.name] = m;
-                                            return acc;
-                                        }, {})).map(([name, msg]: unknown) => (
-                                            <div key={msg.id} className={`rounded-2xl border p-4 ${isDarkMode ? 'border-white/10 bg-zinc-900/40' : 'border-gray-200 bg-white'} shadow-sm`}>
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <span className="text-[10px] uppercase font-bold opacity-60">{name}</span>
-                                                </div>
-                                                <div className="text-sm leading-relaxed">
-                                                    <MathDisplay content={msg.content} />
-                                                </div>
-                                                <div className="flex items-center gap-2 mt-3 opacity-70 hover:opacity-100 transition-opacity">
-                                                    <button onClick={() => navigator.clipboard.writeText(msg.content)} className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold">
-                                                        <Copy className="w-3 h-3" /> Copy
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+                        )}
 
-                            {/* Cross Review */}
-                            {reviewMsgs.length > 0 && (
-                                <div className="flex flex-col gap-3 pt-2">
-                                    <div className={`text-xs font-black uppercase tracking-wider ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>
-                                        {dict?.debate?.crossReview || 'Cross Review'}
-                                    </div>
-                                    <div className="flex flex-col gap-3">
-                                        {reviewMsgs.map((msg) => (
-                                            <div key={msg.id} className={`rounded-2xl border p-4 ${isDarkMode ? 'border-white/10 bg-zinc-900/40' : 'border-gray-200 bg-white'} shadow-sm`}>
-                                                <span className="text-[10px] uppercase font-bold opacity-60">{msg.name}</span>
-                                                <div className="mt-2 text-sm leading-relaxed">
-                                                    <MathDisplay content={msg.content} />
+                        {showFinalOnly ? (
+                            finalConsensus ? (
+                                <div className="flex w-full justify-start">
+                                    <div className="flex flex-col max-w-[90%] items-start">
+                                        <span className="text-[10px] uppercase font-bold opacity-50 mb-1 px-1">{dict?.debate?.finalConsensus || 'Final Consensus'}</span>
+                                        <div className={`p-5 rounded-2xl text-sm leading-relaxed ${isDarkMode ? 'bg-zinc-800/60 text-zinc-100 border border-white/10' : 'bg-white text-gray-900 border border-gray-200'} shadow-sm`}>
+                                            <MathDisplay content={finalConsensus.content} />
+                                            {usedAis.length > 0 && (
+                                                <div className={`mt-4 text-[10px] font-bold uppercase tracking-wider opacity-70 ${isDarkMode ? 'text-zinc-300' : 'text-gray-600'}`}>
+                                                    {dict?.debate?.usedAis || 'Used AIs'}: {usedAis.join(', ')}
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Final Consensus */}
-                            {finalConsensus && (
-                                <div className="flex flex-col gap-3 pt-2">
-                                    <div className={`text-xs font-black uppercase tracking-wider ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>
-                                        {dict?.debate?.finalConsensus || 'Final Consensus'}
-                                    </div>
-                                    <div className={`rounded-2xl border p-5 ${isDarkMode ? 'border-white/10 bg-zinc-800/60 text-zinc-100' : 'border-gray-200 bg-white text-gray-900'} shadow-sm`}>
-                                        <MathDisplay content={finalConsensus.content} />
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Fallback: show any remaining messages (user/system) */}
-                            {messages.filter(m => m.role === 'user' || m.role === 'system').map((msg) => {
-                                const isUser = msg.role === 'user';
-                                return (
-                                    <div key={msg.id} className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`flex flex-col max-w-[80%] ${isUser ? 'items-end' : 'items-start'}`}>
-                                            <span className="text-[10px] uppercase font-bold opacity-50 mb-1 px-1">{msg.name}</span>
-                                            <div className={`p-4 rounded-2xl text-sm leading-relaxed ${isUser ? 'bg-indigo-600/20 text-indigo-100 border border-indigo-500/30' : (isDarkMode ? 'bg-zinc-800/50 text-zinc-200 border border-white/10' : 'bg-gray-100 text-gray-800 border-gray-200 border')}`}>
-                                                <MathDisplay content={msg.content} />
-                                            </div>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-2 mt-2 px-1 opacity-60 hover:opacity-100 transition-opacity">
+                                            <button onClick={() => navigator.clipboard.writeText(finalConsensus.content)} className="flex items-center gap-1 text-[10px] opacity-70 hover:opacity-100 uppercase tracking-wider font-bold transition-opacity" title="Copy Content">
+                                                <Copy className="w-3 h-3" /> Copy
+                                            </button>
+                                            <button onClick={() => handlePrint(finalConsensus.content)} className="flex items-center gap-1 text-[10px] opacity-70 hover:opacity-100 uppercase tracking-wider font-bold">
+                                                <Printer className="w-3 h-3" /> Print
+                                            </button>
+                                            <button onClick={openImageGeneration} className="flex items-center gap-1 text-[10px] opacity-70 hover:opacity-100 uppercase tracking-wider font-bold">
+                                                <ImageIcon className="w-3 h-3" /> {dict?.common?.generateImage || 'Generate Image'}
+                                            </button>
+                                            <button onClick={openVideoGeneration} className="flex items-center gap-1 text-[10px] opacity-70 hover:opacity-100 uppercase tracking-wider font-bold">
+                                                <Video className="w-3 h-3" /> {dict?.common?.generateVideo || 'Generate Video'}
+                                            </button>
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </>
-                    )}
+                                </div>
+                            ) : (
+                                <div className={`text-sm opacity-60 ${isDarkMode ? 'text-zinc-300' : 'text-gray-600'}`}>{dict?.debate?.noConsensusYet || 'No final answer yet.'}</div>
+                            )
+                        ) : (
+                            <>
+                                {/* Independent Answers */}
+                                {independentMsgs.length > 0 && (
+                                    <div className="flex flex-col gap-3">
+                                        <div className={`text-xs font-black uppercase tracking-wider ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>
+                                            {dict?.debate?.independentAnswers || 'Independent Answers'}
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            {Object.entries(independentMsgs.reduce((acc: any, m: any) => {
+                                                acc[m.name] = m;
+                                                return acc;
+                                            }, {})).map(([name, msg]: any) => (
+                                                <div key={msg.id} className={`rounded-2xl border p-4 ${isDarkMode ? 'border-white/10 bg-zinc-900/40' : 'border-gray-200 bg-white'} shadow-sm`}>
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span className="text-[10px] uppercase font-bold opacity-60">{name}</span>
+                                                    </div>
+                                                    <div className="text-sm leading-relaxed">
+                                                        <MathDisplay content={msg.content} />
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mt-3 opacity-70 hover:opacity-100 transition-opacity">
+                                                        <button onClick={() => navigator.clipboard.writeText(msg.content)} className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold">
+                                                            <Copy className="w-3 h-3" /> Copy
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
-                    <div ref={bottomRef} className="h-4" />
-                </div>
-            </main>
+                                {/* Cross Review */}
+                                {reviewMsgs.length > 0 && (
+                                    <div className="flex flex-col gap-3 pt-2">
+                                        <div className={`text-xs font-black uppercase tracking-wider ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>
+                                            {dict?.debate?.crossReview || 'Cross Review'}
+                                        </div>
+                                        <div className="flex flex-col gap-3">
+                                            {reviewMsgs.map((msg) => (
+                                                <div key={msg.id} className={`rounded-2xl border p-4 ${isDarkMode ? 'border-white/10 bg-zinc-900/40' : 'border-gray-200 bg-white'} shadow-sm`}>
+                                                    <span className="text-[10px] uppercase font-bold opacity-60">{msg.name}</span>
+                                                    <div className="mt-2 text-sm leading-relaxed">
+                                                        <MathDisplay content={msg.content} />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Final Consensus */}
+                                {finalConsensus && (
+                                    <div className="flex flex-col gap-3 pt-2">
+                                        <div className={`text-xs font-black uppercase tracking-wider ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>
+                                            {dict?.debate?.finalConsensus || 'Final Consensus'}
+                                        </div>
+                                        <div className={`rounded-2xl border p-5 ${isDarkMode ? 'border-white/10 bg-zinc-800/60 text-zinc-100' : 'border-gray-200 bg-white text-gray-900'} shadow-sm`}>
+                                            <MathDisplay content={finalConsensus.content} />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Fallback: show any remaining messages (user/system) */}
+                                {messages.filter(m => m.role === 'user' || m.role === 'system').map((msg) => {
+                                    const isUser = msg.role === 'user';
+                                    return (
+                                        <div key={msg.id} className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}>
+                                            <div className={`flex flex-col max-w-[80%] ${isUser ? 'items-end' : 'items-start'}`}>
+                                                <span className="text-[10px] uppercase font-bold opacity-50 mb-1 px-1">{msg.name}</span>
+                                                <div className={`p-4 rounded-2xl text-sm leading-relaxed ${isUser ? 'bg-indigo-600/20 text-indigo-100 border border-indigo-500/30' : (isDarkMode ? 'bg-zinc-800/50 text-zinc-200 border border-white/10' : 'bg-gray-100 text-gray-800 border-gray-200 border')}`}>
+                                                    <MathDisplay content={msg.content} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </>
+                        )}
+
+                        <div ref={bottomRef} className="h-4" />
+                    </div>
+                </main>
             </div>
 
 
-{/* Phase 14: Image generation modal */}
+            {/* Phase 14: Image generation modal */}
             {isImageModalOpen && (
                 <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/60 p-4">
                     <div className={`w-full max-w-md rounded-2xl border ${isDarkMode ? 'bg-zinc-950 border-white/10' : 'bg-white border-gray-200'} shadow-2xl overflow-hidden`}>

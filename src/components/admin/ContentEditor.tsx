@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { Loader2, Save, Type } from 'lucide-react';
 
 interface ContentEditorProps {
-    settings: Record<string, unknown>;
+    settings: any;
 }
 
 const CONTENT_KEYS = [
@@ -36,7 +36,7 @@ export default function ContentEditor({ settings }: ContentEditorProps) {
         try {
             await updateSetting(key, values[key]);
             toast.success('Content updated');
-        } catch (error: unknown) {
+        } catch (error: any) {
             toast.error((error instanceof Error ? error.message : String(error)));
         } finally {
             setSaving(null);

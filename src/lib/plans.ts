@@ -26,7 +26,7 @@ export async function getTokenPlans(): Promise<TokenPlan[]> {
   if (error || !data?.value) return DEFAULT_PLANS;
   try {
     const plans = Array.isArray(data.value) ? data.value : JSON.parse(data.value);
-    return (plans as unknown[]).map((p) => ({
+    return (plans as any[]).map((p) => ({
       id: String(p.id),
       name: String(p.name ?? 'Plan'),
       price_cents: Number(p.price_cents ?? p.price ?? 0),
@@ -53,7 +53,7 @@ export async function getPlan(planId: string): Promise<TokenPlan | undefined> {
     const priceCents = Math.round(creditsCents / 0.75);
     return {
       id: planId,
-      name: `Custom Credits ($${(creditsCents/100).toFixed(2)})`,
+      name: `Custom Credits ($${(creditsCents / 100).toFixed(2)})`,
       price_cents: priceCents,
       credits_cents: creditsCents,
       currency: 'usd',

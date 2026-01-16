@@ -12,7 +12,7 @@ type Notification = {
     read: boolean;
 };
 
-export function NotificationSystem({ dict }: { dict: unknown }) {
+export function NotificationSystem({ dict }: { dict: any }) {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [hasUnread, setHasUnread] = useState(false);

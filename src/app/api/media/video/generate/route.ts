@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   const tokensCost = estimateVideoTokens({ durationSec });
 
   // Feature flags / retention from settings (best-effort)
-  const features = (await getSetting('features').catch(() => null)) as unknown;
+  const features = (await getSetting('features').catch(() => null)) as any;
   const freeTrialTextOnly = Boolean(features?.free_trial_text_only ?? true);
 
   // Free trial never allows video

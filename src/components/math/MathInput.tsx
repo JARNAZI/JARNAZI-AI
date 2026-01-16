@@ -19,7 +19,7 @@ type MathVirtualKeyboard = {
 };
 
 function getMathVirtualKeyboard(): MathVirtualKeyboard | undefined {
-  const w = window as unknown as { mathVirtualKeyboard?: MathVirtualKeyboard };
+  const w = window as any;
   return w.mathVirtualKeyboard;
 }
 
@@ -45,7 +45,7 @@ export function MathInput({
 
     // Listen for internal changes
     const handleInput = (evt: Event) => {
-      const target = evt.target as unknown as { value?: string };
+      const target = evt.target as any;
       onChange(target.value ?? '');
     };
 

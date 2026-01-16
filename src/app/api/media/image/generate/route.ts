@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       .select('value')
       .eq('key', 'features')
       .maybeSingle();
-    const features = (featuresRow?.value ?? {}) as unknown;
+    const features = (featuresRow?.value ?? {}) as any;
 
     const { data: profile, error: profileErr } = await supabase
       .from('profiles')
@@ -122,7 +122,7 @@ export async function POST(req: Request) {
     if (assetErr) return NextResponse.json({ error: assetErr.message }, { status: 500 });
 
     return NextResponse.json({ ok: true, tokensDeducted: tokensNeeded, tokenBalance: updated?.token_balance_cents, asset });
-  } catch (e: unknown) {
+  } catch (e: any) {
     return NextResponse.json({ error: e?.message || 'Unexpected error' }, { status: 500 });
   }
 }

@@ -69,21 +69,25 @@ export async function GET(req: Request) {
         // 3. Auto-delete sessions/artifacts older than retentionDays with notification (best-effort)
         const threeDaysAgo = cutoffISO;
 
-const { data: oldDebates, error: oldErr } = await supabase
-    .from('debates')
-    .select('id,user_id,topic,created_at')
-    .lt('created_at', threeDaysAgo)
-    .limit(500);
+        const { data: oldDebates, error: oldErr } = await supabase
+            .from('debates')
+            .select('id,user_id,topic,created_at')
+            .lt('created_at', threeDaysAgo)
+            .limit(500);
 
         if (!oldErr && oldDebates?.length) {
             for (const d of oldDebates) {
                 // Notifications table is added in Phase 10; ignore errors if missing.
-                await supabase.from('notifications').insert({
-                    user_id: d.user_id,
-                    message: `Your session "${(d.topic || '').slice(0, 60)}" was deleted automatically (${retentionDays}-day retention).`,
-                    type: 'info',
-                    link: null
-                }).catch(() => null);
+                try {
+                    await supabase.from('notifications').insert({
+                        user_id: d.user_id,
+                        message: `Your session "${(d.topic || '').slice(0, 60)}" was deleted automatically (${retentionDays}-day retention).`,
+                        type: 'info',
+                        link: null
+                    });
+                } catch {
+                    // ignore
+                }
 
                 await supabase.from('generated_assets').delete().eq('debate_id', d.id);
                 await supabase.from('debate_turns').delete().eq('debate_id', d.id);

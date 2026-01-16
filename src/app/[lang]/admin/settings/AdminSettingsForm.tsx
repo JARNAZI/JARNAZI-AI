@@ -12,7 +12,7 @@ import ContentEditor from '@/components/admin/ContentEditor';
 import AdminProfile from '@/components/admin/AdminProfile';
 
 export default function AdminSettingsForm({ initialSettings }: { initialSettings: Record<string, unknown> }) {
-    type SettingRow = { value: string; [k: string]: unknown };
+    type SettingRow = { value: string;[k: string]: unknown };
     type SettingsMap = Record<string, SettingRow>;
 
     const normalizedInitialSettings: SettingsMap = useMemo(() => {
@@ -21,7 +21,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
             if (v && typeof v === 'object' && 'value' in (v as Record<string, unknown>)) {
                 out[k] = v as SettingRow;
             } else {
-                out[k] = { value: String((v as unknown) ?? '') };
+                out[k] = { value: String((v as any) ?? '') };
             }
         }
         return out;
@@ -43,7 +43,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
                 },
             }));
             toast.success('Setting updated');
-        } catch (error: unknown) {
+        } catch (error: any) {
             toast.error((error instanceof Error ? error.message : String(error)));
         } finally {
             setSaving(null);
@@ -68,7 +68,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
                 },
             }));
             toast.success('Logo uploaded');
-        } catch (error: unknown) {
+        } catch (error: any) {
             toast.error((error instanceof Error ? error.message : String(error)));
         } finally {
             setSaving(null);

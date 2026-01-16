@@ -9,14 +9,14 @@ export {
 } from './email/index';
 
 // No-op stubs for legacy calls (we do NOT send marketing/notification emails).
-export async function sendDebateSummary() {
+export async function sendDebateSummary(email?: string, topic?: string, debateId?: string) {
   return { success: true };
 }
 
-export async function sendAdminAlert() {
+export async function sendAdminAlert(subject?: string, message?: string) {
   return { success: true };
 }
 
-export async function sendContactReply() {
+export async function sendContactReply(toEmail?: string, data?: any) {
   return { success: true };
 }

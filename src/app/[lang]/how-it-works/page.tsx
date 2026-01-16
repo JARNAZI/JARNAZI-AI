@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function HowItWorksPage(props: { params: Promise<{ lang: string }> }) {
     const { lang } = await props.params;
-    const dict = await getDictionary(lang as unknown);
+    const dict = await getDictionary(lang as any);
 
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col animate-fade-in">

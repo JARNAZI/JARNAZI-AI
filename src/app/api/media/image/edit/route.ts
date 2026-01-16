@@ -57,9 +57,9 @@ export async function POST(req: Request) {
       debate_id: debateId,
       asset_type: 'image',
       prompt,
-      provider_name: (fnData as unknown)?.provider || 'unknown',
-      storage_path: (fnData as unknown)?.storage_path || null,
-      public_url: (fnData as unknown)?.public_url || (fnData as unknown)?.url || null,
+      provider_name: (fnData as any)?.provider || 'unknown',
+      storage_path: (fnData as any)?.storage_path || null,
+      public_url: (fnData as any)?.public_url || (fnData as any)?.url || null,
       cost_cents: tokensNeeded,
     })
     .select('*')

@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
-    const stripe = new Stripe(stripeSecret, { apiVersion: '2024-06-20' });
+    const stripe = new Stripe(stripeSecret, { apiVersion: '2024-06-20' } as any);
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',

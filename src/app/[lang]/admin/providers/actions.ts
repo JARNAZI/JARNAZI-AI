@@ -76,7 +76,7 @@ async function requireAdmin() {
       .eq('id', user.id)
       .single();
 
-    const profile = profileRes.data as unknown;
+    const profile = profileRes.data as any;
     if (isRecord(profile) && typeof profile.role === 'string') role = profile.role;
   }
 

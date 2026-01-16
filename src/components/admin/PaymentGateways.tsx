@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { CreditCard, Loader2 } from 'lucide-react';
 
 interface PaymentGatewaysProps {
-    settings: Record<string, unknown>;
+    settings: any;
 }
 
 export default function PaymentGateways({ settings }: PaymentGatewaysProps) {
@@ -29,7 +29,7 @@ export default function PaymentGateways({ settings }: PaymentGatewaysProps) {
             await updateSetting(key, String(checked));
             setGateways(prev => ({ ...prev, [gateway]: checked }));
             toast.success(`${gateway === 'nowpayments' ? 'NowPayments' : 'Stripe'} ${checked ? 'enabled' : 'disabled'}`);
-        } catch (error: unknown) {
+        } catch (error: any) {
             toast.error((error instanceof Error ? error.message : String(error)));
         } finally {
             setSaving(null);

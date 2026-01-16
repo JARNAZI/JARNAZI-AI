@@ -14,7 +14,7 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const health: unknown = {
+    const health: any = {
         openai: 'unknown',
         database: 'unknown',
         timestamp: new Date().toISOString()

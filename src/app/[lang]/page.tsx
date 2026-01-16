@@ -7,7 +7,7 @@ import Navbar from "@/components/home/Navbar";
 export default async function Home(props: { params: Promise<{ lang: string }> }) {
   const params = await props.params;
   const { lang } = params;
-  const dict = await getDictionary(lang as unknown);
+  const dict = await getDictionary(lang as any);
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white flex flex-col relative overflow-x-hidden transition-colors duration-300">

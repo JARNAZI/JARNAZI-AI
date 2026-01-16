@@ -9,7 +9,7 @@ const PUBLIC_FILE = /\.(.*)$/;
 function getLocale(request: NextRequest): string {
     // 1. Check cookie
     const cookieLocale = request.cookies.get("NEXT_LOCALE")?.value;
-    if (cookieLocale && locales.includes(cookieLocale as unknown)) {
+    if (cookieLocale && locales.includes(cookieLocale as any)) {
         return cookieLocale;
     }
 
@@ -24,7 +24,7 @@ function getLocale(request: NextRequest): string {
             });
 
         for (const lang of preferredLocales) {
-            if (locales.includes(lang as unknown)) {
+            if (locales.includes(lang as any)) {
                 return lang;
             }
         }
@@ -137,7 +137,7 @@ export async function middleware(request: NextRequest) {
 
     // Ensure cookie is synced with current locale path if present
     const locale = pathname.split('/')[1];
-    if (locale && locales.includes(locale as unknown)) {
+    if (locale && locales.includes(locale as any)) {
         response.cookies.set('NEXT_LOCALE', locale);
     }
 

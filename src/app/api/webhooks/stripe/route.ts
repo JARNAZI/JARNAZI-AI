@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session: unknown = event.data.object;
+    const session: any = event.data.object;
 
     // New Buy Tokens flow (Phase 3)
     const userId = session?.metadata?.user_id || session?.metadata?.userId;
@@ -56,10 +56,10 @@ export async function POST(req: Request) {
 
           await sendTokenPurchaseInvoice(
             session.customer_details.email,
-            planName,
             amountFormatted,
             tokensToAdd,
-            'en'
+            'en',
+            session.id
           );
         }
       }

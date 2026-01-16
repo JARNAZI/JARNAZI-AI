@@ -15,7 +15,7 @@ const GRANT_REASONS = [
     "Special sales"
 ];
 
-export default function UserManagementPanel({ user }: { user: unknown }) {
+export default function UserManagementPanel({ user }: { user: any }) {
     const [loading, setLoading] = useState<string | null>(null);
     const [grantMode, setGrantMode] = useState(false);
 
@@ -152,8 +152,8 @@ export default function UserManagementPanel({ user }: { user: unknown }) {
                 onClick={handleBan}
                 disabled={!!loading}
                 className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all text-sm font-medium ${user.is_banned
-                        ? 'bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/20'
-                        : 'bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 border-yellow-500/20'
+                    ? 'bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/20'
+                    : 'bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 border-yellow-500/20'
                     }`}
             >
                 <span className="flex items-center gap-2"><Ban className="w-4 h-4" /> {user.is_banned ? 'Unban User' : 'Ban Access'}</span>

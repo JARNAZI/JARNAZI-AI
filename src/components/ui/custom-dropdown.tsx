@@ -61,7 +61,7 @@ export function Dropdown({ trigger, children, align = 'right', width = 'w-56' }:
     );
 }
 
-export function DropdownItem({ onClick, children, className = "", icon: Icon, autoClose = true }: { onClick?: () => void, children: React.ReactNode, className?: string, icon?: unknown, autoClose?: boolean }) {
+export function DropdownItem({ onClick, children, className = "", icon: Icon, autoClose = true }: { onClick?: () => void, children: React.ReactNode, className?: string, icon?: any, autoClose?: boolean }) {
     const { close } = useContext(DropdownContext);
 
     return (

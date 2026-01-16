@@ -31,7 +31,7 @@ export default function BuyTokensClient({ lang }: { lang: string }) {
         .eq('key', 'features')
         .maybeSingle();
 
-      const features = (data as unknown)?.value;
+      const features = (data as any)?.value;
       if (features) {
         setStripeEnabled(Boolean(features.payments_stripe_enabled ?? true));
         setNowpaymentsEnabled(Boolean(features.payments_nowpayments_enabled ?? false));

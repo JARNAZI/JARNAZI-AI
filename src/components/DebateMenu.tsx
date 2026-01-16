@@ -19,14 +19,14 @@ export function DebateMenu() {
     const lang = pathname?.split('/')[1] || 'en';
 
     useEffect(() => {
-        let channel: unknown;
+        let channel: any;
 
         const fetchProfile = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                const { data: profile } = await supabase.from('profiles').select('token_balance, subscription_tier').eq('id', user.id).single();
+                const { data: profile } = await supabase.from('profiles').select('token_balance_cents, subscription_tier').eq('id', user.id).single();
                 if (profile) {
-                    setBalance(profile.token_balance);
+                    setBalance(profile.token_balance_cents);
                     setSubscription(profile.subscription_tier || 'Free');
                 }
 
@@ -38,7 +38,7 @@ export function DebateMenu() {
                         table: 'profiles',
                         filter: `id=eq.${user.id}`
                     }, (payload) => {
-                        if (payload.new.token_balance !== undefined) setBalance(payload.new.token_balance);
+                        if (payload.new.token_balance_cents !== undefined) setBalance(payload.new.token_balance_cents);
                         if (payload.new.subscription_tier !== undefined) setSubscription(payload.new.subscription_tier);
                     })
                     .subscribe();
@@ -115,7 +115,7 @@ export function DebateMenu() {
                         onClick={() => {
                             const segments = pathname.split('/');
                             segments[1] = l.code;
-                            try { document.cookie = `NEXT_LOCALE=${l.code}; path=/; max-age=${60*60*24*365}` } catch {}
+                            try { document.cookie = `NEXT_LOCALE=${l.code}; path=/; max-age=${60 * 60 * 24 * 365}` } catch { }
                             router.push(segments.join('/'));
                         }}
                     >

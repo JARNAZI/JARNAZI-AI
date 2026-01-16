@@ -17,7 +17,7 @@ interface Plan {
 }
 
 interface PlansEditorProps {
-    settings: Record<string, unknown>;
+    settings: any;
 }
 
 const DEFAULT_PLANS: Plan[] = [
@@ -75,7 +75,7 @@ export default function PlansEditor({ settings }: PlansEditorProps) {
             setPlans(newPlans);
             setEditing(null);
             toast.success('Plans updated successfully');
-        } catch (error: unknown) {
+        } catch (error: any) {
             toast.error((error instanceof Error ? error.message : String(error)));
         } finally {
             setSaving(false);

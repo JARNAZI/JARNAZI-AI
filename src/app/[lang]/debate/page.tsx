@@ -18,6 +18,11 @@ export default function DebateDashboard(props: { params: Promise<{ lang: string 
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+    // Missing handlers
+    const resolvedTheme = 'dark'; // Placeholder for now
+    const handleThemeToggle = () => { console.log('Toggle theme'); };
+    const handleLangToggle = () => { console.log('Toggle lang'); };
+
     useEffect(() => {
         const fetchDebates = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -148,7 +153,7 @@ export default function DebateDashboard(props: { params: Promise<{ lang: string 
                                             <MessageSquare className="w-5 h-5 text-zinc-400 group-hover:text-indigo-400" />
                                         </div>
                                         <span className="text-[10px] font-bold text-zinc-600 bg-black/40 px-2 py-1 rounded-full uppercase tracking-wider border border-white/5">
-                                            {new Date(debate.created_at).toLocaleDateString()}
+                                            {new Date(debate.created_at || '').toLocaleDateString()}
                                         </span>
                                     </div>
                                     <h4 className="text-lg font-bold text-zinc-200 group-hover:text-white mb-2 line-clamp-2 leading-tight">

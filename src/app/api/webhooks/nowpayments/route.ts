@@ -37,11 +37,11 @@ export async function POST(req: Request) {
 
             if (userId && tokensStr) {
                 const tokensToAdd = parseInt(tokensStr);
-                const { data: profile } = await supabaseAdmin.from('profiles').select('token_balance').eq('id', userId).single();
+                const { data: profile } = await supabaseAdmin.from('profiles').select('token_balance_cents').eq('id', userId).single();
 
                 if (profile) {
                     await supabaseAdmin.from('profiles').update({
-                        token_balance: (profile.token_balance || 0) + tokensToAdd
+                        token_balance_cents: ((profile as any).token_balance_cents || 0) + tokensToAdd
                     }).eq('id', userId);
 
                     await supabaseAdmin.from('transactions').insert({
@@ -60,7 +60,6 @@ export async function POST(req: Request) {
                         const amountStr = `${data.price_amount} ${data.pay_currency}`;
                         await sendTokenPurchaseInvoice(
                             user.email,
-                            'Token Pack (Crypto)',
                             amountStr,
                             tokensToAdd
                         );

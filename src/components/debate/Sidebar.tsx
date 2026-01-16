@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 
 interface SidebarProps {
     lang: string;
-    dict: unknown;
+    dict: any;
 }
 
 export default function Sidebar({ lang, dict }: SidebarProps) {
@@ -16,7 +16,7 @@ export default function Sidebar({ lang, dict }: SidebarProps) {
     const params = useParams();
     const currentId = params?.id as string;
     const [supabase] = useState(() => createClient());
-    const [recentDebates, setRecentDebates] = useState<unknown[]>([]);
+    const [recentDebates, setRecentDebates] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchRecent = async () => {
@@ -77,8 +77,8 @@ export default function Sidebar({ lang, dict }: SidebarProps) {
                                 key={debate.id}
                                 href={`/${lang}/debate/${debate.id}`}
                                 className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all group ${currentId === debate.id
-                                        ? 'bg-primary/10 text-primary border border-primary/20'
-                                        : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.03]'
+                                    ? 'bg-primary/10 text-primary border border-primary/20'
+                                    : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.03]'
                                     }`}
                             >
                                 <History className={`w-4 h-4 shrink-0 ${currentId === debate.id ? 'text-primary' : 'group-hover:text-zinc-300'}`} />

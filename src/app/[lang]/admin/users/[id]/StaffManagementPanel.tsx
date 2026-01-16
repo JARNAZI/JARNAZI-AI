@@ -5,7 +5,7 @@ import { revokeStaffAccess, promoteToStaff } from '../staff-actions';
 import { toast } from 'sonner';
 import { ShieldAlert, Loader2 } from 'lucide-react';
 
-export default function StaffManagementPanel({ user }: { user: unknown }) {
+export default function StaffManagementPanel({ user }: { user: any }) {
     const [loading, setLoading] = useState(false);
 
     // If user passed in is already support, show revoke options
@@ -69,8 +69,8 @@ export default function StaffManagementPanel({ user }: { user: unknown }) {
                 onClick={toggleStaffRole}
                 disabled={loading}
                 className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all text-sm font-medium ${isSupport
-                        ? 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/20'
-                        : 'bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border-purple-500/20'
+                    ? 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/20'
+                    : 'bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border-purple-500/20'
                     }`}
             >    <span className="flex items-center gap-2">
                     {isSupport ? <ShieldAlert className="w-4 h-4" /> : <ShieldAlert className="w-4 h-4" />}

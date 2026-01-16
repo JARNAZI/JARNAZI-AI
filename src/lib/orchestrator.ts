@@ -164,7 +164,7 @@ export class DebateOrchestrator {
         }
 
         // If we reach here, all candidates failed
-        const errorMsg = lastError ? lastError.message : "No available agents found";
+        const errorMsg = lastError instanceof Error ? lastError.message : "No available agents found";
         console.error("All providers failed for step:", step);
 
         await sendAdminAlert(
@@ -178,7 +178,7 @@ export class DebateOrchestrator {
 
     async executeTextTurn(
         agent: AIProvider,
-        step: unknown,
+        step: TaskPlan['sequence'][0],
         context: DebateContext
     ): Promise<{ content: string; status: 'success' | 'failed'; agentName: string }> {
         // Construct Prompt
@@ -417,7 +417,7 @@ export class DebateOrchestrator {
     }
 
     // Helpers
-    private getFallbackPlan(providers: unknown[]): TaskPlan['sequence'] {
+    private getFallbackPlan(providers: AIProvider[]): TaskPlan['sequence'] {
         // Fallback: Linear debate
         const steps = providers.map(p => ({
             role: "Debater",

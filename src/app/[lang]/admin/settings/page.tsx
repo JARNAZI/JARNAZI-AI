@@ -10,7 +10,7 @@ export default async function AdminSettingsPage() {
     const { data: settings } = await supabase.from('site_settings').select('*').order('label');
 
     // Transform to simple object for ease of use initially, but array is fine for mapping
-    const settingMap = settings?.reduce((acc: unknown, curr) => {
+    const settingMap = settings?.reduce((acc: any, curr) => {
         acc[curr.key] = curr;
         return acc;
     }, {}) || {};

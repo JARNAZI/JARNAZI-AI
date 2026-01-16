@@ -72,7 +72,7 @@ async function requireAdmin() {
 
     // Supabase types may be `any` depending on your generated types;
     // keep it safe and runtime-checked.
-    const profile = profileRes.data as unknown;
+    const profile = profileRes.data as any;
     if (isRecord(profile) && typeof profile.role === 'string') role = profile.role;
   }
 
