@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # Netlify may default to an older Node version on Free/credits plans.
+  # This project requires Node >= 20 (recommended: 22 LTS).
+  NODE_VERSION = "22"

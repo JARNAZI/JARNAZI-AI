@@ -1,0 +1,192 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Premium Light Mode - Minimalist & Airy */
+  --background: #fbfbfb;
+  --foreground: #0c0c0c;
+
+  --primary: #5850ec; 
+  --primary-foreground: #ffffff;
+
+  --secondary: #f3f4f6;
+  --secondary-foreground: #111827;
+
+  --accent: #6d28d9;
+  --accent-foreground: #ffffff;
+
+  --muted: #f1f1f1;
+  --muted-foreground: #737373;
+
+  --card: rgba(255, 255, 255, 0.9);
+  --card-foreground: #0c0c0c;
+
+  --border: #ececec;
+  --input: #ececec;
+
+  --radius: 1.25rem;
+}
+
+.dark {
+  /* Pitch Black Premium Dark Mode */
+  --background: #000000;
+  --foreground: #e5e5e5;
+
+  --primary: #6366f1; 
+  --primary-foreground: #ffffff;
+
+  --secondary: #0a0a0a;
+  --secondary-foreground: #f3f4f6;
+
+  --accent: #8b5cf6;
+  --accent-foreground: #ffffff;
+
+  --muted: #0d0d0d;
+  --muted-foreground: #525252;
+
+  --card: rgba(5, 5, 5, 0.8);
+  --card-foreground: #e5e5e5;
+
+  --border: rgba(255, 255, 255, 0.05);
+  --input: rgba(255, 255, 255, 0.03);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+  --radius-xl: 1.25rem;
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-reveal: reveal 0.8s cubic-bezier(0, 0, 0.2, 1) forwards;
+  --animate-fade-in-up: fadeInUp 0.5s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 10px -5px var(--primary); }
+  to { box-shadow: 0 0 20px 5px var(--primary); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes reveal {
+  from { opacity: 0; clip-path: inset(10% 0 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.01em;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  height: 100%;
+}
+
+/* Custom Scrollbar - High Accessibility & Visibility */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--background);
+  border-left: 1px solid var(--border);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 5px;
+  border: 2px solid var(--background);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* MathLive Dark Mode Correction */
+math-field {
+  --caret-color: var(--primary);
+  --selection-background-color: var(--primary);
+  --text-field-color: var(--foreground);
+  --text-field-background-color: transparent;
+  color: var(--foreground);
+}
+
+math-field::part(content) {
+  color: var(--foreground);
+}
+
+.dark math-field {
+  background-color: rgba(255, 255, 255, 0.03);
+  color: white;
+}
+
+/* Global Pointer Consistency */
+button, 
+a, 
+[role="button"],
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+/* Premium Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Chat Input Scoped MathLive UI Hiding */
+.chat-input .ML__menu-toggle,
+.chat-input .ML__virtual-keyboard-toggle,
+.chat-input .ML__toolbar {
+  display: none !important;
+}
