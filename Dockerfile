@@ -19,11 +19,12 @@ RUN npm run build
 # Remove development dependencies
 RUN npm prune --production
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Expose the port the app runs on (Cloud Run uses PORT env)
+EXPOSE 8080
 
-# Set environment variable for port
-ENV PORT=3000
+# Don't hardcode PORT=3000. Cloud Run injects PORT (usually 8080).
+ENV PORT=8080
+ENV HOSTNAME=0.0.0.0
 
-# Start the application
-CMD ["npm", "start"]
+# Start the application (force Next to listen on PORT)
+CMD ["sh", "-c", "npm start -- -p $PORT -H 0.0.0.0"]
