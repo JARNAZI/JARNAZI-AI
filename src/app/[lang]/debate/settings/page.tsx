@@ -44,7 +44,7 @@ export default async function SettingsPage(props: { params: Promise<{ lang: stri
 
         <section className="p-8 rounded-2xl bg-card/50 border border-border">
           <h2 className="text-xl font-bold text-foreground mb-6">{t.security}</h2>
-          <Link href={`/${lang}/update-password`} className="inline-flex h-10 items-center justify-center rounded-md border border-white/10 bg-white/5 px-4 text-sm font-medium text-white hover:bg-white/10">{t.changePassword}</Link>
+          <Link href={`/${params.lang}/update-password`} className="inline-flex h-10 items-center justify-center rounded-md border border-white/10 bg-white/5 px-4 text-sm font-medium text-white hover:bg-white/10">{t.changePassword}</Link>
         </section>
 
         <section className="p-8 rounded-2xl bg-destructive/5 border border-destructive/30">
