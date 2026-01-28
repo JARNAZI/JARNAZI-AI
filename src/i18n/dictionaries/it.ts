@@ -109,6 +109,11 @@ const it = {
     badge: "Il futuro dell'intelligenza del consenso",
     subtitle2: "Studio di Consenso IA"
   },
+  dashboard: {
+    neuralHub: "Neural Hub",
+    underConstruction: "Questo modulo è attualmente in costruzione. Il Neural Hub fungerà da livello di orchestrazione centrale per flussi di lavoro avanzati multi-agente.",
+    returnToConsole: "Torna alla Console"
+  },
   contactPage: {
     "title": "Contattaci",
     "subtitle": "Domande, feedback o richieste?",

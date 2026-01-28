@@ -109,6 +109,11 @@ const sv = {
     badge: "Framtiden fÃ¶r konsensusintelligens",
     subtitle2: "AI-konsensusstudio"
   },
+  dashboard: {
+    neuralHub: "Neural Hub",
+    underConstruction: "Denna modul är för närvarande under konstruktion. Neural Hub kommer att fungera som det centrala orkestreringsskiktet för avancerade multi-agent-arbetsflöden.",
+    returnToConsole: "Tillbaka till konsolen"
+  },
   contactPage: {
     "title": "Kontakta oss",
     "subtitle": "FrÃ¥gor, feedback eller fÃ¶rfrÃ¥gningar?",

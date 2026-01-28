@@ -109,6 +109,11 @@ const de = {
     badge: "Die Zukunft der Konsensintelligenz",
     subtitle2: "AI-Konsens-Studio"
   },
+  dashboard: {
+    neuralHub: "Neural Hub",
+    underConstruction: "Dieses Modul befindet sich derzeit im Aufbau. Der Neural Hub wird als zentrale Orchestrierungsebene für fortgeschrittene Multi-Agenten-Workflows dienen.",
+    returnToConsole: "Zurück zur Konsole"
+  },
   contactPage: {
     "title": "Kontakt",
     "subtitle": "Fragen, Feedback oder Anfragen?",

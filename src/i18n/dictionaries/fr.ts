@@ -109,6 +109,11 @@ const fr = {
     badge: "L'avenir de l'intelligence consensuelle",
     subtitle2: "Studio de Consensus IA"
   },
+  dashboard: {
+    neuralHub: "Neural Hub",
+    underConstruction: "Ce module est actuellement en construction. Le Neural Hub servira de couche d'orchestration centrale pour les flux de travail multi-agents avancés.",
+    returnToConsole: "Retour à la Console"
+  },
   contactPage: {
     "title": "Nous contacter",
     "subtitle": "Questions, retours ou demandes ?",
