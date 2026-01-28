@@ -23,5 +23,5 @@ export function useDictionary(lang: any) {
     };
   }, [lang]);
 
-  return { dict, loading };
+  return dict;
 }

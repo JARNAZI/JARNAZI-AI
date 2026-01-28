@@ -36,7 +36,7 @@ function SubmitButton({ label }: { label: string }) {
 export default function ContactPage() {
     const params = useParams();
     const lang = ((params as any)?.lang as LanguageCode) || DEFAULT_LANGUAGE;
-    const { dict } = useDictionary(lang);
+    const dict = useDictionary(lang);
     const t = dict?.contactPage || {};
 
     const [state, formAction] = useFormState(submitContactForm, initialState);
