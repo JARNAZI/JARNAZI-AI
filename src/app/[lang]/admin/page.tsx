@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { getDictionary } from '@/i18n/get-dictionary';
 
 
-export default async function AdminDashboard({ params }: { params: { lang: string } }) {
-    const lang = params.lang;
+export default async function AdminDashboard({ params }: { params: Promise<{ lang: string }> }) {
+    const { lang } = await params;
     const dict = await getDictionary(lang);
 
     return (
