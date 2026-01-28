@@ -22,41 +22,47 @@ export async function GET(req: Request) {
         const results: Record<string, unknown> = {};
 
         // Read retention settings (supports both schemas)
-let retentionDays = 3;
+        let retentionDays = 3;
+        let unverifiedDeleteMinutes = 30;
 
-try {
-    // KV schema: key/value
-    const { data: retentionRow, error } = await supabase
-        .from('site_settings')
-        .select('value')
-        .eq('key', 'retention')
-        .maybeSingle();
-    if (!error && retentionRow?.value?.sessions_retention_days != null) {
-        retentionDays = Number(retentionRow.value.sessions_retention_days) || 3;
-    }
-} catch (_) {}
+        try {
+            // KV schema: key='retention', value={sessions_retention_days, unverified_delete_minutes}
+            const { data: retentionRow } = await supabase
+                .from('site_settings')
+                .select('value')
+                .eq('key', 'retention')
+                .maybeSingle();
 
-if (!Number.isFinite(retentionDays) || retentionDays <= 0) retentionDays = 3;
+            if (retentionRow?.value) {
+                if (retentionRow.value.sessions_retention_days != null) {
+                    retentionDays = Number(retentionRow.value.sessions_retention_days) || 3;
+                }
+                if (retentionRow.value.unverified_delete_minutes != null) {
+                    unverifiedDeleteMinutes = Number(retentionRow.value.unverified_delete_minutes) || 30;
+                }
+            }
+        } catch (_) { }
 
-if (retentionDays === 3) {
-    // keep default unless explicitly set
-}
+        // Single-row schema: features JSONB
+        try {
+            const { data } = await supabase.from('site_settings').select('features').limit(1).maybeSingle();
+            const features = (data as any)?.features || {};
 
-if (retentionDays && retentionDays > 0) {
-    // Single-row schema: features JSONB may contain `sessions_retention_days`
-    try {
-        const { data, error } = await supabase.from('site_settings').select('features').limit(1).maybeSingle();
-        if (!error) {
-            const features: any = (data as any)?.features || {};
-            const v = features.sessions_retention_days ?? features.retention_days;
-            if (v != null) {
-                const n = Number(v);
+            const rd = features.sessions_retention_days ?? features.retention_days;
+            if (rd != null) {
+                const n = Number(rd);
                 if (Number.isFinite(n) && n > 0) retentionDays = n;
             }
-        }
-    } catch (_) {}
-}
-        const unverifiedDeleteMinutes = Number(retentionRow?.value?.unverified_delete_minutes ?? 30);
+
+            const udm = features.unverified_delete_minutes;
+            if (udm != null) {
+                const n = Number(udm);
+                if (Number.isFinite(n) && n > 0) unverifiedDeleteMinutes = n;
+            }
+        } catch (_) { }
+
+        if (!Number.isFinite(retentionDays) || retentionDays <= 0) retentionDays = 3;
+        if (!Number.isFinite(unverifiedDeleteMinutes) || unverifiedDeleteMinutes <= 0) unverifiedDeleteMinutes = 30;
 
         const cutoffISO = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000).toISOString();
 
