@@ -1,131 +1,142 @@
 ﻿import { SITE_NAME } from '../config';
 const it = {
-common: {
-        siteName: SITE_NAME,
-        login: "Accedi",
-        register: "Registrati",
-        logout: "Esci",
-        dashboard: "Dashboard",
-        settings: "Impostazioni",
-        profile: "Profilo",
-        loading: "Caricamento...",
-        error: "Si Ã¨ verificato un errore",
-        save: "Salva",
-        cancel: "Annulla",
-        delete: "Elimina",
-        back: "Indietro"
-    },
-    home: {
-        heroTitle: "Dibattito. Accordo. Creazione.",
-        heroSubtitle: "Chiedi una volta. PiÃ¹ IA rispondono in modo indipendente, si revisionano a vicenda, poi OpenAI guida un consenso finale â€” pronto per immagini, video, audio o codice.",
-        startDebate: "Inizia Dibattito",
-        howItWorks: "Come funziona"
-    },
-    debate: {
-        currentPlan: 'Current plan',
-        newTitle: "Nuovo Dibattito",
-        topicLabel: "Inserisci un argomento...",
-        startBtn: "Avvia Dibattito",
-        analyzing: "Analisi dell'argomento...",
-        consensusTitle: "Consenso Finale",
-        // Console UI
-        consoleTitle: "Console Jarnazi",
-        online: "ONLINE",
-        text: "Testo",
-        latex: "LaTex",
-        file: "File",
-        image: "Immagine",
-        video: "Video",
-        audio: "Audio",
-        print: "Stampa",
-        copy: "Copia",
-        save: "Salva",
-        download: "Scarica",
-        placeholder: "Inserisci il tuo argomento...",
-        mathPlaceholder: "\\sum_{i=0}^n x_i",
-        menu: "Menu di Sistema",
-        copyJson: "Copia JSON",
-        printTranscript: "Stampa Trascrizione",
-        viewPlans: "Visualizza Piani",
-        editProfile: "Modifica Profilo",
-        contactUs: "Contattaci",
-        sessionHistory: "Cronologia Sessioni",
-        language: "Lingua",
-        darkMode: "ModalitÃ  Scura",
-        lightMode: "ModalitÃ  Chiara",
-        deleteAccount: "Elimina Account"
-    },
-    notifications: {
-        welcome: "Benvenuto nel Consenso Jarnazi. Il Consiglio Ã¨ pronto."
-    },
-    nav: {
-        features: "FunzionalitÃ ",
-        pricing: "Prezzi",
-        contact: "Contattaci"
-    },
-    sidebar: {
-        newSession: "Nuova Sessione",
-        plans: "Piani",
-        settings: "Impostazioni",
-        signOut: "Disconnetti",
-        jarnazi: "JARNAZI",
-        consensus: "CONSENSO"
-    },
-    features: {
-        title1: "Dibattito multi-agente",
-        desc1: "PerchÃ© affidarsi a un solo modello? Ottieni prospettive indipendenti da piÃ¹ IA, con revisione incrociata per ridurre le allucinazioni.",
-        title2: "Consenso â†’ Creazione",
-        desc2: "Trasforma lâ€™accordo finale in un unico piano e prompt di alta qualitÃ  per generare immagini, video, audio o codice.",
-        title3: "Video lunghi",
-        desc3: "Genera video lunghiâ€”film, serie o programmi TVâ€”divisi in scene e composti in un unico MP4 scaricabile."
-    },
-    footer: {
-        privacy: "Informativa sulla Privacy",
-        terms: "Termini di Utilizzo",
-        rights: "Tutti i diritti riservati."
-    },
-    auth: {
-        welcome: "Bentornato",
-        subtitle: "Accedi per orchestrare il dibattito.",
-        email: "Indirizzo Email",
-        password: "Password",
-        signIn: "Accedi",
-        noAccount: "Non hai un account?",
-        createProfile: "Crea Profilo",
-        securityCheck: "Si prega di completare il controllo di sicurezza."
-    },
-    landing: {
-        badge: "Il futuro dell'intelligenza del consenso",
-        subtitle2: "Studio di Consenso IA"
-    },
-    contactPage:     {
-            "title":"Contattaci",
-            "subtitle":"Domande, feedback o richieste?",
-            "name":"Nome",
-            "subject":"Oggetto",
-            "email":"Email",
-            "message":"Messaggio",
-            "send":"Invia messaggio",
-            "namePh":"Max 25 caratteri",
-            "subjectPh":"Max 20 caratteri",
-            "emailPh":"tuo@esempio.com",
-            "messagePh":"Come possiamo aiutarti? (Max 250 caratteri)",
-            "max250":"Massimo 250 caratteri",
-            "sentToast":"Messaggio inviato! Ti risponderemo a breve."
-    }
-,
-    profilePage:     {
-            "titleRecent":"AttivitÃ  recente",
-            "tokenBalance":"Saldo token",
-            "available":"Disponibile per i dibattiti",
-            "totalDebates":"Dibattiti totali",
-            "sessions":"Sessioni orchestrate",
-            "noDebates":"Nessun dibattito trovato. Inizia la tua prima sessione!",
-            "anonymous":"Utente anonimo",
-            "banned":"BANNATO"
-    }
+  common: {
+    siteName: SITE_NAME,
+    login: "Accedi",
+    register: "Registrati",
+    logout: "Esci",
+    dashboard: "Dashboard",
+    settings: "Impostazioni",
+    profile: "Profilo",
+    loading: "Caricamento...",
+    error: "Si Ã¨ verificato un errore",
+    save: "Salva",
+    cancel: "Annulla",
+    delete: "Elimina",
+    back: "Indietro"
+  },
+  home: {
+    heroTitle: "Dibattito. Accordo. Creazione.",
+    heroSubtitle: "Chiedi una volta. PiÃ¹ IA rispondono in modo indipendente, si revisionano a vicenda, poi OpenAI guida un consenso finale â€” pronto per immagini, video, audio o codice.",
+    startDebate: "Inizia Dibattito",
+    howItWorks: "Come funziona"
+  },
+  debate: {
+    currentPlan: 'Current plan',
+    newTitle: "Nuovo Dibattito",
+    topicLabel: "Inserisci un argomento...",
+    startBtn: "Avvia Dibattito",
+    analyzing: "Analisi dell'argomento...",
+    consensusTitle: "Consenso Finale",
+    // Console UI
+    consoleTitle: "Console Jarnazi",
+    online: "ONLINE",
+    text: "Testo",
+    latex: "LaTex",
+    file: "File",
+    image: "Immagine",
+    video: "Video",
+    audio: "Audio",
+    print: "Stampa",
+    copy: "Copia",
+    save: "Salva",
+    download: "Scarica",
+    placeholder: "Inserisci il tuo argomento...",
+    mathPlaceholder: "\\sum_{i=0}^n x_i",
+    menu: "Menu di Sistema",
+    copyJson: "Copia JSON",
+    printTranscript: "Stampa Trascrizione",
+    viewPlans: "Visualizza Piani",
+    editProfile: "Modifica Profilo",
+    contactUs: "Contattaci",
+    sessionHistory: "Cronologia Sessioni",
+    language: "Lingua",
+    darkMode: "ModalitÃ  Scura",
+    lightMode: "ModalitÃ  Chiara",
+    deleteAccount: "Elimina Account"
+  },
+  notifications: {
+    welcome: "Benvenuto nel Consenso Jarnazi. Il Consiglio Ã¨ pronto."
+  },
+  nav: {
+    features: "FunzionalitÃ ",
+    pricing: "Prezzi",
+    contact: "Contattaci"
+  },
+  sidebar: {
+    newSession: "Nuova Sessione",
+    plans: "Piani",
+    settings: "Impostazioni",
+    signOut: "Disconnetti",
+    jarnazi: "JARNAZI",
+    consensus: "CONSENSO"
+  },
+  features: {
+    title1: "Dibattito multi-agente",
+    desc1: "PerchÃ© affidarsi a un solo modello? Ottieni prospettive indipendenti da piÃ¹ IA, con revisione incrociata per ridurre le allucinazioni.",
+    title2: "Consenso â†’ Creazione",
+    desc2: "Trasforma lâ€™accordo finale in un unico piano e prompt di alta qualitÃ  per generare immagini, video, audio o codice.",
+    title3: "Video lunghi",
+    desc3: "Genera video lunghiâ€”film, serie o programmi TVâ€”divisi in scene e composti in un unico MP4 scaricabile."
+  },
+  footer: {
+    privacy: "Informativa sulla Privacy",
+    terms: "Termini di Utilizzo",
+    rights: "Tutti i diritti riservati."
+  },
+  auth: {
+    welcome: "Bentornato",
+    subtitle: "Accedi per orchestrare il dibattito.",
+    email: "Indirizzo Email",
+    password: "Password",
+    signIn: "Accedi",
+    noAccount: "Non hai un account?",
+    createProfile: "Crea Profilo",
+    securityCheck: "Si prega di completare il controllo di sicurezza."
+  },
+  howItWorks: {
+    title: "Come funziona",
+    step1Title: "Dibattito multi-agente",
+    step1Desc: "Coinvolgi più modelli di IA in una deliberazione strutturata per ottenere i risultati più accurati e creativi.",
+    step2Title: "Costruzione del consenso",
+    step2Desc: "Il livello di orchestrazione avanzato sintetizza gli output di modelli indipendenti in un consenso unificato.",
+    step3Title: "Generazione di risorse",
+    step3Desc: "Genera immagini, video e audio professionali basati sul consenso deliberato.",
+    step4Title: "Video in formato lungo (Film e Serie)",
+    step4Desc: "Genera video lunghi—film, episodi di serie o programmi TV. Possiamo dividere la tua idea in scene, creare segmenti e poi comporre un singolo MP4 che puoi guardare e scaricare."
+  },
+  landing: {
+    badge: "Il futuro dell'intelligenza del consenso",
+    subtitle2: "Studio di Consenso IA"
+  },
+  contactPage: {
+    "title": "Contattaci",
+    "subtitle": "Domande, feedback o richieste?",
+    "name": "Nome",
+    "subject": "Oggetto",
+    "email": "Email",
+    "message": "Messaggio",
+    "send": "Invia messaggio",
+    "namePh": "Max 25 caratteri",
+    "subjectPh": "Max 20 caratteri",
+    "emailPh": "tuo@esempio.com",
+    "messagePh": "Come possiamo aiutarti? (Max 250 caratteri)",
+    "max250": "Massimo 250 caratteri",
+    "sentToast": "Messaggio inviato! Ti risponderemo a breve."
+  }
+  ,
+  profilePage: {
+    "titleRecent": "AttivitÃ  recente",
+    "tokenBalance": "Saldo token",
+    "available": "Disponibile per i dibattiti",
+    "totalDebates": "Dibattiti totali",
+    "sessions": "Sessioni orchestrate",
+    "noDebates": "Nessun dibattito trovato. Inizia la tua prima sessione!",
+    "anonymous": "Utente anonimo",
+    "banned": "BANNATO"
+  }
 
-,
+  ,
   "debateSettingsPage": {
     "title": "Impostazioni account",
     "subtitle": "Gestisci profilo e preferenze.",
@@ -195,146 +206,146 @@ common: {
       }
     }
   }
-,
-    debateMenu: {
-        menuTitle: "Menu",
-        tierLabel: "Tier",
-        balanceLabel: "Balance",
-        neuralHub: "Neural Hub",
-        myTokens: "My Tokens",
-        editUserData: "Edit User Data",
-        savedAssets: "Saved Assets",
-        pricing: "Pricing",
-        purchaseCredits: "Purchase Credits",
-        systemLabel: "System",
-        lightSpectrum: "Light Spectrum",
-        darkSpectrum: "Dark Spectrum",
-        languageLabel: "Language",
-        contactSupport: "Contact Support"
-    },
+  ,
+  debateMenu: {
+    menuTitle: "Menu",
+    tierLabel: "Tier",
+    balanceLabel: "Balance",
+    neuralHub: "Neural Hub",
+    myTokens: "My Tokens",
+    editUserData: "Edit User Data",
+    savedAssets: "Saved Assets",
+    pricing: "Pricing",
+    purchaseCredits: "Purchase Credits",
+    systemLabel: "System",
+    lightSpectrum: "Light Spectrum",
+    darkSpectrum: "Dark Spectrum",
+    languageLabel: "Language",
+    contactSupport: "Contact Support"
+  },
 
-    updatePasswordPage: {
-        title: "Set New Password",
-        subtitle: "Please enter your new secure password.",
-        newPassword: "New Password",
-        submit: "Update Password",
-        successTitle: "Password Updated",
-        successMessage: "Redirecting you to login...",
-        toastSuccess: "Password updated successfully!"
-    },
-    adminDashboard: {
-        title: "Super Admin Console",
-        cards: {
-            providersTitle: "Plans",
-            providersDesc: "Manage subscription plans",
-            usersTitle: "User Management",
-            usersDesc: "Control access & tokens",
-            apiStatusTitle: "API Status",
-            apiStatusDesc: "Check API configuration",
-            financialsTitle: "Financials",
-            financialsDesc: "Revenue & subscriptions",
-            healthTitle: "System Health",
-            healthDesc: "Server status & logs",
-            settingsTitle: "Site Settings",
-            settingsDesc: "Privacy, Terms & Branding"
-        }
-    },
+  updatePasswordPage: {
+    title: "Set New Password",
+    subtitle: "Please enter your new secure password.",
+    newPassword: "New Password",
+    submit: "Update Password",
+    successTitle: "Password Updated",
+    successMessage: "Redirecting you to login...",
+    toastSuccess: "Password updated successfully!"
+  },
+  adminDashboard: {
+    title: "Super Admin Console",
+    cards: {
+      providersTitle: "Plans",
+      providersDesc: "Manage subscription plans",
+      usersTitle: "User Management",
+      usersDesc: "Control access & tokens",
+      apiStatusTitle: "API Status",
+      apiStatusDesc: "Check API configuration",
+      financialsTitle: "Financials",
+      financialsDesc: "Revenue & subscriptions",
+      healthTitle: "System Health",
+      healthDesc: "Server status & logs",
+      settingsTitle: "Site Settings",
+      settingsDesc: "Privacy, Terms & Branding"
+    }
+  },
 
 
-    adminCosts: {
+  adminCosts: {
 
-        title: 'AI Cost Rates',
+    title: 'AI Cost Rates',
 
-        subtitle: 'Manage per-unit USD rates used by the pricing engine (75% cost / 25% margin).'
+    subtitle: 'Manage per-unit USD rates used by the pricing engine (75% cost / 25% margin).'
 
-    },
+  },
 
-    adminProviders: {
-      title: "AI Providers",
-      subtitle: "Configure models and priorities available to the Orchestrator.",
-      providersHeading: "Providers",
-      addProvider: "Add Provider",
-      editProvider: "Edit Provider",
-      confirmDeleteProvider: "Delete this provider?",
-      providerSaved: "Provider saved",
-      providerDeleted: "Provider deleted",
-      fieldName: "Name",
-      fieldProviderCode: "Provider Code",
-      fieldCategory: "Category",
-      fieldModelId: "Model ID",
-      fieldEnvKey: "Env Key (Edge Secret Name)",
-      fieldBaseUrl: "Base URL (optional)",
-      fieldPriority: "Priority (lower = earlier)",
-      fieldActive: "Active",
-      fieldConfig: "Config (JSON)",
-      save: "Save",
-      cancel: "Cancel",
-      edit: "Edit",
-      delete: "Delete"
-    },
+  adminProviders: {
+    title: "AI Providers",
+    subtitle: "Configure models and priorities available to the Orchestrator.",
+    providersHeading: "Providers",
+    addProvider: "Add Provider",
+    editProvider: "Edit Provider",
+    confirmDeleteProvider: "Delete this provider?",
+    providerSaved: "Provider saved",
+    providerDeleted: "Provider deleted",
+    fieldName: "Name",
+    fieldProviderCode: "Provider Code",
+    fieldCategory: "Category",
+    fieldModelId: "Model ID",
+    fieldEnvKey: "Env Key (Edge Secret Name)",
+    fieldBaseUrl: "Base URL (optional)",
+    fieldPriority: "Priority (lower = earlier)",
+    fieldActive: "Active",
+    fieldConfig: "Config (JSON)",
+    save: "Save",
+    cancel: "Cancel",
+    edit: "Edit",
+    delete: "Delete"
+  },
 
-    adminUsers: {
-      title: "User Management",
-      searchPlaceholder: "Search by name or email...",
-      searchButton: "Search Users",
-      thUser: "User",
-      thRole: "Role",
-      thTokens: "Tokens",
-      thStatus: "Status",
-      thActions: "Actions",
-      noName: "No Name",
-      noEmail: "No Email",
-      active: "Active",
-      banned: "Banned",
-      createStaff: "Create Staff",
-      createStaffTitle: "Create Support Staff",
-      staffCreated: "Staff user created/updated successfully",
-      staffEmailPlaceholder: "staff@company.com",
-      staffNamePlaceholder: "Full name",
-      staffPasswordPlaceholder: "Temporary password",
-      createOrUpdateStaff: "Create / Update Staff",
-      cancel: "Cancel",
-      deleteConfirm: "Type \"DELETE\" to confirm deleting {email} forever.",
-      userDeleted: "User deleted",
-      settings: "Settings",
-      delete: "Delete"
-    },
+  adminUsers: {
+    title: "User Management",
+    searchPlaceholder: "Search by name or email...",
+    searchButton: "Search Users",
+    thUser: "User",
+    thRole: "Role",
+    thTokens: "Tokens",
+    thStatus: "Status",
+    thActions: "Actions",
+    noName: "No Name",
+    noEmail: "No Email",
+    active: "Active",
+    banned: "Banned",
+    createStaff: "Create Staff",
+    createStaffTitle: "Create Support Staff",
+    staffCreated: "Staff user created/updated successfully",
+    staffEmailPlaceholder: "staff@company.com",
+    staffNamePlaceholder: "Full name",
+    staffPasswordPlaceholder: "Temporary password",
+    createOrUpdateStaff: "Create / Update Staff",
+    cancel: "Cancel",
+    deleteConfirm: "Type \"DELETE\" to confirm deleting {email} forever.",
+    userDeleted: "User deleted",
+    settings: "Settings",
+    delete: "Delete"
+  },
 
-    adminModels: {
-      title: "Model Registry",
-      subtitle: "Only enabled models here can be used by the Orchestrator. Add or disable models without code changes.",
-      modelsHeading: "Models",
-      addModel: "Add Model",
-      editModel: "Edit Model",
-      confirmDeleteModel: "Delete this model?",
-      modelSaved: "Model saved",
-      modelDeleted: "Model deleted",
-      fieldProvider: "Provider",
-      fieldModelId: "Model ID",
-      fieldPriority: "Priority",
-      fieldEnabled: "Enabled",
-      fieldNotes: "Notes",
-      fieldCapabilities: "Capabilities (JSON)",
-      fieldCostProfile: "Cost Profile (JSON)",
-      save: "Save",
-      cancel: "Cancel",
-      edit: "Edit",
-      delete: "Delete"
-    },
+  adminModels: {
+    title: "Model Registry",
+    subtitle: "Only enabled models here can be used by the Orchestrator. Add or disable models without code changes.",
+    modelsHeading: "Models",
+    addModel: "Add Model",
+    editModel: "Edit Model",
+    confirmDeleteModel: "Delete this model?",
+    modelSaved: "Model saved",
+    modelDeleted: "Model deleted",
+    fieldProvider: "Provider",
+    fieldModelId: "Model ID",
+    fieldPriority: "Priority",
+    fieldEnabled: "Enabled",
+    fieldNotes: "Notes",
+    fieldCapabilities: "Capabilities (JSON)",
+    fieldCostProfile: "Cost Profile (JSON)",
+    save: "Save",
+    cancel: "Cancel",
+    edit: "Edit",
+    delete: "Delete"
+  },
 
-    adminMessages: {
-      title: "Inbox",
-      loadError: "Error loading messages:",
-      empty: "No messages yet.",
-      replied: "Replied",
-      reply: "Reply",
-      sendReply: "Send Reply",
-      replyPlaceholder: "Type your reply...",
-      replySent: "Reply sent successfully",
-      replyFailed: "Failed to send reply",
-      cancel: "Cancel",
-      send: "Send"
-    },
+  adminMessages: {
+    title: "Inbox",
+    loadError: "Error loading messages:",
+    empty: "No messages yet.",
+    replied: "Replied",
+    reply: "Reply",
+    sendReply: "Send Reply",
+    replyPlaceholder: "Type your reply...",
+    replySent: "Reply sent successfully",
+    replyFailed: "Failed to send reply",
+    cancel: "Cancel",
+    send: "Send"
+  },
   buyTokensPage: {
     backToConsole: "Back to Console",
     title: "Buy Tokens",
