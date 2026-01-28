@@ -85,7 +85,8 @@ export async function POST(req: Request) {
     if (!rawTopic) return NextResponse.json({ error: 'Missing topic' }, { status: 400 });
 
     // 1) Basic safety + rate limit (keep existing protections)
-    const ip = headers().get('x-forwarded-for')?.split(',')[0]?.trim() || '0.0.0.0';
+    const headerList = await headers();
+    const ip = headerList.get('x-forwarded-for')?.split(',')[0]?.trim() || '0.0.0.0';
 
     // Turnstile (optional)
     const turnstileToken = body?.turnstileToken;
