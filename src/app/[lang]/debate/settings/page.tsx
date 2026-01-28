@@ -6,7 +6,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 
 export default async function SettingsPage(props: { params: Promise<{ lang: string }> }) {
   const params = await props.params;
-  const dict = await getDictionary(params.lang as any);
+  const dict = await getDictionary(params.lang);
   const t = dict.debateSettingsPage;
 
   return (
@@ -56,3 +56,4 @@ export default async function SettingsPage(props: { params: Promise<{ lang: stri
     </div>
   );
 }
+

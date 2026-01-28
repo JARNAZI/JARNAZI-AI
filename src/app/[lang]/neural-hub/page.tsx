@@ -5,7 +5,7 @@ import { getDictionary } from '@/i18n/get-dictionary';
 export default async function NeuralHubPage(props: { params: Promise<{ lang: string }> }) {
   const params = await props.params;
   const lang = params.lang;
-  const dict = await getDictionary(lang as any);
+  const dict = await getDictionary(lang);
   const d = dict.dashboard || {};
 
   return (
@@ -35,3 +35,4 @@ export default async function NeuralHubPage(props: { params: Promise<{ lang: str
     </div>
   );
 }
+

@@ -8,7 +8,7 @@ import { amountToTokens, MIN_PURCHASE_AMOUNT_USD } from "@/lib/tokens";
 
 export default function PricingPage(props: { params: Promise<{ lang: string }> }) {
   const params = use(props.params);
-  const dict = useDictionary(params.lang as any);
+  const dict = useDictionary(params.lang);
   const t = dict.pricingPage;
 
   const [balance, setBalance] = useState<number | null>(null);
@@ -149,3 +149,4 @@ export default function PricingPage(props: { params: Promise<{ lang: string }> }
     </div>
   );
 }
+

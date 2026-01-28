@@ -3,7 +3,7 @@ import LoginClient from './LoginClient';
 
 export default async function LoginPage(props: { params: Promise<{ lang: string }> }) {
     const params = await props.params;
-    const dict = await getDictionary(params.lang as any);
+    const dict = await getDictionary(params.lang);
 
     return (
         <LoginClient
@@ -12,3 +12,4 @@ export default async function LoginPage(props: { params: Promise<{ lang: string 
         />
     );
 }
+

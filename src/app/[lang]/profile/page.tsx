@@ -11,7 +11,7 @@ export default async function ProfilePage(props: { params: Promise<{ lang: strin
     const supabase = await createClient()
 
     const { lang } = await props.params;
-    const dict = await getDictionary(lang as any);
+    const dict = await getDictionary(lang);
     const t = (dict as any)?.profilePage || {};
     const c = (dict as any)?.common || {};
 

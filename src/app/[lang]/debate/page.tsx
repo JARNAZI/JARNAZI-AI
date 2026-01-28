@@ -3,7 +3,7 @@ import DebateDashboard from './DebateDashboard';
 
 export default async function DebatePage(props: { params: Promise<{ lang: string }> }) {
     const params = await props.params;
-    const dict = await getDictionary(params.lang as any);
+    const dict = await getDictionary(params.lang);
 
     return (
         <DebateDashboard

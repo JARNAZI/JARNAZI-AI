@@ -13,8 +13,8 @@ const dictionaries = {
     sv: () => import('./dictionaries/sv').then((module) => module.default),
 }
 
-export const getDictionary = async (locale: any) => {
-    const fn = dictionaries[locale];
+export const getDictionary = async (locale: string) => {
+    const fn = dictionaries[locale as keyof typeof dictionaries];
     if (fn) {
         return fn();
     }

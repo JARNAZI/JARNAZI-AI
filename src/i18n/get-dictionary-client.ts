@@ -12,8 +12,8 @@ const dictionaries = {
   sv: () => import('./dictionaries/sv').then((m) => m.default),
 } as const;
 
-export async function getDictionaryClient(locale: any) {
-  const fn = (dictionaries as any)[locale];
+export async function getDictionaryClient(locale: string) {
+  const fn = dictionaries[locale as keyof typeof dictionaries];
   if (fn) return fn();
   return dictionaries.en();
 }

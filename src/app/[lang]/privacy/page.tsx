@@ -8,7 +8,7 @@ export default async function PrivacyPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  const dict = await getDictionary(lang as any);
+  const dict = await getDictionary(lang);
   const html = await getSetting<string>('privacy_text', `<h1>${dict.footer.privacy}</h1><p>Coming soon.</p>`);
 
   return (
@@ -22,3 +22,4 @@ export default async function PrivacyPage({
     </main>
   );
 }
+

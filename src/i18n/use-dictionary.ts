@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import type { LanguageCode } from './config';
 import { getDictionaryClient } from './get-dictionary-client';
 
-export function useDictionary(lang: any) {
+export function useDictionary(lang: string) {
   const [dict, setDict] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
