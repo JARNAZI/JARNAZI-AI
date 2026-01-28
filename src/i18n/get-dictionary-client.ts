@@ -12,7 +12,7 @@ const dictionaries = {
   sv: () => import('./dictionaries/sv').then((m) => m.default),
 } as const;
 
-export async function getDictionaryClient(locale: LanguageCode) {
+export async function getDictionaryClient(locale: any) {
   const fn = (dictionaries as any)[locale];
   if (fn) return fn();
   return dictionaries.en();
