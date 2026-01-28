@@ -8,6 +8,7 @@ import { useTheme } from 'next-themes';
 import { createClient } from '@/lib/supabase/client';
 
 // ICONS
+import { LANGUAGES } from '@/i18n/config';
 import { Menu, Send, Type, Image as ImageIcon, Video, FileText, Printer, Copy, ArrowLeft, ChevronLeft, ChevronRight, Sigma, User, CreditCard, LogOut, Sun, Moon, PlusCircle, Globe, Keyboard, Trash2, Mail, Coins, MessageSquare, X, Zap } from 'lucide-react';
 
 // REMOVED LOCAL TYPE DEF - moved to src/types/mathlive.d.ts
@@ -480,10 +481,10 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
         // Realtime Subscription
         const channel = supabase.channel(`debate:${debateId}`)
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'debate_turns', filter: `debate_id=eq.${debateId}` },
-                (payload) => {
+                (payload: any) => {
                     const newTurn = payload.new;
-                    setMessages(prev => {
-                        if (prev.find(p => p.id === newTurn.id)) return prev;
+                    setMessages((prev: Message[]) => {
+                        if (prev.find((p: Message) => p.id === newTurn.id)) return prev;
                         return [...prev, {
                             id: newTurn.id,
                             role: (newTurn.role as any) || (() => {
@@ -681,7 +682,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
             content: contentToSend + (isMathMode ? "" : ""), // Store the delimited content directly
             timestamp: Date.now()
         };
-        setMessages(prev => [...prev, newMsg]);
+        setMessages((prev: Message[]) => [...prev, newMsg]);
         setInputContent('');
         setSelectedFile(null);
         setRecordedAudio(null);
@@ -785,7 +786,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
                 setProfileInfo({ token_balance_cents: newBalance });
             }
 
-            setMessages(prev => ([...prev, {
+            setMessages((prev: Message[]) => ([...prev, {
                 id: `image-${Date.now()}`,
                 role: 'system',
                 name: 'System',
@@ -997,7 +998,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
                     <div className="w-px h-6 bg-border mx-1" />
 
                     <button
-                        onClick={() => setIsMenuOpen(v => !v)}
+                        onClick={() => setIsMenuOpen((v: boolean) => !v)}
                         className="p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white cursor-pointer relative z-50 shadow-lg hover:shadow-indigo-500/20 transition-all active:scale-95"
                         aria-label={dict.dashboard?.openMenu || "Open Menu"}
                         title={dict.dashboard?.openMenu || "Open Menu"}
@@ -1055,11 +1056,11 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
                                 <div className="my-2 border-t border-border" />
 
                                 <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest px-4 py-2 mt-4">{dict.dashboard?.interfaceLocale || "Interface Locale"}</p>
-                                <div className="grid grid-cols-2 gap-1 px-4 mb-4">
-                                    {(require('@/i18n/config').LANGUAGES).map((l: any) => (
+                                <div className="flex flex-wrap gap-2 mt-4 max-h-48 overflow-y-auto custom-scrollbar p-1">
+                                    {LANGUAGES.map((l: { code: string; name: string; flag: string }) => (
                                         <button
                                             key={l.code}
-                                            onClick={() => handleLangToggle(l.code)}
+                                            onClick={() => handleLangToggle(l.code as any)}
                                             className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold transition-all border ${lang === l.code ? 'bg-primary border-primary text-primary-foreground' : 'bg-background border-border text-muted-foreground hover:bg-muted'}`}
                                         >
                                             <span className="text-sm">{l.flag}</span>
@@ -1522,8 +1523,8 @@ Suggested amount: $${amount}`
                         ) : (
                             <div className="flex flex-col gap-4">
                                 {messages
-                                    .filter(m => m.id !== 'welcome')
-                                    .map((msg) => {
+                                    .filter((m: Message) => m.role !== 'system')
+                                    .map((msg: Message) => {
                                         const isUser = msg.role === 'user';
                                         const isAgreement = msg.role === 'agreement' || msg.phase === 'consensus';
                                         const replyTo = (msg.meta as any)?.reply_to_name || (msg.meta as any)?.replyToName || (msg.meta as any)?.reply_to || null;
@@ -1700,7 +1701,7 @@ Suggested amount: $${amount}`
                                 <label className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>{dict?.debate?.finalVisualPrompt || 'Final Visual Prompt'}</label>
                                 <textarea
                                     value={pendingImagePrompt}
-                                    onChange={(e) => setPendingImagePrompt(e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPendingImagePrompt(e.target.value)}
                                     rows={5}
                                     className={`w-full rounded-xl border p-3 text-sm font-medium outline-none ${isDarkMode ? 'bg-zinc-900 border-white/10 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
                                     placeholder={dict.debate?.imagePromptPlaceholder || "Describe the image to generate..."}
@@ -1711,7 +1712,7 @@ Suggested amount: $${amount}`
                                         <div className="text-xs font-bold uppercase tracking-wider opacity-80">{dict?.debate?.style || 'Style'}</div>
                                         <input
                                             value={pendingImageStyle}
-                                            onChange={(e) => setPendingImageStyle(e.target.value)}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPendingImageStyle(e.target.value)}
                                             className={`mt-1 w-full bg-transparent outline-none text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                                         />
                                     </div>
@@ -1719,7 +1720,7 @@ Suggested amount: $${amount}`
                                         <div className="text-xs font-bold uppercase tracking-wider opacity-80">{dict?.debate?.aspectRatio || 'Aspect'}</div>
                                         <input
                                             value={pendingImageAspect}
-                                            onChange={(e) => setPendingImageAspect(e.target.value)}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPendingImageAspect(e.target.value)}
                                             className={`mt-1 w-full bg-transparent outline-none text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                                         />
                                     </div>

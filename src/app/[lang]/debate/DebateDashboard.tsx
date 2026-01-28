@@ -25,6 +25,7 @@ const MathPanel = dynamic(() => import('@/components/math/MathPanel'), { ssr: fa
 import NotificationBell from '@/components/notifications/NotificationBell';
 import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
+import { LANGUAGES } from '@/i18n/config';
 
 export default function DebateDashboard({ params: propsParams, dict }: { params: Promise<{ lang: string }>, dict: any }) {
     const params = use(propsParams);
@@ -502,7 +503,7 @@ export default function DebateDashboard({ params: propsParams, dict }: { params:
                                     <div className="flex-1 flex flex-col">
                                         <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground">{d.interfaceLocale || "Interface Locale"}</span>
                                         <div className="flex flex-wrap gap-2 mt-4 max-h-48 overflow-y-auto custom-scrollbar p-1">
-                                            {require('@/i18n/config').LANGUAGES.map((l: any) => (
+                                            {LANGUAGES.map((l: any) => (
                                                 <button
                                                     key={l.code}
                                                     onClick={() => handleLangToggle(l.code)}
