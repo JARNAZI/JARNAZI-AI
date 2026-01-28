@@ -833,6 +833,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
             }
 
             const urls: string[] = [];
+            const assetIds: string[] = [];
             let totalDeducted = 0;
 
             // Generate sequentially to avoid timeouts and to allow partial progress.
@@ -872,6 +873,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
                                 sceneOffset: i,
                                 totalSegments: segments.length,
                                 urls,
+                                assetIds,
                                 totalDeducted,
                                 pendingId,
                                 expiresAt,
@@ -923,6 +925,8 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
 
                 const url = j?.asset?.public_url ?? null;
                 if (url) urls.push(url);
+                const aid = j?.asset?.id;
+                if (aid) assetIds.push(String(aid));
             }
 
             // Update local balance (best-effort)
