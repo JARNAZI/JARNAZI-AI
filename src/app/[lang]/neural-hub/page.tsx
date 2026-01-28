@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { Construction, ArrowLeft } from 'lucide-react';
 import { getDictionary } from '@/i18n/get-dictionary';
 
 export default async function NeuralHubPage(props: { params: Promise<{ lang: string }> }) {
