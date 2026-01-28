@@ -241,22 +241,13 @@ common: {
     },
 
 
-    adminCosts: {
-
-
+    adminCosts: {
 
         title: 'AI Cost Rates',
 
-
-
         subtitle: 'Manage per-unit USD rates used by the pricing engine (75% cost / 25% margin).'
 
-
-
     },
-
-
-
 
     adminProviders: {
       title: "AI Providers",
@@ -359,5 +350,6 @@ common: {
 } as const;
 
 export default de;
+
 
 

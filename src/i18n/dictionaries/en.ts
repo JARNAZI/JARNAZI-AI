@@ -1,4 +1,4 @@
-import { SITE_NAME } from '../config';
+﻿import { SITE_NAME } from '../config';
 const en = {
   common: {
     siteName: SITE_NAME,
@@ -18,7 +18,7 @@ const en = {
   },
   home: {
     heroTitle: "Debate. Agree. Create.",
-    heroSubtitle: "Ask once. Multiple AIs answer independently, review each other, then OpenAI leads a final consensus — ready for images, video, audio, or code.",
+    heroSubtitle: "Ask once. Multiple AIs answer independently, review each other, then OpenAI leads a final consensus â€” ready for images, video, audio, or code.",
     startDebate: "Start Debate",
     howItWorks: "How It Works"
   },
@@ -110,10 +110,10 @@ const en = {
   features: {
     title1: "Multi-Agent Debate",
     desc1: "Why rely on one model? Get independent perspectives from multiple AIs, cross-reviewed to reduce hallucinations.",
-    title2: "Consensus → Creation",
+    title2: "Consensus â†’ Creation",
     desc2: "Turn the final agreement into a single high-quality plan and prompt for image, video, audio, or code generation.",
     title3: "Long-form Video Ready",
-    desc3: "Generate long videos—films, series, or TV programs—split into scenes and composed into a single downloadable MP4."
+    desc3: "Generate long videosâ€”films, series, or TV programsâ€”split into scenes and composed into a single downloadable MP4."
   },
   footer: {
     privacy: "Privacy Policy",
@@ -136,14 +136,14 @@ const en = {
     alreadyHaveAccount: "Already have an account?",
     forgotPassword: "Forgot Password?",
     checkEmail: "Check your email",
-    checkEmailDesc: "We’ve sent a confirmation link to {email}. Please verify your account to continue.",
+    checkEmailDesc: "Weâ€™ve sent a confirmation link to {email}. Please verify your account to continue.",
     iAgreeTo: "I agree to the",
     termsOfUse: "Terms of Use",
     privacyPolicy: "Privacy Policy",
     and: "and",
     backToLogin: "Back to Login",
     emailPlaceholder: "architect@jarnazi.com",
-    passwordPlaceholder: "••••••••",
+    passwordPlaceholder: "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢",
     fullNamePlaceholder: "John Doe",
     forgotPasswordTitle: "Reset Password",
     forgotPasswordSubtitle: "Enter your email to receive recovery instructions.",
@@ -161,7 +161,7 @@ const en = {
     step3Title: "Asset Generation",
     step3Desc: "Generate professional images, videos, and audio based on the deliberated consensus.",
     step4Title: "Long-form Video (Films & Series)",
-    step4Desc: "Generate long videos—films, series episodes, or TV-style programs. We can split your idea into scenes, create segments, then compose a single MP4 you can watch and download."
+    step4Desc: "Generate long videosâ€”films, series episodes, or TV-style programs. We can split your idea into scenes, create segments, then compose a single MP4 you can watch and download."
   },
   landing: {
     badge: "Multi-AI Debate for Creators",
@@ -514,3 +514,4 @@ const en = {
 } as const;
 
 export default en;
+
