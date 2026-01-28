@@ -106,7 +106,7 @@ export default function AdminManageCosts({ initialCosts }: { initialCosts: unkno
 
     setLoading(true);
     try {
-      await deleteAiCost(id);
+      await deleteAiCost(id, lang);
       setCosts(costs.filter((c) => c.id !== id));
       toast.success(dict?.adminCosts?.deleted ?? 'Deleted');
     } catch (err: unknown) {

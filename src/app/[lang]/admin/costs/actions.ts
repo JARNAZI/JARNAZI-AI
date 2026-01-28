@@ -98,7 +98,7 @@ export async function upsertAiCost(input: unknown) {
   return { success: true };
 }
 
-export async function deleteAiCost(id: string) {
+export async function deleteAiCost(id: string, lang: string = 'en') {
   const supabase = await requireAdmin();
   const { error } = await supabase.from('ai_costs').delete().eq('id', id);
   if (error) throw error;
