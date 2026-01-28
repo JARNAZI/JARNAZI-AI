@@ -1,4 +1,4 @@
-import { SITE_NAME } from '../config';
+﻿import { SITE_NAME } from '../config';
 const it = {
 common: {
         siteName: SITE_NAME,
@@ -9,7 +9,7 @@ common: {
         settings: "Impostazioni",
         profile: "Profilo",
         loading: "Caricamento...",
-        error: "Si è verificato un errore",
+        error: "Si Ã¨ verificato un errore",
         save: "Salva",
         cancel: "Annulla",
         delete: "Elimina",
@@ -17,7 +17,7 @@ common: {
     },
     home: {
         heroTitle: "Dibattito. Accordo. Creazione.",
-        heroSubtitle: "Chiedi una volta. Più IA rispondono in modo indipendente, si revisionano a vicenda, poi OpenAI guida un consenso finale — pronto per immagini, video, audio o codice.",
+        heroSubtitle: "Chiedi una volta. PiÃ¹ IA rispondono in modo indipendente, si revisionano a vicenda, poi OpenAI guida un consenso finale â€” pronto per immagini, video, audio o codice.",
         startDebate: "Inizia Dibattito",
         howItWorks: "Come funziona"
     },
@@ -51,15 +51,15 @@ common: {
         contactUs: "Contattaci",
         sessionHistory: "Cronologia Sessioni",
         language: "Lingua",
-        darkMode: "Modalità Scura",
-        lightMode: "Modalità Chiara",
+        darkMode: "ModalitÃ  Scura",
+        lightMode: "ModalitÃ  Chiara",
         deleteAccount: "Elimina Account"
     },
     notifications: {
-        welcome: "Benvenuto nel Consenso Jarnazi. Il Consiglio è pronto."
+        welcome: "Benvenuto nel Consenso Jarnazi. Il Consiglio Ã¨ pronto."
     },
     nav: {
-        features: "Funzionalità",
+        features: "FunzionalitÃ ",
         pricing: "Prezzi",
         contact: "Contattaci"
     },
@@ -73,11 +73,11 @@ common: {
     },
     features: {
         title1: "Dibattito multi-agente",
-        desc1: "Perché affidarsi a un solo modello? Ottieni prospettive indipendenti da più IA, con revisione incrociata per ridurre le allucinazioni.",
-        title2: "Consenso → Creazione",
-        desc2: "Trasforma l’accordo finale in un unico piano e prompt di alta qualità per generare immagini, video, audio o codice.",
+        desc1: "PerchÃ© affidarsi a un solo modello? Ottieni prospettive indipendenti da piÃ¹ IA, con revisione incrociata per ridurre le allucinazioni.",
+        title2: "Consenso â†’ Creazione",
+        desc2: "Trasforma lâ€™accordo finale in un unico piano e prompt di alta qualitÃ  per generare immagini, video, audio o codice.",
         title3: "Video lunghi",
-        desc3: "Genera video lunghi—film, serie o programmi TV—divisi in scene e composti in un unico MP4 scaricabile."
+        desc3: "Genera video lunghiâ€”film, serie o programmi TVâ€”divisi in scene e composti in un unico MP4 scaricabile."
     },
     footer: {
         privacy: "Informativa sulla Privacy",
@@ -115,7 +115,7 @@ common: {
     }
 ,
     profilePage:     {
-            "titleRecent":"Attività recente",
+            "titleRecent":"AttivitÃ  recente",
             "tokenBalance":"Saldo token",
             "available":"Disponibile per i dibattiti",
             "totalDebates":"Dibattiti totali",
@@ -135,7 +135,7 @@ common: {
     "security": "Sicurezza",
     "changePassword": "Cambia password",
     "dangerZone": "Zona pericolosa",
-    "dangerText": "Una volta eliminato l’account, non si torna indietro.",
+    "dangerText": "Una volta eliminato lâ€™account, non si torna indietro.",
     "deleteAccount": "Elimina account",
     "emailPlaceholder": "user@example.com",
     "displayNamePlaceholder": "Utente Jarnazi"
@@ -148,14 +148,14 @@ common: {
     "tokensLabel": "Token",
     "planSuffix": "Piano",
     "freeTier": "Gratis",
-    "mostPopular": "Più popolare",
+    "mostPopular": "PiÃ¹ popolare",
     "perPack": "/ pacchetto",
     "descriptionLine1": "Acquista token per alimentare i tuoi dibattiti IA e la generazione di contenuti.",
     "tokensNeverExpire": "I token non scadono mai",
     "descriptionLine2": "e puoi ricaricarli subito.",
     "enterpriseTitle": "Soluzione Enterprise",
-    "enterpriseSubtitle": "Acquista una quantità personalizzata di token per la tua organizzazione.",
-    "tokenAmount": "Quantità di token",
+    "enterpriseSubtitle": "Acquista una quantitÃ  personalizzata di token per la tua organizzazione.",
+    "tokenAmount": "QuantitÃ  di token",
     "totalPrice": "Prezzo totale",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Token)",
     "plans": {
@@ -239,6 +239,23 @@ common: {
             settingsDesc: "Privacy, Terms & Branding"
         }
     },
+
+
+    adminCosts: {
+
+
+
+        title: 'AI Cost Rates',
+
+
+
+        subtitle: 'Manage per-unit USD rates used by the pricing engine (75% cost / 25% margin).'
+
+
+
+    },
+
+
 
 
     adminProviders: {
@@ -342,3 +359,5 @@ common: {
 } as const;
 
 export default it;
+
+

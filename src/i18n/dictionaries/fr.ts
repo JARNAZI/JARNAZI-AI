@@ -1,12 +1,12 @@
-import { SITE_NAME } from '../config';
+﻿import { SITE_NAME } from '../config';
 const fr = {
 common: {
         siteName: SITE_NAME,
         login: "Se connecter",
         register: "S'inscrire",
-        logout: "Déconnexion",
+        logout: "DÃ©connexion",
         dashboard: "Tableau de bord",
-        settings: "Paramètres",
+        settings: "ParamÃ¨tres",
         profile: "Profil",
         loading: "Chargement...",
         error: "Une erreur est survenue",
@@ -16,16 +16,16 @@ common: {
         back: "Retour"
     },
     home: {
-        heroTitle: "Débat. Accord. Création.",
-        heroSubtitle: "Posez une question. Plusieurs IA répondent indépendamment, se relisent entre elles, puis OpenAI conduit à un consensus final — prêt pour image, vidéo, audio ou code.",
-        startDebate: "Commencer le débat",
-        howItWorks: "Comment ça marche"
+        heroTitle: "DÃ©bat. Accord. CrÃ©ation.",
+        heroSubtitle: "Posez une question. Plusieurs IA rÃ©pondent indÃ©pendamment, se relisent entre elles, puis OpenAI conduit Ã  un consensus final â€” prÃªt pour image, vidÃ©o, audio ou code.",
+        startDebate: "Commencer le dÃ©bat",
+        howItWorks: "Comment Ã§a marche"
     },
     debate: {
         currentPlan: 'Current plan',
-        newTitle: "Nouveau débat",
+        newTitle: "Nouveau dÃ©bat",
         topicLabel: "Entrez un sujet...",
-        startBtn: "Lancer le débat",
+        startBtn: "Lancer le dÃ©bat",
         analyzing: "Analyse du sujet...",
         consensusTitle: "Consensus final",
         // Console UI
@@ -35,15 +35,15 @@ common: {
         latex: "LaTex",
         file: "Fichier",
         image: "Image",
-        video: "Vidéo",
+        video: "VidÃ©o",
         audio: "Audio",
         print: "Imprimer",
         copy: "Copier",
         save: "Sauvegarder",
-        download: "Télécharger",
+        download: "TÃ©lÃ©charger",
         placeholder: "Entrez votre argument...",
         mathPlaceholder: "\\sum_{i=0}^n x_i",
-        menu: "Menu Système",
+        menu: "Menu SystÃ¨me",
         copyJson: "Copier JSON",
         printTranscript: "Imprimer la transcription",
         viewPlans: "Voir les plans",
@@ -56,43 +56,43 @@ common: {
         deleteAccount: "Supprimer le compte"
     },
     notifications: {
-        welcome: "Bienvenue au Consensus Jarnazi. Le Conseil est prêt."
+        welcome: "Bienvenue au Consensus Jarnazi. Le Conseil est prÃªt."
     },
     nav: {
-        features: "Fonctionnalités",
+        features: "FonctionnalitÃ©s",
         pricing: "Tarifs",
         contact: "Contactez-nous"
     },
     sidebar: {
         newSession: "Nouvelle session",
         plans: "Plans",
-        settings: "Paramètres",
-        signOut: "Déconnexion",
+        settings: "ParamÃ¨tres",
+        signOut: "DÃ©connexion",
         jarnazi: "JARNAZI",
         consensus: "CONSENSUS"
     },
     features: {
-        title1: "Débat multi-agents",
-        desc1: "Pourquoi n’utiliser qu’un seul modèle ? Obtenez des points de vue indépendants de plusieurs IA, avec revue croisée pour réduire les hallucinations.",
-        title2: "Consensus → Création",
-        desc2: "Transformez l’accord final en un plan et un prompt uniques, de haute qualité, pour générer image, vidéo, audio ou code.",
-        title3: "Vidéo longue durée",
-        desc3: "Générez des vidéos longues—films, séries ou émissions TV—découpées en scènes puis assemblées en un seul MP4 téléchargeable."
+        title1: "DÃ©bat multi-agents",
+        desc1: "Pourquoi nâ€™utiliser quâ€™un seul modÃ¨le ? Obtenez des points de vue indÃ©pendants de plusieurs IA, avec revue croisÃ©e pour rÃ©duire les hallucinations.",
+        title2: "Consensus â†’ CrÃ©ation",
+        desc2: "Transformez lâ€™accord final en un plan et un prompt uniques, de haute qualitÃ©, pour gÃ©nÃ©rer image, vidÃ©o, audio ou code.",
+        title3: "VidÃ©o longue durÃ©e",
+        desc3: "GÃ©nÃ©rez des vidÃ©os longuesâ€”films, sÃ©ries ou Ã©missions TVâ€”dÃ©coupÃ©es en scÃ¨nes puis assemblÃ©es en un seul MP4 tÃ©lÃ©chargeable."
     },
     footer: {
-        privacy: "Politique de confidentialité",
+        privacy: "Politique de confidentialitÃ©",
         terms: "Conditions d'utilisation",
-        rights: "Tous droits réservés."
+        rights: "Tous droits rÃ©servÃ©s."
     },
     auth: {
         welcome: "Bon retour",
-        subtitle: "Connectez-vous pour orchestrer le débat.",
+        subtitle: "Connectez-vous pour orchestrer le dÃ©bat.",
         email: "Adresse e-mail",
         password: "Mot de passe",
         signIn: "Se connecter",
         noAccount: "Pas de compte ?",
-        createProfile: "Créer un profil",
-        securityCheck: "Veuillez compléter le test de sécurité."
+        createProfile: "CrÃ©er un profil",
+        securityCheck: "Veuillez complÃ©ter le test de sÃ©curitÃ©."
     },
     landing: {
         badge: "L'avenir de l'intelligence consensuelle",
@@ -106,43 +106,43 @@ common: {
             "email":"E-mail",
             "message":"Message",
             "send":"Envoyer",
-            "namePh":"Max 25 caractères",
-            "subjectPh":"Max 20 caractères",
+            "namePh":"Max 25 caractÃ¨res",
+            "subjectPh":"Max 20 caractÃ¨res",
             "emailPh":"vous@exemple.com",
-            "messagePh":"Comment pouvons-nous aider ? (Max 250 caractères)",
-            "max250":"Maximum 250 caractères",
-            "sentToast":"Message envoyé ! Nous vous répondrons rapidement."
+            "messagePh":"Comment pouvons-nous aider ? (Max 250 caractÃ¨res)",
+            "max250":"Maximum 250 caractÃ¨res",
+            "sentToast":"Message envoyÃ© ! Nous vous rÃ©pondrons rapidement."
     }
 ,
     profilePage:     {
-            "titleRecent":"Activité récente",
+            "titleRecent":"ActivitÃ© rÃ©cente",
             "tokenBalance":"Solde de jetons",
-            "available":"Disponible pour les débats",
-            "totalDebates":"Débats au total",
-            "sessions":"Sessions orchestrées",
-            "noDebates":"Aucun débat trouvé. Lancez votre première session !",
+            "available":"Disponible pour les dÃ©bats",
+            "totalDebates":"DÃ©bats au total",
+            "sessions":"Sessions orchestrÃ©es",
+            "noDebates":"Aucun dÃ©bat trouvÃ©. Lancez votre premiÃ¨re session !",
             "anonymous":"Utilisateur anonyme",
             "banned":"BANNI"
     }
 
 ,
   "debateSettingsPage": {
-    "title": "Paramètres du compte",
-    "subtitle": "Gérez votre profil et vos préférences.",
+    "title": "ParamÃ¨tres du compte",
+    "subtitle": "GÃ©rez votre profil et vos prÃ©fÃ©rences.",
     "profileInfo": "Informations du profil",
     "emailAddress": "Adresse e-mail",
-    "displayName": "Nom d’affichage",
-    "security": "Sécurité",
+    "displayName": "Nom dâ€™affichage",
+    "security": "SÃ©curitÃ©",
     "changePassword": "Changer le mot de passe",
     "dangerZone": "Zone de danger",
-    "dangerText": "Une fois votre compte supprimé, il n’y a pas de retour en arrière.",
+    "dangerText": "Une fois votre compte supprimÃ©, il nâ€™y a pas de retour en arriÃ¨re.",
     "deleteAccount": "Supprimer le compte",
     "emailPlaceholder": "user@example.com",
     "displayNamePlaceholder": "Utilisateur Jarnazi"
   },
   "pricingPage": {
     "investIn": "Investissez dans",
-    "intelligence": "l’intelligence",
+    "intelligence": "lâ€™intelligence",
     "currentPlan": "Forfait actuel",
     "availableBalance": "Solde disponible",
     "tokensLabel": "Tokens",
@@ -150,47 +150,47 @@ common: {
     "freeTier": "Gratuit",
     "mostPopular": "Le plus populaire",
     "perPack": "/ pack",
-    "descriptionLine1": "Achetez des tokens pour alimenter vos débats IA et la génération de contenu.",
-    "tokensNeverExpire": "Les tokens n’expirent jamais",
-    "descriptionLine2": "et peuvent être rechargés instantanément.",
+    "descriptionLine1": "Achetez des tokens pour alimenter vos dÃ©bats IA et la gÃ©nÃ©ration de contenu.",
+    "tokensNeverExpire": "Les tokens nâ€™expirent jamais",
+    "descriptionLine2": "et peuvent Ãªtre rechargÃ©s instantanÃ©ment.",
     "enterpriseTitle": "Solution Enterprise",
-    "enterpriseSubtitle": "Achetez une quantité personnalisée de tokens pour votre organisation.",
-    "tokenAmount": "Quantité de tokens",
+    "enterpriseSubtitle": "Achetez une quantitÃ© personnalisÃ©e de tokens pour votre organisation.",
+    "tokenAmount": "QuantitÃ© de tokens",
     "totalPrice": "Prix total",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
     "plans": {
       "starter": {
         "name": "Pack Starter",
-        "description": "Idéal pour des débats occasionnels.",
+        "description": "IdÃ©al pour des dÃ©bats occasionnels.",
         "features": [
           "42 tokens de consensus",
-          "Accès à GPT-4o & Claude 3",
-          "Génération d’images basique",
-          "Les tokens n’expirent jamais",
-          "Résumés par e-mail"
+          "AccÃ¨s Ã  GPT-4o & Claude 3",
+          "GÃ©nÃ©ration dâ€™images basique",
+          "Les tokens nâ€™expirent jamais",
+          "RÃ©sumÃ©s par e-mail"
         ]
       },
       "producer": {
         "name": "Forfait Producer",
-        "description": "Pour les utilisateurs intensifs et la collaboration fréquente.",
+        "description": "Pour les utilisateurs intensifs et la collaboration frÃ©quente.",
         "features": [
           "155 tokens de consensus",
-          "Accès à tous les nœuds",
-          "Images haute résolution",
+          "AccÃ¨s Ã  tous les nÅ“uds",
+          "Images haute rÃ©solution",
           "Traitement prioritaire",
-          "Les tokens n’expirent jamais"
+          "Les tokens nâ€™expirent jamais"
         ]
       },
       "creator": {
         "name": "Pro Creator",
-        "description": "Boîte à outils ultime pour la création pro.",
+        "description": "BoÃ®te Ã  outils ultime pour la crÃ©ation pro.",
         "features": [
           "1050 tokens de consensus",
-          "Accès prioritaire (Tier 1)",
-          "Génération vidéo 4K",
-          "Support dédié",
-          "Droits d’usage commercial",
-          "Les tokens n’expirent jamais"
+          "AccÃ¨s prioritaire (Tier 1)",
+          "GÃ©nÃ©ration vidÃ©o 4K",
+          "Support dÃ©diÃ©",
+          "Droits dâ€™usage commercial",
+          "Les tokens nâ€™expirent jamais"
         ]
       }
     }
@@ -239,6 +239,23 @@ common: {
             settingsDesc: "Privacy, Terms & Branding"
         }
     },
+
+
+    adminCosts: {
+
+
+
+        title: 'AI Cost Rates',
+
+
+
+        subtitle: 'Manage per-unit USD rates used by the pricing engine (75% cost / 25% margin).'
+
+
+
+    },
+
+
 
 
     adminProviders: {
@@ -342,3 +359,5 @@ common: {
 } as const;
 
 export default fr;
+
+

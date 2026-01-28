@@ -1,4 +1,4 @@
-import { SITE_NAME } from '../config';
+﻿import { SITE_NAME } from '../config';
 const de = {
 common: {
         siteName: SITE_NAME,
@@ -12,12 +12,12 @@ common: {
         error: "Ein Fehler ist aufgetreten",
         save: "Speichern",
         cancel: "Abbrechen",
-        delete: "Löschen",
-        back: "Zurück"
+        delete: "LÃ¶schen",
+        back: "ZurÃ¼ck"
     },
     home: {
         heroTitle: "Debattieren. Einigen. Erschaffen.",
-        heroSubtitle: "Einmal fragen. Mehrere AIs antworten unabhängig, prüfen sich gegenseitig, dann führt OpenAI zu einem finalen Konsens — bereit für Bilder, Video, Audio oder Code.",
+        heroSubtitle: "Einmal fragen. Mehrere AIs antworten unabhÃ¤ngig, prÃ¼fen sich gegenseitig, dann fÃ¼hrt OpenAI zu einem finalen Konsens â€” bereit fÃ¼r Bilder, Video, Audio oder Code.",
         startDebate: "Debatte starten",
         howItWorks: "Wie es funktioniert"
     },
@@ -27,7 +27,7 @@ common: {
         topicLabel: "Geben Sie ein Thema ein...",
         startBtn: "Debatte initiieren",
         analyzing: "Thema analysieren...",
-        consensusTitle: "Endgültiger Konsens",
+        consensusTitle: "EndgÃ¼ltiger Konsens",
         // Konsole UI
         consoleTitle: "Jarnazi Konsole",
         online: "ONLINE",
@@ -43,7 +43,7 @@ common: {
         download: "Herunterladen",
         placeholder: "Geben Sie Ihr Argument ein...",
         mathPlaceholder: "\\sum_{i=0}^n x_i",
-        menu: "Systemmenü",
+        menu: "SystemmenÃ¼",
         copyJson: "JSON kopieren",
         printTranscript: "Transkript drucken",
         viewPlans: "Modelle ansehen",
@@ -53,7 +53,7 @@ common: {
         language: "Sprache",
         darkMode: "Dunkelmodus",
         lightMode: "Lichtmodus",
-        deleteAccount: "Konto löschen"
+        deleteAccount: "Konto lÃ¶schen"
     },
     notifications: {
         welcome: "Willkommen beim Jarnazi-Konsens. Der Rat ist bereit."
@@ -65,7 +65,7 @@ common: {
     },
     sidebar: {
         newSession: "Neue Sitzung",
-        plans: "Pläne",
+        plans: "PlÃ¤ne",
         settings: "Einstellungen",
         signOut: "Abmelden",
         jarnazi: "JARNAZI",
@@ -73,11 +73,11 @@ common: {
     },
     features: {
         title1: "Multi-Agent-Debatte",
-        desc1: "Warum nur ein Modell? Erhalte unabhängige Perspektiven mehrerer AIs, die sich gegenseitig prüfen, um Halluzinationen zu reduzieren.",
-        title2: "Konsens → Kreation",
-        desc2: "Wandle die finale Einigung in einen einzigen hochwertigen Plan und Prompt für Bild-, Video-, Audio- oder Code-Generierung.",
-        title3: "Lange Videos möglich",
-        desc3: "Erstelle lange Videos – Filme, Serien oder TV‑Shows – in Szenen aufgeteilt und zu einer einzigen MP4 zum Download zusammengesetzt."
+        desc1: "Warum nur ein Modell? Erhalte unabhÃ¤ngige Perspektiven mehrerer AIs, die sich gegenseitig prÃ¼fen, um Halluzinationen zu reduzieren.",
+        title2: "Konsens â†’ Kreation",
+        desc2: "Wandle die finale Einigung in einen einzigen hochwertigen Plan und Prompt fÃ¼r Bild-, Video-, Audio- oder Code-Generierung.",
+        title3: "Lange Videos mÃ¶glich",
+        desc3: "Erstelle lange Videos â€“ Filme, Serien oder TVâ€‘Shows â€“ in Szenen aufgeteilt und zu einer einzigen MP4 zum Download zusammengesetzt."
     },
     footer: {
         privacy: "Datenschutzrichtlinie",
@@ -85,14 +85,14 @@ common: {
         rights: "Alle Rechte vorbehalten."
     },
     auth: {
-        welcome: "Willkommen zurück",
+        welcome: "Willkommen zurÃ¼ck",
         subtitle: "Melden Sie sich an, um die Debatte zu orchestrieren.",
         email: "E-Mail-Adresse",
         password: "Passwort",
         signIn: "Anmelden",
         noAccount: "Haben Sie noch kein Konto?",
         createProfile: "Profil erstellen",
-        securityCheck: "Bitte führen Sie die Sicherheitsprüfung durch."
+        securityCheck: "Bitte fÃ¼hren Sie die SicherheitsprÃ¼fung durch."
     },
     landing: {
         badge: "Die Zukunft der Konsensintelligenz",
@@ -109,15 +109,15 @@ common: {
             "namePh":"Max. 25 Zeichen",
             "subjectPh":"Max. 20 Zeichen",
             "emailPh":"du@beispiel.com",
-            "messagePh":"Wie können wir helfen? (Max. 250 Zeichen)",
+            "messagePh":"Wie kÃ¶nnen wir helfen? (Max. 250 Zeichen)",
             "max250":"Maximal 250 Zeichen",
-            "sentToast":"Nachricht erfolgreich gesendet! Wir melden uns in Kürze."
+            "sentToast":"Nachricht erfolgreich gesendet! Wir melden uns in KÃ¼rze."
     }
 ,
     profilePage:     {
-            "titleRecent":"Letzte Aktivitäten",
+            "titleRecent":"Letzte AktivitÃ¤ten",
             "tokenBalance":"Token-Guthaben",
-            "available":"Verfügbar für Debatten",
+            "available":"VerfÃ¼gbar fÃ¼r Debatten",
             "totalDebates":"Debatten insgesamt",
             "sessions":"Orchestrierte Sitzungen",
             "noDebates":"Keine Debatten gefunden. Starte deine erste Sitzung!",
@@ -133,10 +133,10 @@ common: {
     "emailAddress": "E-Mail-Adresse",
     "displayName": "Anzeigename",
     "security": "Sicherheit",
-    "changePassword": "Passwort ändern",
+    "changePassword": "Passwort Ã¤ndern",
     "dangerZone": "Gefahrenzone",
-    "dangerText": "Sobald du dein Konto löschst, gibt es kein Zurück.",
-    "deleteAccount": "Konto löschen",
+    "dangerText": "Sobald du dein Konto lÃ¶schst, gibt es kein ZurÃ¼ck.",
+    "deleteAccount": "Konto lÃ¶schen",
     "emailPlaceholder": "user@example.com",
     "displayNamePlaceholder": "Jarnazi Nutzer"
   },
@@ -144,24 +144,24 @@ common: {
     "investIn": "Investiere in",
     "intelligence": "Intelligenz",
     "currentPlan": "Aktueller Plan",
-    "availableBalance": "Verfügbares Guthaben",
+    "availableBalance": "VerfÃ¼gbares Guthaben",
     "tokensLabel": "Tokens",
     "planSuffix": "Plan",
     "freeTier": "Kostenlos",
     "mostPopular": "Am beliebtesten",
     "perPack": "/ Paket",
-    "descriptionLine1": "Kaufe Tokens für KI-Debatten und Content-Erstellung.",
+    "descriptionLine1": "Kaufe Tokens fÃ¼r KI-Debatten und Content-Erstellung.",
     "tokensNeverExpire": "Tokens verfallen nie",
-    "descriptionLine2": "und können sofort aufgeladen werden.",
-    "enterpriseTitle": "Enterprise-Lösung",
-    "enterpriseSubtitle": "Kaufe eine benutzerdefinierte Token-Menge für dein Unternehmen.",
+    "descriptionLine2": "und kÃ¶nnen sofort aufgeladen werden.",
+    "enterpriseTitle": "Enterprise-LÃ¶sung",
+    "enterpriseSubtitle": "Kaufe eine benutzerdefinierte Token-Menge fÃ¼r dein Unternehmen.",
     "tokenAmount": "Token-Anzahl",
     "totalPrice": "Gesamtpreis",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
     "plans": {
       "starter": {
         "name": "Starter-Paket",
-        "description": "Perfekt für gelegentliche Debatten und Anfragen.",
+        "description": "Perfekt fÃ¼r gelegentliche Debatten und Anfragen.",
         "features": [
           "42 Konsens-Tokens",
           "Zugang zu GPT-4o & Claude 3",
@@ -172,21 +172,21 @@ common: {
       },
       "producer": {
         "name": "Producer-Plan",
-        "description": "Für Power-User mit häufiger KI-Kollaboration.",
+        "description": "FÃ¼r Power-User mit hÃ¤ufiger KI-Kollaboration.",
         "features": [
           "155 Konsens-Tokens",
           "Zugang zu allen Neural Nodes",
-          "Hochauflösende Bildgenerierung",
+          "HochauflÃ¶sende Bildgenerierung",
           "Priorisierte Verarbeitung",
           "Tokens verfallen nie"
         ]
       },
       "creator": {
         "name": "Pro Creator",
-        "description": "Ultimatives Toolkit für professionelle Content-Erstellung.",
+        "description": "Ultimatives Toolkit fÃ¼r professionelle Content-Erstellung.",
         "features": [
           "1050 Konsens-Tokens",
-          "Top-Priorität (Tier 1)",
+          "Top-PrioritÃ¤t (Tier 1)",
           "4K-Video-Generierung",
           "Dedizierter Support",
           "Kommerzielle Nutzungsrechte",
@@ -239,6 +239,23 @@ common: {
             settingsDesc: "Privacy, Terms & Branding"
         }
     },
+
+
+    adminCosts: {
+
+
+
+        title: 'AI Cost Rates',
+
+
+
+        subtitle: 'Manage per-unit USD rates used by the pricing engine (75% cost / 25% margin).'
+
+
+
+    },
+
+
 
 
     adminProviders: {
@@ -342,3 +359,5 @@ common: {
 } as const;
 
 export default de;
+
+

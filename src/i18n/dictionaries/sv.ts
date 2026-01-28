@@ -1,4 +1,4 @@
-import { SITE_NAME } from '../config';
+﻿import { SITE_NAME } from '../config';
 const sv = {
 common: {
         siteName: SITE_NAME,
@@ -6,10 +6,10 @@ common: {
         register: "Registrera dig",
         logout: "Logga ut",
         dashboard: "Panel",
-        settings: "Inställningar",
+        settings: "InstÃ¤llningar",
         profile: "Profil",
         loading: "Laddar...",
-        error: "Ett fel inträffade",
+        error: "Ett fel intrÃ¤ffade",
         save: "Spara",
         cancel: "Avbryt",
         delete: "Ta bort",
@@ -17,16 +17,16 @@ common: {
     },
     home: {
         heroTitle: "Debatt. Enighet. Skapa.",
-        heroSubtitle: "Fråga en gång. Flera AI:er svarar oberoende, granskar varandra och sedan leder OpenAI fram till en slutlig konsensus — redo för bild, video, ljud eller kod.",
+        heroSubtitle: "FrÃ¥ga en gÃ¥ng. Flera AI:er svarar oberoende, granskar varandra och sedan leder OpenAI fram till en slutlig konsensus â€” redo fÃ¶r bild, video, ljud eller kod.",
         startDebate: "Starta Debatt",
         howItWorks: "Hur det fungerar"
     },
     debate: {
         currentPlan: 'Current plan',
         newTitle: "Ny Debatt",
-        topicLabel: "Ange ett ämne...",
+        topicLabel: "Ange ett Ã¤mne...",
         startBtn: "Starta Debatt",
-        analyzing: "Analyserar Ämne...",
+        analyzing: "Analyserar Ã„mne...",
         consensusTitle: "Slutlig Konsensus",
         // Konsol UI
         consoleTitle: "Jarnazi Konsol",
@@ -50,13 +50,13 @@ common: {
         editProfile: "Redigera profil",
         contactUs: "Kontakta oss",
         sessionHistory: "Sessionshistorik",
-        language: "Språk",
-        darkMode: "Mörkt läge",
-        lightMode: "Ljust läge",
+        language: "SprÃ¥k",
+        darkMode: "MÃ¶rkt lÃ¤ge",
+        lightMode: "Ljust lÃ¤ge",
         deleteAccount: "Ta bort konto"
     },
     notifications: {
-        welcome: "Välkommen till Jarnazi Consensus. Rådet är redo."
+        welcome: "VÃ¤lkommen till Jarnazi Consensus. RÃ¥det Ã¤r redo."
     },
     nav: {
         features: "Funktioner",
@@ -66,131 +66,131 @@ common: {
     sidebar: {
         newSession: "Ny session",
         plans: "Planer",
-        settings: "Inställningar",
+        settings: "InstÃ¤llningar",
         signOut: "Logga ut",
         jarnazi: "JARNAZI",
         consensus: "KONSENSUS"
     },
     features: {
         title1: "Multi-agent-debatt",
-        desc1: "Varför lita på en modell? Få oberoende perspektiv från flera AI:er, korsgranskade för att minska hallucinationer.",
-        title2: "Konsensus → Skapande",
-        desc2: "Gör den slutliga enigheten till en enda plan och prompt av hög kvalitet för bild-, video-, ljud- eller kodgenerering.",
-        title3: "Långa videor",
-        desc3: "Skapa långa videor—filmer, serier eller TV‑program—uppdelade i scener och sammansatta till en enda nedladdningsbar MP4."
+        desc1: "VarfÃ¶r lita pÃ¥ en modell? FÃ¥ oberoende perspektiv frÃ¥n flera AI:er, korsgranskade fÃ¶r att minska hallucinationer.",
+        title2: "Konsensus â†’ Skapande",
+        desc2: "GÃ¶r den slutliga enigheten till en enda plan och prompt av hÃ¶g kvalitet fÃ¶r bild-, video-, ljud- eller kodgenerering.",
+        title3: "LÃ¥nga videor",
+        desc3: "Skapa lÃ¥nga videorâ€”filmer, serier eller TVâ€‘programâ€”uppdelade i scener och sammansatta till en enda nedladdningsbar MP4."
     },
     footer: {
         privacy: "Integritetspolicy",
-        terms: "Användarvillkor",
-        rights: "Alla rättigheter förbehållna."
+        terms: "AnvÃ¤ndarvillkor",
+        rights: "Alla rÃ¤ttigheter fÃ¶rbehÃ¥llna."
     },
     auth: {
-        welcome: "Välkommen tillbaka",
-        subtitle: "Logga in för att orkestrera debatten.",
+        welcome: "VÃ¤lkommen tillbaka",
+        subtitle: "Logga in fÃ¶r att orkestrera debatten.",
         email: "E-postadress",
-        password: "Lösenord",
+        password: "LÃ¶senord",
         signIn: "Logga in",
         noAccount: "Har du inget konto?",
         createProfile: "Skapa profil",
-        securityCheck: "Vänligen slutför säkerhetskontrollen."
+        securityCheck: "VÃ¤nligen slutfÃ¶r sÃ¤kerhetskontrollen."
     },
     landing: {
-        badge: "Framtiden för konsensusintelligens",
+        badge: "Framtiden fÃ¶r konsensusintelligens",
         subtitle2: "AI-konsensusstudio"
     },
     contactPage:     {
             "title":"Kontakta oss",
-            "subtitle":"Frågor, feedback eller förfrågningar?",
+            "subtitle":"FrÃ¥gor, feedback eller fÃ¶rfrÃ¥gningar?",
             "name":"Namn",
-            "subject":"Ämne",
-            "email":"E‑post",
+            "subject":"Ã„mne",
+            "email":"Eâ€‘post",
             "message":"Meddelande",
             "send":"Skicka meddelande",
             "namePh":"Max 25 tecken",
             "subjectPh":"Max 20 tecken",
             "emailPh":"du@exempel.com",
-            "messagePh":"Hur kan vi hjälpa? (Max 250 tecken)",
+            "messagePh":"Hur kan vi hjÃ¤lpa? (Max 250 tecken)",
             "max250":"Max 250 tecken",
-            "sentToast":"Meddelandet skickades! Vi återkommer snart."
+            "sentToast":"Meddelandet skickades! Vi Ã¥terkommer snart."
     }
 ,
     profilePage:     {
             "titleRecent":"Senaste aktivitet",
-            "tokenBalance":"Token‑saldo",
-            "available":"Tillgängligt för debatter",
+            "tokenBalance":"Tokenâ€‘saldo",
+            "available":"TillgÃ¤ngligt fÃ¶r debatter",
             "totalDebates":"Totalt antal debatter",
             "sessions":"Orkestrerade sessioner",
-            "noDebates":"Inga debatter hittades. Starta din första session!",
-            "anonymous":"Anonym användare",
-            "banned":"AVSTÄNGD"
+            "noDebates":"Inga debatter hittades. Starta din fÃ¶rsta session!",
+            "anonymous":"Anonym anvÃ¤ndare",
+            "banned":"AVSTÃ„NGD"
     }
 
 ,
   "debateSettingsPage": {
-    "title": "Kontoinställningar",
-    "subtitle": "Hantera din profil och dina inställningar.",
+    "title": "KontoinstÃ¤llningar",
+    "subtitle": "Hantera din profil och dina instÃ¤llningar.",
     "profileInfo": "Profilinformation",
     "emailAddress": "E-postadress",
     "displayName": "Visningsnamn",
-    "security": "Säkerhet",
-    "changePassword": "Ändra lösenord",
+    "security": "SÃ¤kerhet",
+    "changePassword": "Ã„ndra lÃ¶senord",
     "dangerZone": "Riskzon",
-    "dangerText": "När du raderar kontot går det inte att ångra.",
+    "dangerText": "NÃ¤r du raderar kontot gÃ¥r det inte att Ã¥ngra.",
     "deleteAccount": "Radera konto",
     "emailPlaceholder": "user@example.com",
-    "displayNamePlaceholder": "Jarnazi-användare"
+    "displayNamePlaceholder": "Jarnazi-anvÃ¤ndare"
   },
   "pricingPage": {
     "investIn": "Investera i",
     "intelligence": "Intelligens",
     "currentPlan": "Nuvarande plan",
-    "availableBalance": "Tillgängligt saldo",
+    "availableBalance": "TillgÃ¤ngligt saldo",
     "tokensLabel": "Tokens",
     "planSuffix": "Plan",
     "freeTier": "Gratis",
-    "mostPopular": "Mest populär",
+    "mostPopular": "Mest populÃ¤r",
     "perPack": "/ paket",
-    "descriptionLine1": "Köp tokens för AI-debatter och innehållsgenerering.",
-    "tokensNeverExpire": "Tokens går aldrig ut",
-    "descriptionLine2": "och kan fyllas på direkt.",
-    "enterpriseTitle": "Enterprise-lösning",
-    "enterpriseSubtitle": "Köp en anpassad mängd tokens för din organisation.",
-    "tokenAmount": "Token-mängd",
+    "descriptionLine1": "KÃ¶p tokens fÃ¶r AI-debatter och innehÃ¥llsgenerering.",
+    "tokensNeverExpire": "Tokens gÃ¥r aldrig ut",
+    "descriptionLine2": "och kan fyllas pÃ¥ direkt.",
+    "enterpriseTitle": "Enterprise-lÃ¶sning",
+    "enterpriseSubtitle": "KÃ¶p en anpassad mÃ¤ngd tokens fÃ¶r din organisation.",
+    "tokenAmount": "Token-mÃ¤ngd",
     "totalPrice": "Totalpris",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
     "plans": {
       "starter": {
         "name": "Starter Pack",
-        "description": "Perfekt för avslappnade debatter och ibland frågor.",
+        "description": "Perfekt fÃ¶r avslappnade debatter och ibland frÃ¥gor.",
         "features": [
           "42 konsensus-tokens",
-          "Tillgång till GPT-4o & Claude 3",
-          "Grundläggande bildgenerering",
-          "Tokens går aldrig ut",
+          "TillgÃ¥ng till GPT-4o & Claude 3",
+          "GrundlÃ¤ggande bildgenerering",
+          "Tokens gÃ¥r aldrig ut",
           "E-postsammanfattningar"
         ]
       },
       "producer": {
         "name": "Producer Plan",
-        "description": "För power users med frekvent AI-samarbete.",
+        "description": "FÃ¶r power users med frekvent AI-samarbete.",
         "features": [
           "155 konsensus-tokens",
-          "Tillgång till alla noder",
-          "Högupplöst bildgenerering",
+          "TillgÃ¥ng till alla noder",
+          "HÃ¶gupplÃ¶st bildgenerering",
           "Prioriterad bearbetning",
-          "Tokens går aldrig ut"
+          "Tokens gÃ¥r aldrig ut"
         ]
       },
       "creator": {
         "name": "Pro Creator",
-        "description": "Ultimat verktyg för professionell skapande.",
+        "description": "Ultimat verktyg fÃ¶r professionell skapande.",
         "features": [
           "1050 konsensus-tokens",
-          "Högsta prioritet (Tier 1)",
+          "HÃ¶gsta prioritet (Tier 1)",
           "4K-videogenerering",
           "Dedikerad support",
-          "Kommersiella rättigheter",
-          "Tokens går aldrig ut"
+          "Kommersiella rÃ¤ttigheter",
+          "Tokens gÃ¥r aldrig ut"
         ]
       }
     }
@@ -239,6 +239,23 @@ common: {
             settingsDesc: "Privacy, Terms & Branding"
         }
     },
+
+
+    adminCosts: {
+
+
+
+        title: 'AI Cost Rates',
+
+
+
+        subtitle: 'Manage per-unit USD rates used by the pricing engine (75% cost / 25% margin).'
+
+
+
+    },
+
+
 
 
     adminProviders: {
@@ -342,3 +359,5 @@ common: {
 } as const;
 
 export default sv;
+
+
