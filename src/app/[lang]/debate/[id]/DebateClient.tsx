@@ -124,6 +124,30 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
     };
 
 
+    const startTokenPurchase = async (amount: number, { returnTo, pendingId }: { returnTo: string; pendingId: string }) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        const accessToken = session?.access_token;
+        if (!accessToken) {
+            throw new Error('Please sign in again.');
+        }
+
+        const endpoint = stripeEnabled ? '/api/buy-tokens/checkout' : (nowpaymentsEnabled ? '/api/buy-tokens/nowpayments' : '/api/buy-tokens/checkout');
+
+        const payRes = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({ amount, lang, returnTo, pendingId }),
+        });
+        const payJson = await payRes.json().catch(() => ({} as any));
+        if (!payRes.ok || !payJson?.url) throw new Error(payJson?.error || 'Checkout failed');
+
+        window.location.href = payJson.url;
+    };
+
+
     useEffect(() => {
         // Auto-resume pending long video generation after token purchase (short window)
         const resumeFlag = searchParams?.get('resume');
@@ -214,25 +238,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
                             );
                             if (!ok) throw new Error(j?.error || 'INSUFFICIENT_TOKENS');
 
-                            const { data: { session } } = await supabase.auth.getSession();
-                            const accessToken = session?.access_token;
-                            if (!accessToken) throw new Error('Please sign in again.');
-
-                            const returnTo = `/${lang}/debate/${debateId}?resume=1`;
-                            const endpoint = stripeEnabled ? '/api/buy-tokens/checkout' : (nowpaymentsEnabled ? '/api/buy-tokens/nowpayments' : '/api/buy-tokens/checkout');
-
-                            const payRes = await fetch(endpoint, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${accessToken}`,
-                                },
-                                body: JSON.stringify({ amount, lang, returnTo, pendingId }),
-                            });
-                            const payJson = await payRes.json().catch(() => ({} as any));
-                            if (!payRes.ok || !payJson?.url) throw new Error(payJson?.error || 'Checkout failed');
-
-                            window.location.href = payJson.url;
+                            await startTokenPurchase(amount, { returnTo: `/${lang}/debate/${debateId}?resume=1`, pendingId });
                             return;
                         }
 
@@ -889,28 +895,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
                     );
                     if (!ok) throw new Error(j?.error || 'INSUFFICIENT_TOKENS');
 
-                    const { data: { session } } = await supabase.auth.getSession();
-                    const accessToken = session?.access_token;
-                    if (!accessToken) {
-                        throw new Error('Please sign in again.');
-                    }
-
-                    const returnTo = `/${lang}/debate/${debateId}?resume=1`;
-                    const endpoint = stripeEnabled ? '/api/buy-tokens/checkout' : (nowpaymentsEnabled ? '/api/buy-tokens/nowpayments' : '/api/buy-tokens/checkout');
-
-                    const payRes = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${accessToken}`,
-                        },
-                        body: JSON.stringify({ amount, lang, returnTo, pendingId }),
-                    });
-                    const payJson = await payRes.json().catch(() => ({} as any));
-                    if (!payRes.ok || !payJson?.url) throw new Error(payJson?.error || 'Checkout failed');
-
-                    // Redirect to payment page; on return, resume effect will continue.
-                    window.location.href = payJson.url;
+                    await startTokenPurchase(amount, { returnTo: `/${lang}/debate/${debateId}?resume=1`, pendingId });
                     return;
                 }
 
