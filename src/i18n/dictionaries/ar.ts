@@ -493,7 +493,7 @@ const ar = {
       replyFailed: "فشل إرسال الرد",
       cancel: "إلغاء",
       send: "إرسال"
-    },,
+    },
   buyTokensPage: {
     backToConsole: "العودة إلى اللوحة",
     title: "شراء توكنات",

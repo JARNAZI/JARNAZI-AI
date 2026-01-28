@@ -1,7 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { createClientPrimitive } from '@/lib/supabase/server';
+import { createClient as createClientPrimitive } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
 
 /**

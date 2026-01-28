@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import AdminManageProviders from './AdminManageProviders';
-import { getDictionary } from '@/i18n/getDictionary';
+import { getDictionary } from '@/i18n/get-dictionary';
 
 export const dynamic = 'force-dynamic';
 

@@ -71,14 +71,14 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
             const j = await res.json();
             if (!res.ok) throw new Error(j.error || 'Failed to delete account');
             await supabase.auth.signOut();
-        window.location.replace(`/${lang}/login`);
+            window.location.replace(`/${lang}/login`);
         } catch (e: unknown) {
             alert((e instanceof Error ? e.message : String(e)));
         }
     };
 
     const [profileInfo, setProfileInfo] = useState<{ token_balance_cents: number } | null>(null);
-    const [isMenuOpen, setIsMenuOpen] = useState(false); 
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const searchParams = useSearchParams();
 
@@ -123,7 +123,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
         return Math.round(amount * 100) / 100;
     };
 
-    
+
     useEffect(() => {
         // Auto-resume pending long video generation after token purchase (short window)
         const resumeFlag = searchParams?.get('resume');
@@ -205,12 +205,12 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
                                         ts: Date.now(),
                                     })
                                 );
-                            } catch {}
+                            } catch { }
 
                             const amount = missingTokensToAmount(missing);
                             const ok = confirm(
                                 (dict?.buyTokensPage?.insufficientTokens || dict?.common?.insufficientTokens || 'Not enough tokens.') +
-                                    `\n\nMissing: ${missing}\n\nBuy now (${amount} USD) and resume?`
+                                `\n\nMissing: ${missing}\n\nBuy now (${amount} USD) and resume?`
                             );
                             if (!ok) throw new Error(j?.error || 'INSUFFICIENT_TOKENS');
 
@@ -274,13 +274,13 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
                         url.searchParams.delete('purchase');
                         url.searchParams.delete('pendingId');
                         window.history.replaceState({}, '', url.toString());
-                    } catch {}
+                    } catch { }
                 }
             })();
         } catch {
             // ignore
         }
-    
+
         // Auto-resume pending compose-after-purchase (short window)
         try {
             const raw2 = localStorage.getItem('pending_compose_resume_v1');
@@ -342,16 +342,16 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
                                             localStorage.setItem('pending_compose_resume_v1', JSON.stringify(st3));
                                         }
                                     }
-                                } catch {}
+                                } catch { }
                             }
                         })();
                     }
                 }
             }
-        } catch {}
-}, [searchParams, debateId, lang, stripeEnabled, nowpaymentsEnabled, profileInfo, supabase, dict]);
+        } catch { }
+    }, [searchParams, debateId, lang, stripeEnabled, nowpaymentsEnabled, profileInfo, supabase, dict]);
 
-// top-right dropdown
+    // top-right dropdown
 
     const [showFinalOnly, setShowFinalOnly] = useState(true);
     // NOTE: These states existed in an earlier iteration of the UI but were unused.
@@ -371,11 +371,11 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
         mime?: string;
         filename?: string;
     };
-    
+
     const [lastUploadedAsset, setLastUploadedAsset] = useState<UploadedAsset | null>(null);
     const [uploadingAsset, setUploadingAsset] = useState(false);
-    
-    
+
+
     // Phase 8: Video generation safeguards (cost-before-generate + confirmation)
     const [pendingVideoPrompt, setPendingVideoPrompt] = useState<string>('');
     const [pendingVideoDurationSec, setPendingVideoDurationSec] = useState<number>(6);
@@ -391,7 +391,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
     // Phase 14: Media generation happens AFTER the text debate reaches a final consensus.
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-const [pendingImagePrompt, setPendingImagePrompt] = useState<string>('');
+    const [pendingImagePrompt, setPendingImagePrompt] = useState<string>('');
     const [pendingImageStyle, setPendingImageStyle] = useState<string>('Cinematic');
     const [pendingImageAspect, setPendingImageAspect] = useState<string>('16:9');
     const [imageGenerating, setImageGenerating] = useState(false);
@@ -602,7 +602,7 @@ const [pendingImagePrompt, setPendingImagePrompt] = useState<string>('');
         // 1. Prepare Content & Enforce LaTeX
         let contentToSend = inputContent;
 
-// If user is requesting an edit and didn't attach a new file, attach the most recent uploaded asset context.
+        // If user is requesting an edit and didn't attach a new file, attach the most recent uploaded asset context.
         if (!selectedFile && lastUploadedAsset && shouldAttachLastAssetForEdit(contentToSend) && !contentToSend.includes('[ASSET_URL:')) {
             contentToSend += `\n[ASSET_URL: ${lastUploadedAsset.signedUrl}]\n[ASSET_PATH: ${lastUploadedAsset.path}]\n[ASSET_KIND: ${lastUploadedAsset.kind}]`;
         }
@@ -620,7 +620,7 @@ const [pendingImagePrompt, setPendingImagePrompt] = useState<string>('');
             }
         }
 
-// Upload selected file (image/video/any file) to Supabase Storage via server route, then attach the signed URL to the prompt.
+        // Upload selected file (image/video/any file) to Supabase Storage via server route, then attach the signed URL to the prompt.
         if (selectedFile) {
             try {
                 setUploadingAsset(true);
@@ -693,38 +693,38 @@ const [pendingImagePrompt, setPendingImagePrompt] = useState<string>('');
             if (dbError) throw dbError;
 
             // 4. Trigger AI Debate (Server API - unified path)
-//    This keeps all orchestration in ONE place and ensures token accounting is consistent.
-const { data: { session } } = await supabase.auth.getSession();
-const accessToken = session?.access_token;
+            //    This keeps all orchestration in ONE place and ensures token accounting is consistent.
+            const { data: { session } } = await supabase.auth.getSession();
+            const accessToken = session?.access_token;
 
-const res = await fetch('/api/debate/message', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-  },
-  body: JSON.stringify({
-    debateId,
-    prompt: contentToSend,
-    requestType: isMathMode ? 'latex' : (contentToSend.includes('[ASSET_KIND: image]') ? 'image' : (contentToSend.includes('[ASSET_KIND: video]') ? 'video' : 'text')),
-    
-  }),
-});
+            const res = await fetch('/api/debate/message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+                },
+                body: JSON.stringify({
+                    debateId,
+                    prompt: contentToSend,
+                    requestType: isMathMode ? 'latex' : (contentToSend.includes('[ASSET_KIND: image]') ? 'image' : (contentToSend.includes('[ASSET_KIND: video]') ? 'video' : 'text')),
 
-if (!res.ok) {
-  // Token shortage: prompt user to buy tokens and optionally return back to this debate.
-  if (res.status === 402) {
-    const j = await res.json().catch(() => ({} as any));
-    const missing = Number(j?.missingTokens ?? 0) || 0;
-    alert((dict?.tokens?.insufficient || 'Insufficient tokens.') + (missing ? ` (Missing: ${missing})` : ''));
-    // Redirect to buy-tokens with a return URL so user can come back.
-    const ret = encodeURIComponent(`/${lang}/debate/${debateId}`);
-    window.location.href = `/${lang}/buy-tokens?missing=${missing}&return=${ret}`;
-    return;
-  }
-  const errText = await res.text().catch(() => '');
-  throw new Error(`Debate message failed: ${res.status} ${errText}`);
-}
+                }),
+            });
+
+            if (!res.ok) {
+                // Token shortage: prompt user to buy tokens and optionally return back to this debate.
+                if (res.status === 402) {
+                    const j = await res.json().catch(() => ({} as any));
+                    const missing = Number(j?.missingTokens ?? 0) || 0;
+                    alert((dict?.tokens?.insufficient || 'Insufficient tokens.') + (missing ? ` (Missing: ${missing})` : ''));
+                    // Redirect to buy-tokens with a return URL so user can come back.
+                    const ret = encodeURIComponent(`/${lang}/debate/${debateId}`);
+                    window.location.href = `/${lang}/buy-tokens?missing=${missing}&return=${ret}`;
+                    return;
+                }
+                const errText = await res.text().catch(() => '');
+                throw new Error(`Debate message failed: ${res.status} ${errText}`);
+            }
 
         } catch (err) {
             console.error(err);
@@ -796,179 +796,179 @@ if (!res.ok) {
         }
     };
 
-    
-const parseDurationSecFromPrompt = (text: string): number | null => {
-    const s = (text || '').toLowerCase();
-    // Match "90s", "90 sec", "90 seconds"
-    const secMatch = s.match(/\b(\d{1,4})\s*(s|sec|secs|second|seconds)\b/);
-    if (secMatch) return Number(secMatch[1]);
-    // Match "2m", "2 min", "2 minutes"
-    const minMatch = s.match(/\b(\d{1,3})\s*(m|min|mins|minute|minutes)\b/);
-    if (minMatch) return Number(minMatch[1]) * 60;
-    return null;
-};
 
-// Phase 8: confirm + reserve tokens server-side before any video generation
+    const parseDurationSecFromPrompt = (text: string): number | null => {
+        const s = (text || '').toLowerCase();
+        // Match "90s", "90 sec", "90 seconds"
+        const secMatch = s.match(/\b(\d{1,4})\s*(s|sec|secs|second|seconds)\b/);
+        if (secMatch) return Number(secMatch[1]);
+        // Match "2m", "2 min", "2 minutes"
+        const minMatch = s.match(/\b(\d{1,3})\s*(m|min|mins|minute|minutes)\b/);
+        if (minMatch) return Number(minMatch[1]) * 60;
+        return null;
+    };
+
+    // Phase 8: confirm + reserve tokens server-side before any video generation
     const handleConfirmVideoGeneration = async () => {
-    setVideoGenerating(true);
-    try {
-        // Determine requested duration from prompt (e.g., "30m", "120s") or UI field.
-        let requestedDurationSec = parseDurationSecFromPrompt(pendingVideoPrompt) ?? pendingVideoDurationSec;
-        requestedDurationSec = Math.round(Number(requestedDurationSec));
-        if (!Number.isFinite(requestedDurationSec) || requestedDurationSec <= 0) requestedDurationSec = 6;
+        setVideoGenerating(true);
+        try {
+            // Determine requested duration from prompt (e.g., "30m", "120s") or UI field.
+            let requestedDurationSec = parseDurationSecFromPrompt(pendingVideoPrompt) ?? pendingVideoDurationSec;
+            requestedDurationSec = Math.round(Number(requestedDurationSec));
+            if (!Number.isFinite(requestedDurationSec) || requestedDurationSec <= 0) requestedDurationSec = 6;
 
-        // Long video mode: providers often cap a *single* generation to ~600s.
-        // We support arbitrarily long videos by splitting into multiple <=600s scenes.
+            // Long video mode: providers often cap a *single* generation to ~600s.
+            // We support arbitrarily long videos by splitting into multiple <=600s scenes.
 
-        const segments: number[] = [];
-        if (requestedDurationSec > 600) {
-            let remaining = requestedDurationSec;
-            while (remaining > 0) {
-                const chunk = Math.min(600, remaining);
-                segments.push(chunk);
-                remaining -= chunk;
+            const segments: number[] = [];
+            if (requestedDurationSec > 600) {
+                let remaining = requestedDurationSec;
+                while (remaining > 0) {
+                    const chunk = Math.min(600, remaining);
+                    segments.push(chunk);
+                    remaining -= chunk;
+                }
+            } else {
+                segments.push(requestedDurationSec);
             }
-        } else {
-            segments.push(requestedDurationSec);
-        }
 
-        const urls: string[] = [];
-        let totalDeducted = 0;
+            const urls: string[] = [];
+            let totalDeducted = 0;
 
-        // Generate sequentially to avoid timeouts and to allow partial progress.
-        for (let i = 0; i < segments.length; i++) {
-            const segSec = segments[i];
-            const res = await fetch('/api/media/video/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    debateId,
-                    prompt: segments.length > 1 ? `${pendingVideoPrompt}
+            // Generate sequentially to avoid timeouts and to allow partial progress.
+            for (let i = 0; i < segments.length; i++) {
+                const segSec = segments[i];
+                const res = await fetch('/api/media/video/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        debateId,
+                        prompt: segments.length > 1 ? `${pendingVideoPrompt}
 
 [Scene ${i + 1}/${segments.length}]` : pendingVideoPrompt,
-                    durationSec: segSec,
-                    confirmed: true,
-                }),
-            });
+                        durationSec: segSec,
+                        confirmed: true,
+                    }),
+                });
 
-            const j = await res.json().catch(() => ({} as any));
-                        // If tokens are insufficient mid-run, prompt purchase and auto-resume remaining scenes.
-                        if (res.status === 402 && (j?.error === 'INSUFFICIENT_TOKENS' || j?.error === 'INSUFFICIENT')) {
-                            const missing = Number(j?.missingTokens ?? 0) || 0;
-                            const pendingId = String(j?.pendingId ?? '');
-                            const expiresAt = j?.expiresAt ?? null;
+                const j = await res.json().catch(() => ({} as any));
+                // If tokens are insufficient mid-run, prompt purchase and auto-resume remaining scenes.
+                if (res.status === 402 && (j?.error === 'INSUFFICIENT_TOKENS' || j?.error === 'INSUFFICIENT')) {
+                    const missing = Number(j?.missingTokens ?? 0) || 0;
+                    const pendingId = String(j?.pendingId ?? '');
+                    const expiresAt = j?.expiresAt ?? null;
 
-                            // Save resume state (remaining segments incl current)
-                            try {
-                                const remaining = segments.slice(i); // includes current segment
-                                localStorage.setItem(
-                                    'pending_video_resume_v1',
-                                    JSON.stringify({
-                                        v: 1,
-                                        debateId,
-                                        lang,
-                                        prompt: pendingVideoPrompt,
-                                        segments: remaining,
-                                        sceneOffset: i,
-                                        totalSegments: segments.length,
-                                        urls,
-                                        totalDeducted,
-                                        pendingId,
-                                        expiresAt,
-                                        ts: Date.now(),
-                                    })
-                                );
-                            } catch {}
+                    // Save resume state (remaining segments incl current)
+                    try {
+                        const remaining = segments.slice(i); // includes current segment
+                        localStorage.setItem(
+                            'pending_video_resume_v1',
+                            JSON.stringify({
+                                v: 1,
+                                debateId,
+                                lang,
+                                prompt: pendingVideoPrompt,
+                                segments: remaining,
+                                sceneOffset: i,
+                                totalSegments: segments.length,
+                                urls,
+                                totalDeducted,
+                                pendingId,
+                                expiresAt,
+                                ts: Date.now(),
+                            })
+                        );
+                    } catch { }
 
-                            const amount = missingTokensToAmount(missing);
-                            const ok = confirm(
-                                (dict?.buyTokensPage?.insufficientTokens || dict?.common?.insufficientTokens || 'Not enough tokens.') +
-                                    `\n\nRequired: ${j?.tokensNeeded ?? ''}\nMissing: ${missing}\n\nBuy now (${amount} USD) and resume?`
-                            );
-                            if (!ok) throw new Error(j?.error || 'INSUFFICIENT_TOKENS');
+                    const amount = missingTokensToAmount(missing);
+                    const ok = confirm(
+                        (dict?.buyTokensPage?.insufficientTokens || dict?.common?.insufficientTokens || 'Not enough tokens.') +
+                        `\n\nRequired: ${j?.tokensNeeded ?? ''}\nMissing: ${missing}\n\nBuy now (${amount} USD) and resume?`
+                    );
+                    if (!ok) throw new Error(j?.error || 'INSUFFICIENT_TOKENS');
 
-                            const { data: { session } } = await supabase.auth.getSession();
-                            const accessToken = session?.access_token;
-                            if (!accessToken) {
-                                throw new Error('Please sign in again.');
-                            }
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const accessToken = session?.access_token;
+                    if (!accessToken) {
+                        throw new Error('Please sign in again.');
+                    }
 
-                            const returnTo = `/${lang}/debate/${debateId}?resume=1`;
-                            const endpoint = stripeEnabled ? '/api/buy-tokens/checkout' : (nowpaymentsEnabled ? '/api/buy-tokens/nowpayments' : '/api/buy-tokens/checkout');
+                    const returnTo = `/${lang}/debate/${debateId}?resume=1`;
+                    const endpoint = stripeEnabled ? '/api/buy-tokens/checkout' : (nowpaymentsEnabled ? '/api/buy-tokens/nowpayments' : '/api/buy-tokens/checkout');
 
-                            const payRes = await fetch(endpoint, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${accessToken}`,
-                                },
-                                body: JSON.stringify({ amount, lang, returnTo, pendingId }),
-                            });
-                            const payJson = await payRes.json().catch(() => ({} as any));
-                            if (!payRes.ok || !payJson?.url) throw new Error(payJson?.error || 'Checkout failed');
+                    const payRes = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`,
+                        },
+                        body: JSON.stringify({ amount, lang, returnTo, pendingId }),
+                    });
+                    const payJson = await payRes.json().catch(() => ({} as any));
+                    if (!payRes.ok || !payJson?.url) throw new Error(payJson?.error || 'Checkout failed');
 
-                            // Redirect to payment page; on return, resume effect will continue.
-                            window.location.href = payJson.url;
-                            return;
-                        }
+                    // Redirect to payment page; on return, resume effect will continue.
+                    window.location.href = payJson.url;
+                    return;
+                }
 
-            if (!res.ok) {
-                // Stop on failure; previous successful segments remain available.
-                const msg = j?.error || `Failed to generate scene ${i + 1}`;
-                throw new Error(msg);
+                if (!res.ok) {
+                    // Stop on failure; previous successful segments remain available.
+                    const msg = j?.error || `Failed to generate scene ${i + 1}`;
+                    throw new Error(msg);
+                }
+
+                const deducted = Number(j?.tokensDeducted ?? j?.tokensCost ?? j?.tokensDeductedCents ?? 0) || 0;
+                totalDeducted += deducted;
+
+                const url = j?.asset?.public_url ?? null;
+                if (url) urls.push(url);
             }
 
-            const deducted = Number(j?.tokensDeducted ?? j?.tokensCost ?? j?.tokensDeductedCents ?? 0) || 0;
-            totalDeducted += deducted;
+            // Update local balance (best-effort)
+            if (profileInfo) {
+                const newBalance = Math.max(0, Number(profileInfo.token_balance_cents) - totalDeducted);
+                setProfileInfo({ token_balance_cents: newBalance });
+            }
 
-            const url = j?.asset?.public_url ?? null;
-            if (url) urls.push(url);
+            // Player: if long video, store playlist; otherwise keep single url behavior.
+            if (urls.length) {
+                setLastVideoSegments(urls);
+                setLastVideoAssetIds(assetIds);
+                setLastVideoJobId(null);
+                setLastVideoFinalUrl(null);
+                setVideoSegmentIndex(0);
+                setLastVideoAssetUrl(urls[0]);
+            }
+
+            const msg =
+                urls.length > 1
+                    ? (dict?.debate?.longVideoGenSuccess ||
+                        `Long video generated as ${urls.length} scenes. It will play continuously in the player.`)
+                    : (dict?.debate?.videoGenSuccess || 'Video generated successfully.');
+
+            setMessages((prev) => [
+                ...prev,
+                {
+                    id: `video-${Date.now()}`,
+                    role: 'system',
+                    name: 'System',
+                    content: msg,
+                    timestamp: Date.now(),
+                } as any,
+            ]);
+
+            // Clear inputs
+            setInputContent('');
+            setSelectedFile(null);
+            setRecordedAudio(null);
+            setIsVideoModalOpen(false);
+        } catch (e: unknown) {
+            alert((e instanceof Error ? e.message : String(e)) || 'Video generation failed');
+        } finally {
+            setVideoGenerating(false);
         }
-
-        // Update local balance (best-effort)
-        if (profileInfo) {
-            const newBalance = Math.max(0, Number(profileInfo.token_balance_cents) - totalDeducted);
-            setProfileInfo({ token_balance_cents: newBalance });
-        }
-
-        // Player: if long video, store playlist; otherwise keep single url behavior.
-        if (urls.length) {
-            setLastVideoSegments(urls);
-            setLastVideoAssetIds(assetIds);
-            setLastVideoJobId(null);
-            setLastVideoFinalUrl(null);
-            setVideoSegmentIndex(0);
-            setLastVideoAssetUrl(urls[0]);
-        }
-
-        const msg =
-            urls.length > 1
-                ? (dict?.debate?.longVideoGenSuccess ||
-                      `Long video generated as ${urls.length} scenes. It will play continuously in the player.`)
-                : (dict?.debate?.videoGenSuccess || 'Video generated successfully.');
-
-        setMessages((prev) => [
-            ...prev,
-            {
-                id: `video-${Date.now()}`,
-                role: 'system',
-                name: 'System',
-                content: msg,
-                timestamp: Date.now(),
-            } as any,
-        ]);
-
-        // Clear inputs
-        setInputContent('');
-        setSelectedFile(null);
-        setRecordedAudio(null);
-        setIsVideoModalOpen(false);
-    } catch (e: unknown) {
-        alert((e instanceof Error ? e.message : String(e)) || 'Video generation failed');
-    } finally {
-        setVideoGenerating(false);
-    }
-};
+    };
 
     const independentMsgs = messages.filter(m => m.role === 'assistant' && (m.phase === 'independent' || !m.phase));
     const consensusMsgs = messages.filter(m => m.role === 'agreement' || m.phase === 'consensus');
@@ -1242,177 +1242,179 @@ const parseDurationSecFromPrompt = (text: string): number | null => {
                 <main ref={scrollRef} onScroll={handleScroll} className={`flex-1 overflow-y-auto bg-background transition-colors`}>
                     <div className="w-full max-w-5xl mx-auto flex flex-col gap-6 p-4">
                         {lastVideoAssetUrl && (
-    <div className={`rounded-2xl overflow-hidden border border-border bg-card shadow-sm`}>
-        <div className={`px-4 py-2 text-xs font-black uppercase tracking-wider bg-muted text-foreground/80`}>
-            {dict?.debate?.videoPlayerTitle || 'Video Player'}
-        </div>
-        <video
-            src={lastVideoSegments.length ? (lastVideoSegments[videoSegmentIndex] ?? lastVideoAssetUrl) : lastVideoAssetUrl}
-            controls
-            className="w-full h-auto"
-            onEnded={() => {
-                if (!lastVideoSegments.length) return;
-                const next = videoSegmentIndex + 1;
-                if (next < lastVideoSegments.length) {
-                    setVideoSegmentIndex(next);
-                    setLastVideoAssetUrl(lastVideoSegments[next]);
-                }
-            }}
-        />
-        <div className="p-3 flex flex-wrap items-center gap-2">
-            <a
-                href={lastVideoSegments.length ? (lastVideoSegments[videoSegmentIndex] ?? lastVideoAssetUrl) : lastVideoAssetUrl}
-                download
-                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border border-border bg-background hover:bg-muted transition-all active:scale-95"
-            >
-                <FileText className="w-4 h-4" />
-                {dict?.debate?.downloadVideo || 'Download Video'}
-            </a>
+                            <div className={`rounded-2xl overflow-hidden border border-border bg-card shadow-sm`}>
+                                <div className={`px-4 py-2 text-xs font-black uppercase tracking-wider bg-muted text-foreground/80`}>
+                                    {dict?.debate?.videoPlayerTitle || 'Video Player'}
+                                </div>
+                                <video
+                                    src={lastVideoSegments.length ? (lastVideoSegments[videoSegmentIndex] ?? lastVideoAssetUrl) : lastVideoAssetUrl}
+                                    controls
+                                    className="w-full h-auto"
+                                    onEnded={() => {
+                                        if (!lastVideoSegments.length) return;
+                                        const next = videoSegmentIndex + 1;
+                                        if (next < lastVideoSegments.length) {
+                                            setVideoSegmentIndex(next);
+                                            setLastVideoAssetUrl(lastVideoSegments[next]);
+                                        }
+                                    }}
+                                />
+                                <div className="p-3 flex flex-wrap items-center gap-2">
+                                    <a
+                                        href={lastVideoSegments.length ? (lastVideoSegments[videoSegmentIndex] ?? lastVideoAssetUrl) : lastVideoAssetUrl}
+                                        download
+                                        className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border border-border bg-background hover:bg-muted transition-all active:scale-95"
+                                    >
+                                        <FileText className="w-4 h-4" />
+                                        {dict?.debate?.downloadVideo || 'Download Video'}
+                                    </a>
 
-            {lastVideoFinalUrl && (
-                <a
-                    href={lastVideoFinalUrl}
-                    download
-                    className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border border-border bg-background hover:bg-muted transition-all active:scale-95"
-                >
-                    <FileText className="w-4 h-4" />
-                    {dict?.debate?.downloadFinalVideo || 'Download Final MP4'}
-                </a>
-            )}
+                                    {lastVideoFinalUrl && (
+                                        <a
+                                            href={lastVideoFinalUrl}
+                                            download
+                                            className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border border-border bg-background hover:bg-muted transition-all active:scale-95"
+                                        >
+                                            <FileText className="w-4 h-4" />
+                                            {dict?.debate?.downloadFinalVideo || 'Download Final MP4'}
+                                        </a>
+                                    )}
 
 
-            {lastVideoSegments.length > 1 && (
-                <button
-                    type="button"
-                    onClick={async () => {
-                        // Download all scenes sequentially (no FFmpeg merge).
-                        for (let i = 0; i < lastVideoSegments.length; i++) {
-                            const url = lastVideoSegments[i];
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `video_scene_${i + 1}.mp4`;
-                            document.body.appendChild(a);
-                            a.click();
-                            a.remove();
-                            // slight delay to avoid browser blocking multiple downloads
-                            await new Promise((r) => setTimeout(r, 400));
-                        }
-                    }}
-                    className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border border-border bg-background hover:bg-muted transition-all active:scale-95"
-                >
-                    <Video className="w-4 h-4" />
-                    {dict?.debate?.downloadAllScenes || 'Download All Scenes'}
-                </button>
+                                    {lastVideoSegments.length > 1 && (
+                                        <>
+                                            <button
+                                                type="button"
+                                                onClick={async () => {
+                                                    // Download all scenes sequentially (no FFmpeg merge).
+                                                    for (let i = 0; i < lastVideoSegments.length; i++) {
+                                                        const url = lastVideoSegments[i];
+                                                        const a = document.createElement('a');
+                                                        a.href = url;
+                                                        a.download = `video_scene_${i + 1}.mp4`;
+                                                        document.body.appendChild(a);
+                                                        a.click();
+                                                        a.remove();
+                                                        // slight delay to avoid browser blocking multiple downloads
+                                                        await new Promise((r) => setTimeout(r, 400));
+                                                    }
+                                                }}
+                                                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border border-border bg-background hover:bg-muted transition-all active:scale-95"
+                                            >
+                                                <Video className="w-4 h-4" />
+                                                {dict?.debate?.downloadAllScenes || 'Download All Scenes'}
+                                            </button>
 
-                <button
-                    type="button"
-                    disabled={videoComposing}
-                    onClick={async () => {
-                        if (!lastVideoAssetIds.length) {
-                            alert('Missing asset ids for composition.');
-                            return;
-                        }
-                        try {
-                            setVideoComposing(true);
-                            setLastVideoFinalUrl(null);
-                            setLastVideoJobId(null);
+                                            <button
+                                                type="button"
+                                                disabled={videoComposing}
+                                                onClick={async () => {
+                                                    if (!lastVideoAssetIds.length) {
+                                                        alert('Missing asset ids for composition.');
+                                                        return;
+                                                    }
+                                                    try {
+                                                        setVideoComposing(true);
+                                                        setLastVideoFinalUrl(null);
+                                                        setLastVideoJobId(null);
 
-                            const res = await fetch('/api/media/video/compose', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    debateId,
-                                    assetIds: lastVideoAssetIds,
-                                    durationSec: (Array.isArray(lastVideoAssetIds) ? lastVideoAssetIds.length : 1) * 600,
-                                }),
-                            });
-                            const j = await res.json().catch(() => ({} as any));
+                                                        const res = await fetch('/api/media/video/compose', {
+                                                            method: 'POST',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify({
+                                                                debateId,
+                                                                assetIds: lastVideoAssetIds,
+                                                                durationSec: (Array.isArray(lastVideoAssetIds) ? lastVideoAssetIds.length : 1) * 600,
+                                                            }),
+                                                        });
+                                                        const j = await res.json().catch(() => ({} as any));
 
-                            if (res.status === 402 && (j?.error === 'INSUFFICIENT_TOKENS' || j?.error === 'INSUFFICIENT')) {
-                                const missing = Number(j?.missingTokens ?? 0) || 0;
-                                const pendingId = String(j?.pendingId ?? '');
-                                const expiresAt2 = j?.expiresAt ?? null;
+                                                        if (res.status === 402 && (j?.error === 'INSUFFICIENT_TOKENS' || j?.error === 'INSUFFICIENT')) {
+                                                            const missing = Number(j?.missingTokens ?? 0) || 0;
+                                                            const pendingId = String(j?.pendingId ?? '');
+                                                            const expiresAt2 = j?.expiresAt ?? null;
 
-                                try {
-                                    localStorage.setItem(
-                                        'pending_compose_resume_v1',
-                                        JSON.stringify({
-                                            v: 1,
-                                            debateId,
-                                            assetIds: lastVideoAssetIds,
-                                            durationSec: (Array.isArray(lastVideoAssetIds) ? lastVideoAssetIds.length : 1) * 600,
-                                            pendingId,
-                                            expiresAt: expiresAt2,
-                                            ts: Date.now(),
-                                        })
-                                    );
-                                } catch {}
+                                                            try {
+                                                                localStorage.setItem(
+                                                                    'pending_compose_resume_v1',
+                                                                    JSON.stringify({
+                                                                        v: 1,
+                                                                        debateId,
+                                                                        assetIds: lastVideoAssetIds,
+                                                                        durationSec: (Array.isArray(lastVideoAssetIds) ? lastVideoAssetIds.length : 1) * 600,
+                                                                        pendingId,
+                                                                        expiresAt: expiresAt2,
+                                                                        ts: Date.now(),
+                                                                    })
+                                                                );
+                                                            } catch { }
 
-                                const amount = missingTokensToAmount(missing);
-                                const ok = confirm(
-                                    (dict?.buy?.insufficient_tokens_prompt ?? 'Insufficient tokens. Buy now?') +
-                                        `
+                                                            const amount = missingTokensToAmount(missing);
+                                                            const ok = confirm(
+                                                                (dict?.buy?.insufficient_tokens_prompt ?? 'Insufficient tokens. Buy now?') +
+                                                                `
 
 Missing: ${missing} tokens
 Suggested amount: $${amount}`
-                                );
-                                if (ok) {
-                                    await startTokenPurchase(amount, { returnTo: `/${lang}/debate/${debateId}`, pendingId });
-                                }
-                                return;
-                            }
+                                                            );
+                                                            if (ok) {
+                                                                await startTokenPurchase(amount, { returnTo: `/${lang}/debate/${debateId}`, pendingId });
+                                                            }
+                                                            return;
+                                                        }
 
-                            if (!res.ok) throw new Error(j?.error || 'Compose failed');
+                                                        if (!res.ok) throw new Error(j?.error || 'Compose failed');
 
-                            const jobId = String(j?.jobId ?? '');
-                            setLastVideoJobId(jobId);
+                                                        const jobId = String(j?.jobId ?? '');
+                                                        setLastVideoJobId(jobId);
 
-                            // Poll status
-                            const started = Date.now();
-                            while (Date.now() - started < 10 * 60 * 1000) {
-                                await new Promise((r) => setTimeout(r, 2000));
-                                const sres = await fetch(`/api/media/video/compose/status?jobId=${encodeURIComponent(jobId)}`);
-                                const sj = await sres.json().catch(() => ({} as any));
-                                if (!sres.ok) throw new Error(sj?.error || 'Status failed');
-                                if (sj?.status === 'done' && sj?.downloadUrl) {
-                                    setLastVideoFinalUrl(String(sj.downloadUrl));
-                                    break;
-                                }
-                                if (sj?.status === 'failed') {
-                                    throw new Error(sj?.error || 'Composition failed');
-                                }
-                            }
-                        } catch (e: any) {
-                            alert(e?.message || 'Composition failed');
-                        } finally {
-                            setVideoComposing(false);
-                        }
-                    }}
-                    className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border border-border bg-background hover:bg-muted transition-all active:scale-95 disabled:opacity-60"
-                >
-                    <Zap className="w-4 h-4" />
-                    {videoComposing ? (dict?.debate?.composing || 'Composing...') : (dict?.debate?.composeFinal || 'Compose Final')}
-                </button>
-            )}
+                                                        // Poll status
+                                                        const started = Date.now();
+                                                        while (Date.now() - started < 10 * 60 * 1000) {
+                                                            await new Promise((r) => setTimeout(r, 2000));
+                                                            const sres = await fetch(`/api/media/video/compose/status?jobId=${encodeURIComponent(jobId)}`);
+                                                            const sj = await sres.json().catch(() => ({} as any));
+                                                            if (!sres.ok) throw new Error(sj?.error || 'Status failed');
+                                                            if (sj?.status === 'done' && sj?.downloadUrl) {
+                                                                setLastVideoFinalUrl(String(sj.downloadUrl));
+                                                                break;
+                                                            }
+                                                            if (sj?.status === 'failed') {
+                                                                throw new Error(sj?.error || 'Composition failed');
+                                                            }
+                                                        }
+                                                    } catch (e: any) {
+                                                        alert(e?.message || 'Composition failed');
+                                                    } finally {
+                                                        setVideoComposing(false);
+                                                    }
+                                                }}
+                                                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border border-border bg-background hover:bg-muted transition-all active:scale-95 disabled:opacity-60"
+                                            >
+                                                <Zap className="w-4 h-4" />
+                                                {videoComposing ? (dict?.debate?.composing || 'Composing...') : (dict?.debate?.composeFinal || 'Compose Final')}
+                                            </button>
+                                        </>
+                                    )}
 
-            <a
-                href={lastVideoAssetUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border border-border bg-background hover:bg-muted transition-all active:scale-95"
-            >
-                <Video className="w-4 h-4" />
-                {dict?.debate?.openVideo || 'Open'}
-            </a>
+                                    <a
+                                        href={lastVideoAssetUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border border-border bg-background hover:bg-muted transition-all active:scale-95"
+                                    >
+                                        <Video className="w-4 h-4" />
+                                        {dict?.debate?.openVideo || 'Open'}
+                                    </a>
 
-            {lastVideoSegments.length > 1 && (
-                <div className="ml-auto text-xs font-black uppercase tracking-wider text-foreground/70">
-                    {dict?.debate?.sceneLabel || 'Scene'} {videoSegmentIndex + 1}/{lastVideoSegments.length}
-                </div>
-            )}
-        </div>
-    </div>
-)}
+                                    {lastVideoSegments.length > 1 && (
+                                        <div className="ml-auto text-xs font-black uppercase tracking-wider text-foreground/70">
+                                            {dict?.debate?.sceneLabel || 'Scene'} {videoSegmentIndex + 1}/{lastVideoSegments.length}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
                         {lastImageAssetUrl && (
                             <div className={`rounded-2xl overflow-hidden border border-border bg-card shadow-sm`}>
@@ -1656,7 +1658,7 @@ Suggested amount: $${amount}`
             </div >
 
 
-            
+
             {/* Image fullscreen preview modal */}
             {isImageFullscreenOpen && lastImageAssetUrl && (
                 <div className="fixed inset-0 z-[90] bg-black/90 flex items-center justify-center p-4">
@@ -1690,7 +1692,7 @@ Suggested amount: $${amount}`
                     </div>
                 </div>
             )}
-{/* Phase 14: Image generation modal */}
+            {/* Phase 14: Image generation modal */}
             {
                 isImageModalOpen && (
                     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/60 p-4">

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { Mail, CheckCircle } from 'lucide-react';
 import ReplyModal from '@/components/admin/ReplyModal';
-import { getDictionary } from '@/i18n/getDictionary';
+import { getDictionary } from '@/i18n/get-dictionary';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,9 +41,8 @@ export default async function AdminMessagesPage(props: { params: Promise<{ lang:
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-2 h-2 rounded-full ${
-                        msg.status === 'replied' ? 'bg-emerald-500' : 'bg-blue-500'
-                      }`}
+                      className={`w-2 h-2 rounded-full ${msg.status === 'replied' ? 'bg-emerald-500' : 'bg-blue-500'
+                        }`}
                     />
                     <div>
                       <div className="font-semibold text-foreground">{msg.name}</div>

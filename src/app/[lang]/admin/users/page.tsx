@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import CreateStaffModal from './CreateStaffModal';
 import UserListActions from './UserListActions';
-import { getDictionary } from '@/i18n/getDictionary';
+import { getDictionary } from '@/i18n/get-dictionary';
 
 export const dynamic = 'force-dynamic';
 
@@ -70,11 +70,10 @@ export default async function AdminUsersPage(props: {
                 </td>
                 <td className="p-4 text-muted-foreground">
                   <span
-                    className={`px-2 py-0.5 rounded text-xs border ${
-                      user.role === 'admin' || user.role === 'super_admin'
+                    className={`px-2 py-0.5 rounded text-xs border ${user.role === 'admin' || user.role === 'super_admin'
                         ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
                         : 'bg-muted/40 text-muted-foreground border-border'
-                    }`}
+                      }`}
                   >
                     {user.role}
                   </span>

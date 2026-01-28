@@ -326,7 +326,7 @@ common: {
       replyFailed: "Failed to send reply",
       cancel: "Cancel",
       send: "Send"
-    },,
+    },
   buyTokensPage: {
     backToConsole: "Back to Console",
     title: "Buy Tokens",
