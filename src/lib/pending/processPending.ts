@@ -21,7 +21,7 @@ function getAdmin(): AdminClient {
 }
 
 async function getLatestPending(admin: AdminClient, userId: string): Promise<PendingRow | null> {
-  const { data, error } = await admin.rpc('get_latest_pending', { p_user_id: userId });
+  const { data, error } = await admin.rpc('get_latest_pending', { p_user_id: userId } as any);
   if (error) return null;
   // Supabase RPC can return an array or a single object depending on function; handle both.
   const row = Array.isArray(data) ? (data[0] as any) : (data as any);
