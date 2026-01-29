@@ -44,7 +44,7 @@ async function reserveTokens(admin: AdminClient, userId: string, tokens: number,
     p_tokens: tokens,
     p_reason: reason,
     p_meta: meta ?? {},
-  });
+  } as any);
   if (error) return { ok: false, error: error.message };
   if (!ok) return { ok: false, error: 'INSUFFICIENT_TOKENS' };
   return { ok: true };
