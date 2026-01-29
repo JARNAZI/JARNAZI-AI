@@ -18,7 +18,7 @@ export function DebateMenu() {
     const supabase = useMemo(() => createClient(), []);
 
     const lang = (pathname?.split('/')[1] || 'en') as LanguageCode;
-    const { dict } = useDictionary(lang);
+    const dict = useDictionary(lang);
     const t = dict?.debateMenu || {};
 
     useEffect(() => {

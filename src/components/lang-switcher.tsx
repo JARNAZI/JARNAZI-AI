@@ -7,7 +7,7 @@ export default function LangSwitcher() {
     const pathname = usePathname()
     const router = useRouter()
 
-    const currentLang = pathname.split('/')[1] || 'en'
+    const currentLang = pathname ? (pathname.split('/')[1] || 'en') : 'en'
 
     const handleSwitch = (newLang: string) => {
         if (!pathname) return
@@ -19,7 +19,7 @@ export default function LangSwitcher() {
         }
         segments[1] = newLang
         const newPath = segments.join('/')
-        try { document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=${60*60*24*365}` } catch {}
+        try { document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=${60 * 60 * 24 * 365}` } catch { }
         router.push(newPath)
     }
 

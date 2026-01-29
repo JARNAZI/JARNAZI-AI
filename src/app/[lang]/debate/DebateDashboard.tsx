@@ -66,7 +66,7 @@ export default function DebateDashboard({ params: propsParams, dict }: { params:
 
     const handleLangToggle = (targetLang: string) => {
         if (targetLang === lang) return;
-        const newPathname = pathname.replace(`/${lang}`, `/${targetLang}`);
+        const newPathname = pathname ? pathname.replace(`/${lang}`, `/${targetLang}`) : `/${targetLang}`;
         try { document.cookie = `NEXT_LOCALE=${targetLang}; path=/; max-age=${60 * 60 * 24 * 365}` } catch { }
         router.push(newPathname);
         toast.info(dict.notifications?.langSwitched?.replace('{lang}', targetLang === 'en' ? 'English' : 'Arabic') || `Language switched to ${targetLang === 'en' ? 'English' : 'Arabic'}`);
