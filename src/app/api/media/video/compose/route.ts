@@ -341,7 +341,7 @@ export async function POST(req: Request) {
       if (reservedTokens > 0) {
         await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: reservedTokens, p_reason: 'video_compose_failed', p_meta: { jobId } } as any);
       }
-      await admin.from('video_jobs').update({ status: 'failed', refunded: reservedTokens > 0, error: 'Missing CLOUD_RUN_COMPOSER_URL/SECRET' } as any).eq('id', jobId);
+      await (admin.from('video_jobs') as any).update({ status: 'failed', refunded: reservedTokens > 0, error: 'Missing CLOUD_RUN_COMPOSER_URL/SECRET' }).eq('id', jobId);
       return NextResponse.json({ error: 'Composer service is not configured' }, { status: 500 });
     }
 
@@ -360,7 +360,7 @@ export async function POST(req: Request) {
       if (reservedTokens > 0) {
         await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: reservedTokens, p_reason: 'video_compose_failed', p_meta: { jobId, stage: 'dispatch' } } as any);
       }
-      await admin.from('video_jobs').update({ status: 'failed', refunded: reservedTokens > 0, error: `Composer dispatch failed: ${dispatch.status} ${t}` } as any).eq('id', jobId);
+      await (admin.from('video_jobs') as any).update({ status: 'failed', refunded: reservedTokens > 0, error: `Composer dispatch failed: ${dispatch.status} ${t}` }).eq('id', jobId);
       return NextResponse.json({ error: 'Composer dispatch failed' }, { status: 500 });
     }
 
