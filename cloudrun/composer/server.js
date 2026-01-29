@@ -16,20 +16,35 @@ const SECRET = process.env.CLOUD_RUN_COMPOSER_SECRET;
 
 console.log("Starting advanced composer service...");
 console.log("PORT:", process.env.PORT);
+console.log("Environment Check:");
+console.log("- SUPABASE_URL:", process.env.SUPABASE_URL ? `Present (${process.env.SUPABASE_URL.substring(0, 10)}...)` : "MISSING");
+console.log("- SUPABASE_SERVICE_ROLE_KEY:", process.env.SUPABASE_SERVICE_ROLE_KEY ? "Present (Hidden)" : "MISSING");
+console.log("- CLOUD_RUN_COMPOSER_SECRET:", process.env.CLOUD_RUN_COMPOSER_SECRET ? "Present (Hidden)" : "MISSING");
 
 let supabase = null;
 if (!SUPABASE_URL || !SERVICE_ROLE) {
   console.error("CRITICAL: Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.");
+  console.error("The service will start but /compose will fail.");
 } else {
   try {
     supabase = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
-    console.log("Supabase client initialized.");
+    console.log("Supabase client initialized successfully.");
   } catch (err) {
     console.error("FATAL: Failed to initialize Supabase client:", err.message);
   }
 }
 
-app.get("/health", (_req, res) => res.json({ ok: true, timestamp: new Date().toISOString() }));
+app.get("/health", (_req, res) => {
+  res.json({
+    ok: true,
+    timestamp: new Date().toISOString(),
+    config: {
+      hasUrl: !!SUPABASE_URL,
+      hasKey: !!SERVICE_ROLE,
+      hasSecret: !!SECRET
+    }
+  });
+});
 
 /**
  * Run a command and return stdout/stderr
