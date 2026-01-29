@@ -1,30 +1,43 @@
-# Use an official Node.js runtime as a parent image
-FROM node:22-slim
+FROM node:22-slim AS base
 
-# Set the working directory
+# 1. Install dependencies only when needed
+FROM base AS deps
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
-
-# Install dependencies
+# Install dependencies based on the preferred package manager
+COPY package.json package-lock.json* ./
 RUN npm ci
 
-# Copy the rest of the application code
+# 2. Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build the Next.js application
+# Build the app
 RUN npm run build
 
-# Remove development dependencies
-RUN npm prune --production
+# 3. Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
 
-# Expose the port the app runs on (Cloud Run uses PORT env)
+ENV NODE_ENV=production
+# Cloud Run sets PORT, but we set a default
+ENV PORT=8080
+ENV HOSTNAME="0.0.0.0"
+
+# You only need to copy next.config.ts if you are NOT using "output: standalone"
+# But we are using standalone, so we copy the standalone output.
+
+COPY --from=builder /app/public ./public
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Expose the port
 EXPOSE 8080
 
-# Don't hardcode PORT=3000. Cloud Run injects PORT (usually 8080).
-ENV PORT=8080
-ENV HOSTNAME=0.0.0.0
-
-# Start the application (force Next to listen on PORT)
-CMD ["sh", "-c", "npm start -- -p $PORT -H 0.0.0.0"]
+# Run the standalone server
+CMD ["node", "server.js"]
