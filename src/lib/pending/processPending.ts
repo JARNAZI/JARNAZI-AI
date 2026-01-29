@@ -107,7 +107,7 @@ async function runVideoComposeFromPending(admin: AdminClient, userId: string, pe
     tokens_reserved: pending.required_tokens > 0 ? pending.required_tokens : 0,
     refunded: false,
     expires_at: expiresAt,
-  });
+  } as any);
   if (jErr) return { ok: false, error: jErr.message };
 
   const composerUrl = process.env.CLOUD_RUN_COMPOSER_URL;
