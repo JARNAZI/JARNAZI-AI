@@ -114,7 +114,7 @@ async function runVideoComposeFromPending(admin: AdminClient, userId: string, pe
   const composerSecret = process.env.CLOUD_RUN_COMPOSER_SECRET;
   if (!composerUrl || !composerSecret) {
     // mark job failed
-    await admin.from('video_jobs').update({ status: 'failed', error: 'Missing CLOUD_RUN_COMPOSER_URL/SECRET' }).eq('id', jobId);
+    await admin.from('video_jobs').update({ status: 'failed', error: 'Missing CLOUD_RUN_COMPOSER_URL/SECRET' } as any).eq('id', jobId);
     return { ok: false, error: 'Composer not configured' };
   }
 
@@ -129,12 +129,12 @@ async function runVideoComposeFromPending(admin: AdminClient, userId: string, pe
 
   if (!dispatch.ok) {
     const t = await dispatch.text().catch(() => '');
-    await admin.from('video_jobs').update({ status: 'failed', error: `Composer dispatch failed: ${dispatch.status} ${t}` }).eq('id', jobId);
+    await admin.from('video_jobs').update({ status: 'failed', error: `Composer dispatch failed: ${dispatch.status} ${t}` } as any).eq('id', jobId);
     return { ok: false, error: 'Composer dispatch failed' };
   }
 
   // Mark pending as done (job created)
-  await admin.from('pending_requests').update({ status: 'done', last_error: `job:${jobId}` }).eq('id', pending.id);
+  await admin.from('pending_requests').update({ status: 'done', last_error: `job:${jobId}` } as any).eq('id', pending.id);
 
   return { ok: true, jobId, outputPath };
 }
@@ -151,7 +151,7 @@ export async function processPendingForUser(userId: string) {
   // Avoid running expired items
   const exp = Date.parse(pending.expires_at);
   if (Number.isFinite(exp) && exp <= Date.now()) {
-    await admin.from('pending_requests').update({ status: 'expired' }).eq('id', pending.id);
+    await admin.from('pending_requests').update({ status: 'expired' } as any).eq('id', pending.id);
     return { ok: true, resumed: false, expired: true };
   }
 
