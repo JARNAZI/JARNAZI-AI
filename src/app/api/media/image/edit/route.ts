@@ -78,7 +78,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Insufficient tokens', tokensNeeded }, { status: 402 });
 
     // Reserve tokens atomically
-    const { error: reserveErr } = await admin.rpc('reserve_tokens', { p_user_id: user.id, p_tokens: tokensNeeded });
+    const { error: reserveErr } = await admin.rpc('reserve_tokens', { p_user_id: user.id, p_tokens: tokensNeeded } as any);
     if (reserveErr) {
       const msg = reserveErr.message || 'INSUFFICIENT_TOKENS';
       const status = msg.includes('INSUFFICIENT') ? 402 : 500;
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
     });
 
     if (fnError) {
-      await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: tokensNeeded });
+      await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: tokensNeeded } as any);
       return NextResponse.json({ error: 'Image editing failed', details: fnError.message }, { status: 502 });
     }
 
@@ -116,7 +116,7 @@ export async function POST(req: Request) {
         storage_path: (fnData as any)?.storage_path || null,
         public_url: (fnData as any)?.public_url || (fnData as any)?.url || null,
         cost_cents: tokensNeeded,
-      })
+      } as any)
       .select('*')
       .single();
 

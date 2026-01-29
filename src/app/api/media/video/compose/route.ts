@@ -92,7 +92,7 @@ async function bestEffortSaveCanonToDb(admin: any, jobId: string, canon: CanonIn
           name: String(loc.name),
           description: String(loc.description ?? ''),
           attributes: loc.attributes ?? {},
-        })
+        } as any)
         .select('id')
         .maybeSingle();
       if (error) return null;
@@ -109,7 +109,7 @@ async function bestEffortSaveCanonToDb(admin: any, jobId: string, canon: CanonIn
         name: 'Style',
         description: '',
         attributes: canon.style ?? {},
-      });
+      } as any);
     }
 
     // Insert extra locations
@@ -140,7 +140,7 @@ async function bestEffortSaveCanonToDb(admin: any, jobId: string, canon: CanonIn
               home_location_name: ch.home?.name ?? null,
               work_location_name: ch.work?.name ?? null,
             },
-          })
+          } as any)
           .select('id')
           .maybeSingle();
 
@@ -154,7 +154,7 @@ async function bestEffortSaveCanonToDb(admin: any, jobId: string, canon: CanonIn
             from_entity_id: chId,
             to_entity_id: homeId,
             link_type: 'home',
-          });
+          } as any);
         }
         if (workId) {
           await admin.from('story_entity_links').insert({
@@ -162,7 +162,7 @@ async function bestEffortSaveCanonToDb(admin: any, jobId: string, canon: CanonIn
             from_entity_id: chId,
             to_entity_id: workId,
             link_type: 'work',
-          });
+          } as any);
         }
       }
     }
@@ -229,10 +229,10 @@ export async function POST(req: Request) {
             p_required_tokens: requiredTokens,
             p_missing_tokens: missingTokens,
             p_ttl_minutes: 10,
-          });
+          } as any);
 
           if (!pendErr && pendingId) {
-            const { data: latest } = await admin.rpc('get_latest_pending', { p_user_id: user.id });
+            const { data: latest } = await admin.rpc('get_latest_pending', { p_user_id: user.id } as any);
             const expiresAt = Array.isArray(latest) && latest.length ? (latest[0] as any).expires_at : null;
 
             return NextResponse.json(
@@ -263,7 +263,7 @@ export async function POST(req: Request) {
         p_tokens: requiredTokens,
         p_reason: 'video_compose',
         p_meta: { debateId, assetCount: assetIds.length },
-      });
+      } as any);
 
       if (rErr) return NextResponse.json({ error: rErr.message }, { status: 500 });
       if (!ok) return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', tokensNeeded: requiredTokens, tokenBalance }, { status: 402 });
@@ -315,7 +315,7 @@ export async function POST(req: Request) {
       tokens_reserved: reservedTokens,
       refunded: false,
       expires_at: expiresAt,
-    });
+    } as any);
 
     if (jErr) return NextResponse.json({ error: jErr.message }, { status: 500 });
 
@@ -339,9 +339,9 @@ export async function POST(req: Request) {
     if (!composerUrl || !composerSecret) {
       // refund reserved tokens (if any)
       if (reservedTokens > 0) {
-        await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: reservedTokens, p_reason: 'video_compose_failed', p_meta: { jobId } });
+        await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: reservedTokens, p_reason: 'video_compose_failed', p_meta: { jobId } } as any);
       }
-      await admin.from('video_jobs').update({ status: 'failed', refunded: reservedTokens > 0, error: 'Missing CLOUD_RUN_COMPOSER_URL/SECRET' }).eq('id', jobId);
+      await admin.from('video_jobs').update({ status: 'failed', refunded: reservedTokens > 0, error: 'Missing CLOUD_RUN_COMPOSER_URL/SECRET' } as any).eq('id', jobId);
       return NextResponse.json({ error: 'Composer service is not configured' }, { status: 500 });
     }
 
@@ -358,9 +358,9 @@ export async function POST(req: Request) {
     if (!dispatch.ok) {
       const t = await dispatch.text().catch(() => '');
       if (reservedTokens > 0) {
-        await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: reservedTokens, p_reason: 'video_compose_failed', p_meta: { jobId, stage: 'dispatch' } });
+        await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: reservedTokens, p_reason: 'video_compose_failed', p_meta: { jobId, stage: 'dispatch' } } as any);
       }
-      await admin.from('video_jobs').update({ status: 'failed', refunded: reservedTokens > 0, error: `Composer dispatch failed: ${dispatch.status} ${t}` }).eq('id', jobId);
+      await admin.from('video_jobs').update({ status: 'failed', refunded: reservedTokens > 0, error: `Composer dispatch failed: ${dispatch.status} ${t}` } as any).eq('id', jobId);
       return NextResponse.json({ error: 'Composer dispatch failed' }, { status: 500 });
     }
 

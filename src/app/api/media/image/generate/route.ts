@@ -92,7 +92,7 @@ export async function POST(req: Request) {
     }
 
     // 3) Reserve tokens atomically (prevents double-charge in races)
-    const { error: reserveErr } = await admin.rpc('reserve_tokens', { p_user_id: user.id, p_tokens: tokensNeeded });
+    const { error: reserveErr } = await admin.rpc('reserve_tokens', { p_user_id: user.id, p_tokens: tokensNeeded } as any);
     if (reserveErr) {
       const msg = reserveErr.message || 'INSUFFICIENT_TOKENS';
       const status = msg.includes('INSUFFICIENT') ? 402 : 500;
@@ -120,7 +120,7 @@ export async function POST(req: Request) {
 
     if (fnErr) {
       // 5) Refund tokens on failure (best-effort)
-      await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: tokensNeeded });
+      await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: tokensNeeded } as any);
       return NextResponse.json({ error: fnErr.message || 'Generation failed' }, { status: 500 });
     }
 
@@ -140,7 +140,7 @@ export async function POST(req: Request) {
         storage_path,
         public_url,
         cost_cents: tokensNeeded,
-      })
+      } as any)
       .select('*')
       .single();
 

@@ -127,7 +127,7 @@ export async function POST(req: Request) {
     }
 
     // Token cost (video): uses admin AI Costs (real cost) with 75% cost / 25% profit.
-// Fallbacks: site_settings.video_base_tokens (fixed) -> heuristic estimate.
+    // Fallbacks: site_settings.video_base_tokens (fixed) -> heuristic estimate.
     const perVideoBase = Number((await getSetting('video_base_tokens', null)) ?? 0);
 
     let tokensNeeded: number | null = null;
@@ -155,10 +155,10 @@ export async function POST(req: Request) {
           p_required_tokens: requiredTokens,
           p_missing_tokens: missingTokens,
           p_ttl_minutes: 10,
-        });
+        } as any);
 
         if (!pendErr && pendingId) {
-          const { data: latest } = await admin.rpc('get_latest_pending', { p_user_id: user.id });
+          const { data: latest } = await admin.rpc('get_latest_pending', { p_user_id: user.id } as any);
           const expiresAt = Array.isArray(latest) && latest.length ? (latest[0] as any).expires_at : null;
 
           return NextResponse.json(
@@ -186,7 +186,7 @@ export async function POST(req: Request) {
 
 
     // 3) Reserve tokens atomically
-    const { error: reserveErr } = await admin.rpc('reserve_tokens', { p_user_id: user.id, p_tokens: tokensNeeded });
+    const { error: reserveErr } = await admin.rpc('reserve_tokens', { p_user_id: user.id, p_tokens: tokensNeeded } as any);
     if (reserveErr) {
       const msg = reserveErr.message || 'INSUFFICIENT_TOKENS';
       const status = msg.includes('INSUFFICIENT') ? 402 : 500;
@@ -210,7 +210,7 @@ export async function POST(req: Request) {
     });
 
     if (fnErr) {
-      await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: tokensNeeded });
+      await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: tokensNeeded } as any);
       return NextResponse.json({ error: fnErr.message || 'Generation failed' }, { status: 500 });
     }
 
@@ -230,7 +230,7 @@ export async function POST(req: Request) {
         public_url,
         cost_cents: tokensNeeded,
         meta: { durationSec },
-      })
+      } as any)
       .select('*')
       .single();
 
