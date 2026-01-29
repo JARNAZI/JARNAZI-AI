@@ -1,4 +1,4 @@
-﻿import { SITE_NAME } from '../config';
+import { SITE_NAME } from '../config';
 const it = {
   common: {
     siteName: SITE_NAME,
@@ -9,7 +9,7 @@ const it = {
     settings: "Impostazioni",
     profile: "Profilo",
     loading: "Caricamento...",
-    error: "Si Ã¨ verificato un errore",
+    error: "Si è verificato un errore",
     save: "Salva",
     cancel: "Annulla",
     delete: "Elimina",
@@ -17,7 +17,7 @@ const it = {
   },
   home: {
     heroTitle: "Dibattito. Accordo. Creazione.",
-    heroSubtitle: "Chiedi una volta. PiÃ¹ IA rispondono in modo indipendente, si revisionano a vicenda, poi OpenAI guida un consenso finale â€” pronto per immagini, video, audio o codice.",
+    heroSubtitle: "Chiedi una volta. Più IA rispondono in modo indipendente, si revisionano a vicenda, poi OpenAI guida un consenso finale — pronto per immagini, video, audio o codice.",
     startDebate: "Inizia Dibattito",
     howItWorks: "Come funziona"
   },
@@ -51,15 +51,15 @@ const it = {
     contactUs: "Contattaci",
     sessionHistory: "Cronologia Sessioni",
     language: "Lingua",
-    darkMode: "ModalitÃ  Scura",
-    lightMode: "ModalitÃ  Chiara",
+    darkMode: "Modalità Scura",
+    lightMode: "Modalità Chiara",
     deleteAccount: "Elimina Account"
   },
   notifications: {
-    welcome: "Benvenuto nel Consenso Jarnazi. Il Consiglio Ã¨ pronto."
+    welcome: "Benvenuto nel Consenso Jarnazi. Il Consiglio è pronto."
   },
   nav: {
-    features: "FunzionalitÃ ",
+    features: "Funzionalità",
     pricing: "Prezzi",
     contact: "Contattaci"
   },
@@ -73,11 +73,11 @@ const it = {
   },
   features: {
     title1: "Dibattito multi-agente",
-    desc1: "PerchÃ© affidarsi a un solo modello? Ottieni prospettive indipendenti da piÃ¹ IA, con revisione incrociata per ridurre le allucinazioni.",
-    title2: "Consenso â†’ Creazione",
-    desc2: "Trasforma lâ€™accordo finale in un unico piano e prompt di alta qualitÃ  per generare immagini, video, audio o codice.",
+    desc1: "Perché affidarsi a un solo modello? Ottieni prospettive indipendenti da più IA, con revisione incrociata per ridurre le allucinazioni.",
+    title2: "Consenso → Creazione",
+    desc2: "Trasforma l’accordo finale in un unico piano e prompt di alta qualità per generare immagini, video, audio o codice.",
     title3: "Video lunghi",
-    desc3: "Genera video lunghiâ€”film, serie o programmi TVâ€”divisi in scene e composti in un unico MP4 scaricabile."
+    desc3: "Genera video lunghi—film, serie o programmi TV—divisi in scene e composti in un unico MP4 scaricabile."
   },
   footer: {
     privacy: "Informativa sulla Privacy",
@@ -97,13 +97,13 @@ const it = {
   howItWorks: {
     title: "Come funziona",
     step1Title: "Dibattito multi-agente",
-    step1Desc: "Coinvolgi più modelli di IA in una deliberazione strutturata per ottenere i risultati più accurati e creativi.",
+    step1Desc: "Coinvolgi pi� modelli di IA in una deliberazione strutturata per ottenere i risultati pi� accurati e creativi.",
     step2Title: "Costruzione del consenso",
     step2Desc: "Il livello di orchestrazione avanzato sintetizza gli output di modelli indipendenti in un consenso unificato.",
     step3Title: "Generazione di risorse",
     step3Desc: "Genera immagini, video e audio professionali basati sul consenso deliberato.",
     step4Title: "Video in formato lungo (Film e Serie)",
-    step4Desc: "Genera video lunghi—film, episodi di serie o programmi TV. Possiamo dividere la tua idea in scene, creare segmenti e poi comporre un singolo MP4 che puoi guardare e scaricare."
+    step4Desc: "Genera video lunghi�film, episodi di serie o programmi TV. Possiamo dividere la tua idea in scene, creare segmenti e poi comporre un singolo MP4 che puoi guardare e scaricare."
   },
   landing: {
     badge: "Il futuro dell'intelligenza del consenso",
@@ -111,7 +111,7 @@ const it = {
   },
   dashboard: {
     neuralHub: "Neural Hub",
-    underConstruction: "Questo modulo è attualmente in costruzione. Il Neural Hub fungerà da livello di orchestrazione centrale per flussi di lavoro avanzati multi-agente.",
+    underConstruction: "Questo modulo � attualmente in costruzione. Il Neural Hub funger� da livello di orchestrazione centrale per flussi di lavoro avanzati multi-agente.",
     returnToConsole: "Torna alla Console"
   },
   contactPage: {
@@ -131,7 +131,7 @@ const it = {
   }
   ,
   profilePage: {
-    "titleRecent": "AttivitÃ  recente",
+    "titleRecent": "Attività recente",
     "tokenBalance": "Saldo token",
     "available": "Disponibile per i dibattiti",
     "totalDebates": "Dibattiti totali",
@@ -151,7 +151,7 @@ const it = {
     "security": "Sicurezza",
     "changePassword": "Cambia password",
     "dangerZone": "Zona pericolosa",
-    "dangerText": "Una volta eliminato lâ€™account, non si torna indietro.",
+    "dangerText": "Una volta eliminato l’account, non si torna indietro.",
     "deleteAccount": "Elimina account",
     "emailPlaceholder": "user@example.com",
     "displayNamePlaceholder": "Utente Jarnazi"
@@ -164,14 +164,14 @@ const it = {
     "tokensLabel": "Token",
     "planSuffix": "Piano",
     "freeTier": "Gratis",
-    "mostPopular": "PiÃ¹ popolare",
+    "mostPopular": "Più popolare",
     "perPack": "/ pacchetto",
     "descriptionLine1": "Acquista token per alimentare i tuoi dibattiti IA e la generazione di contenuti.",
     "tokensNeverExpire": "I token non scadono mai",
     "descriptionLine2": "e puoi ricaricarli subito.",
     "enterpriseTitle": "Soluzione Enterprise",
-    "enterpriseSubtitle": "Acquista una quantitÃ  personalizzata di token per la tua organizzazione.",
-    "tokenAmount": "QuantitÃ  di token",
+    "enterpriseSubtitle": "Acquista una quantità personalizzata di token per la tua organizzazione.",
+    "tokenAmount": "Quantità di token",
     "totalPrice": "Prezzo totale",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Token)",
     "plans": {

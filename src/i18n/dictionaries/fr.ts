@@ -1,12 +1,12 @@
-﻿import { SITE_NAME } from '../config';
+import { SITE_NAME } from '../config';
 const fr = {
   common: {
     siteName: SITE_NAME,
     login: "Se connecter",
     register: "S'inscrire",
-    logout: "DÃ©connexion",
+    logout: "Déconnexion",
     dashboard: "Tableau de bord",
-    settings: "ParamÃ¨tres",
+    settings: "Paramètres",
     profile: "Profil",
     loading: "Chargement...",
     error: "Une erreur est survenue",
@@ -16,16 +16,16 @@ const fr = {
     back: "Retour"
   },
   home: {
-    heroTitle: "DÃ©bat. Accord. CrÃ©ation.",
-    heroSubtitle: "Posez une question. Plusieurs IA rÃ©pondent indÃ©pendamment, se relisent entre elles, puis OpenAI conduit Ã  un consensus final â€” prÃªt pour image, vidÃ©o, audio ou code.",
-    startDebate: "Commencer le dÃ©bat",
-    howItWorks: "Comment Ã§a marche"
+    heroTitle: "Débat. Accord. Création.",
+    heroSubtitle: "Posez une question. Plusieurs IA répondent indépendamment, se relisent entre elles, puis OpenAI conduit à un consensus final — prêt pour image, vidéo, audio ou code.",
+    startDebate: "Commencer le débat",
+    howItWorks: "Comment ça marche"
   },
   debate: {
     currentPlan: 'Current plan',
-    newTitle: "Nouveau dÃ©bat",
+    newTitle: "Nouveau débat",
     topicLabel: "Entrez un sujet...",
-    startBtn: "Lancer le dÃ©bat",
+    startBtn: "Lancer le débat",
     analyzing: "Analyse du sujet...",
     consensusTitle: "Consensus final",
     // Console UI
@@ -35,15 +35,15 @@ const fr = {
     latex: "LaTex",
     file: "Fichier",
     image: "Image",
-    video: "VidÃ©o",
+    video: "Vidéo",
     audio: "Audio",
     print: "Imprimer",
     copy: "Copier",
     save: "Sauvegarder",
-    download: "TÃ©lÃ©charger",
+    download: "Télécharger",
     placeholder: "Entrez votre argument...",
     mathPlaceholder: "\\sum_{i=0}^n x_i",
-    menu: "Menu SystÃ¨me",
+    menu: "Menu Système",
     copyJson: "Copier JSON",
     printTranscript: "Imprimer la transcription",
     viewPlans: "Voir les plans",
@@ -56,54 +56,54 @@ const fr = {
     deleteAccount: "Supprimer le compte"
   },
   notifications: {
-    welcome: "Bienvenue au Consensus Jarnazi. Le Conseil est prÃªt."
+    welcome: "Bienvenue au Consensus Jarnazi. Le Conseil est prêt."
   },
   nav: {
-    features: "FonctionnalitÃ©s",
+    features: "Fonctionnalités",
     pricing: "Tarifs",
     contact: "Contactez-nous"
   },
   sidebar: {
     newSession: "Nouvelle session",
     plans: "Plans",
-    settings: "ParamÃ¨tres",
-    signOut: "DÃ©connexion",
+    settings: "Paramètres",
+    signOut: "Déconnexion",
     jarnazi: "JARNAZI",
     consensus: "CONSENSUS"
   },
   features: {
-    title1: "DÃ©bat multi-agents",
-    desc1: "Pourquoi nâ€™utiliser quâ€™un seul modÃ¨le ? Obtenez des points de vue indÃ©pendants de plusieurs IA, avec revue croisÃ©e pour rÃ©duire les hallucinations.",
-    title2: "Consensus â†’ CrÃ©ation",
-    desc2: "Transformez lâ€™accord final en un plan et un prompt uniques, de haute qualitÃ©, pour gÃ©nÃ©rer image, vidÃ©o, audio ou code.",
-    title3: "VidÃ©o longue durÃ©e",
-    desc3: "GÃ©nÃ©rez des vidÃ©os longuesâ€”films, sÃ©ries ou Ã©missions TVâ€”dÃ©coupÃ©es en scÃ¨nes puis assemblÃ©es en un seul MP4 tÃ©lÃ©chargeable."
+    title1: "Débat multi-agents",
+    desc1: "Pourquoi n’utiliser qu’un seul modèle ? Obtenez des points de vue indépendants de plusieurs IA, avec revue croisée pour réduire les hallucinations.",
+    title2: "Consensus → Création",
+    desc2: "Transformez l’accord final en un plan et un prompt uniques, de haute qualité, pour générer image, vidéo, audio ou code.",
+    title3: "Vidéo longue durée",
+    desc3: "Générez des vidéos longues—films, séries ou émissions TV—découpées en scènes puis assemblées en un seul MP4 téléchargeable."
   },
   footer: {
-    privacy: "Politique de confidentialitÃ©",
+    privacy: "Politique de confidentialité",
     terms: "Conditions d'utilisation",
-    rights: "Tous droits rÃ©servÃ©s."
+    rights: "Tous droits réservés."
   },
   auth: {
     welcome: "Bon retour",
-    subtitle: "Connectez-vous pour orchestrer le dÃ©bat.",
+    subtitle: "Connectez-vous pour orchestrer le débat.",
     email: "Adresse e-mail",
     password: "Mot de passe",
     signIn: "Se connecter",
     noAccount: "Pas de compte ?",
-    createProfile: "CrÃ©er un profil",
-    securityCheck: "Veuillez complÃ©ter le test de sÃ©curitÃ©."
+    createProfile: "Créer un profil",
+    securityCheck: "Veuillez compléter le test de sécurité."
   },
   howItWorks: {
-    title: "Comment ça marche",
-    step1Title: "Débat multi-agents",
-    step1Desc: "Impliquez plusieurs modèles d'IA dans une délibération structurée pour obtenir les résultats les plus précis et créatifs.",
+    title: "Comment �a marche",
+    step1Title: "D�bat multi-agents",
+    step1Desc: "Impliquez plusieurs mod�les d'IA dans une d�lib�ration structur�e pour obtenir les r�sultats les plus pr�cis et cr�atifs.",
     step2Title: "Construction du consensus",
-    step2Desc: "La couche d'orchestration avancée synthétise les sorties de modèles indépendants en un consensus unifié.",
-    step3Title: "Génération d'actifs",
-    step3Desc: "Générez des images, vidéos et audio professionnels basés sur le consensus délibéré.",
-    step4Title: "Vidéo longue durée (Films & Séries)",
-    step4Desc: "Générez des vidéos longues—films, épisodes de séries ou émissions TV. Nous pouvons diviser votre idée en scènes, créer des segments, puis composer un seul MP4 que vous pouvez regarder et télécharger."
+    step2Desc: "La couche d'orchestration avanc�e synth�tise les sorties de mod�les ind�pendants en un consensus unifi�.",
+    step3Title: "G�n�ration d'actifs",
+    step3Desc: "G�n�rez des images, vid�os et audio professionnels bas�s sur le consensus d�lib�r�.",
+    step4Title: "Vid�o longue dur�e (Films & S�ries)",
+    step4Desc: "G�n�rez des vid�os longues�films, �pisodes de s�ries ou �missions TV. Nous pouvons diviser votre id�e en sc�nes, cr�er des segments, puis composer un seul MP4 que vous pouvez regarder et t�l�charger."
   },
   landing: {
     badge: "L'avenir de l'intelligence consensuelle",
@@ -111,8 +111,8 @@ const fr = {
   },
   dashboard: {
     neuralHub: "Neural Hub",
-    underConstruction: "Ce module est actuellement en construction. Le Neural Hub servira de couche d'orchestration centrale pour les flux de travail multi-agents avancés.",
-    returnToConsole: "Retour à la Console"
+    underConstruction: "Ce module est actuellement en construction. Le Neural Hub servira de couche d'orchestration centrale pour les flux de travail multi-agents avanc�s.",
+    returnToConsole: "Retour � la Console"
   },
   contactPage: {
     "title": "Nous contacter",
@@ -122,43 +122,43 @@ const fr = {
     "email": "E-mail",
     "message": "Message",
     "send": "Envoyer",
-    "namePh": "Max 25 caractÃ¨res",
-    "subjectPh": "Max 20 caractÃ¨res",
+    "namePh": "Max 25 caractères",
+    "subjectPh": "Max 20 caractères",
     "emailPh": "vous@exemple.com",
-    "messagePh": "Comment pouvons-nous aider ? (Max 250 caractÃ¨res)",
-    "max250": "Maximum 250 caractÃ¨res",
-    "sentToast": "Message envoyÃ© ! Nous vous rÃ©pondrons rapidement."
+    "messagePh": "Comment pouvons-nous aider ? (Max 250 caractères)",
+    "max250": "Maximum 250 caractères",
+    "sentToast": "Message envoyé ! Nous vous répondrons rapidement."
   }
   ,
   profilePage: {
-    "titleRecent": "ActivitÃ© rÃ©cente",
+    "titleRecent": "Activité récente",
     "tokenBalance": "Solde de jetons",
-    "available": "Disponible pour les dÃ©bats",
-    "totalDebates": "DÃ©bats au total",
-    "sessions": "Sessions orchestrÃ©es",
-    "noDebates": "Aucun dÃ©bat trouvÃ©. Lancez votre premiÃ¨re session !",
+    "available": "Disponible pour les débats",
+    "totalDebates": "Débats au total",
+    "sessions": "Sessions orchestrées",
+    "noDebates": "Aucun débat trouvé. Lancez votre première session !",
     "anonymous": "Utilisateur anonyme",
     "banned": "BANNI"
   }
 
   ,
   "debateSettingsPage": {
-    "title": "ParamÃ¨tres du compte",
-    "subtitle": "GÃ©rez votre profil et vos prÃ©fÃ©rences.",
+    "title": "Paramètres du compte",
+    "subtitle": "Gérez votre profil et vos préférences.",
     "profileInfo": "Informations du profil",
     "emailAddress": "Adresse e-mail",
-    "displayName": "Nom dâ€™affichage",
-    "security": "SÃ©curitÃ©",
+    "displayName": "Nom d’affichage",
+    "security": "Sécurité",
     "changePassword": "Changer le mot de passe",
     "dangerZone": "Zone de danger",
-    "dangerText": "Une fois votre compte supprimÃ©, il nâ€™y a pas de retour en arriÃ¨re.",
+    "dangerText": "Une fois votre compte supprimé, il n’y a pas de retour en arrière.",
     "deleteAccount": "Supprimer le compte",
     "emailPlaceholder": "user@example.com",
     "displayNamePlaceholder": "Utilisateur Jarnazi"
   },
   "pricingPage": {
     "investIn": "Investissez dans",
-    "intelligence": "lâ€™intelligence",
+    "intelligence": "l’intelligence",
     "currentPlan": "Forfait actuel",
     "availableBalance": "Solde disponible",
     "tokensLabel": "Tokens",
@@ -166,47 +166,47 @@ const fr = {
     "freeTier": "Gratuit",
     "mostPopular": "Le plus populaire",
     "perPack": "/ pack",
-    "descriptionLine1": "Achetez des tokens pour alimenter vos dÃ©bats IA et la gÃ©nÃ©ration de contenu.",
-    "tokensNeverExpire": "Les tokens nâ€™expirent jamais",
-    "descriptionLine2": "et peuvent Ãªtre rechargÃ©s instantanÃ©ment.",
+    "descriptionLine1": "Achetez des tokens pour alimenter vos débats IA et la génération de contenu.",
+    "tokensNeverExpire": "Les tokens n’expirent jamais",
+    "descriptionLine2": "et peuvent être rechargés instantanément.",
     "enterpriseTitle": "Solution Enterprise",
-    "enterpriseSubtitle": "Achetez une quantitÃ© personnalisÃ©e de tokens pour votre organisation.",
-    "tokenAmount": "QuantitÃ© de tokens",
+    "enterpriseSubtitle": "Achetez une quantité personnalisée de tokens pour votre organisation.",
+    "tokenAmount": "Quantité de tokens",
     "totalPrice": "Prix total",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
     "plans": {
       "starter": {
         "name": "Pack Starter",
-        "description": "IdÃ©al pour des dÃ©bats occasionnels.",
+        "description": "Idéal pour des débats occasionnels.",
         "features": [
           "42 tokens de consensus",
-          "AccÃ¨s Ã  GPT-4o & Claude 3",
-          "GÃ©nÃ©ration dâ€™images basique",
-          "Les tokens nâ€™expirent jamais",
-          "RÃ©sumÃ©s par e-mail"
+          "Accès à GPT-4o & Claude 3",
+          "Génération d’images basique",
+          "Les tokens n’expirent jamais",
+          "Résumés par e-mail"
         ]
       },
       "producer": {
         "name": "Forfait Producer",
-        "description": "Pour les utilisateurs intensifs et la collaboration frÃ©quente.",
+        "description": "Pour les utilisateurs intensifs et la collaboration fréquente.",
         "features": [
           "155 tokens de consensus",
-          "AccÃ¨s Ã  tous les nÅ“uds",
-          "Images haute rÃ©solution",
+          "Accès à tous les nœuds",
+          "Images haute résolution",
           "Traitement prioritaire",
-          "Les tokens nâ€™expirent jamais"
+          "Les tokens n’expirent jamais"
         ]
       },
       "creator": {
         "name": "Pro Creator",
-        "description": "BoÃ®te Ã  outils ultime pour la crÃ©ation pro.",
+        "description": "Boîte à outils ultime pour la création pro.",
         "features": [
           "1050 tokens de consensus",
-          "AccÃ¨s prioritaire (Tier 1)",
-          "GÃ©nÃ©ration vidÃ©o 4K",
-          "Support dÃ©diÃ©",
-          "Droits dâ€™usage commercial",
-          "Les tokens nâ€™expirent jamais"
+          "Accès prioritaire (Tier 1)",
+          "Génération vidéo 4K",
+          "Support dédié",
+          "Droits d’usage commercial",
+          "Les tokens n’expirent jamais"
         ]
       }
     }

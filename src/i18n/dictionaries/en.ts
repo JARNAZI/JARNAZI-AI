@@ -1,4 +1,4 @@
-﻿import { SITE_NAME } from '../config';
+import { SITE_NAME } from '../config';
 const en = {
   common: {
     siteName: SITE_NAME,
