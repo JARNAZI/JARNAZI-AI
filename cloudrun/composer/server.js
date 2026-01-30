@@ -10,27 +10,34 @@ const app = express();
 app.use(morgan("tiny"));
 app.use(express.json({ limit: "10mb" }));
 
-const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
-const SECRET = process.env.CLOUD_RUN_COMPOSER_SECRET;
+const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "").trim();
+const SERVICE_ROLE = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || "").trim();
+const SECRET = (process.env.CLOUD_RUN_COMPOSER_SECRET || "").trim();
 
 console.log("Starting advanced composer service...");
 console.log("PORT:", process.env.PORT);
-console.log("Environment Check:");
-console.log("- SUPABASE_URL:", process.env.SUPABASE_URL ? `Present (${process.env.SUPABASE_URL.substring(0, 10)}...)` : "MISSING");
-console.log("- SUPABASE_SERVICE_ROLE_KEY:", process.env.SUPABASE_SERVICE_ROLE_KEY ? "Present (Hidden)" : "MISSING");
-console.log("- CLOUD_RUN_COMPOSER_SECRET:", process.env.CLOUD_RUN_COMPOSER_SECRET ? "Present (Hidden)" : "MISSING");
+console.log("Environment Check (Trimmed):");
+console.log("- SUPABASE_URL:", SUPABASE_URL ? `Present (${SUPABASE_URL.substring(0, 15)}...)` : "MISSING/EMPTY");
+console.log("- SUPABASE_SERVICE_ROLE_KEY:", SERVICE_ROLE ? `Present (${SERVICE_ROLE.length} chars)` : "MISSING/EMPTY");
+console.log("- CLOUD_RUN_COMPOSER_SECRET:", SECRET ? "Present (Hidden)" : "MISSING/EMPTY");
 
 let supabase = null;
 if (!SUPABASE_URL || !SERVICE_ROLE) {
   console.error("CRITICAL: Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.");
   console.error("The service will start but /compose will fail.");
+} else if (SUPABASE_URL === "undefined" || SUPABASE_URL === "null") {
+  console.error("CRITICAL: SUPABASE_URL is literally the string 'undefined' or 'null'. Check your Cloud Run settings.");
 } else {
   try {
+    // Basic URL validation before passing to supabase-js to avoid crash
+    if (!SUPABASE_URL.startsWith("http")) {
+      throw new Error(`Invalid URL format: ${SUPABASE_URL}`);
+    }
     supabase = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
     console.log("Supabase client initialized successfully.");
   } catch (err) {
     console.error("FATAL: Failed to initialize Supabase client:", err.message);
+    console.error("Check if SUPABASE_URL is a valid URL.");
   }
 }
 
