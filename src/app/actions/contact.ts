@@ -26,7 +26,9 @@ export async function submitContactForm(prevState: unknown, formData: FormData) 
 
     const validation = contactSchema.safeParse(rawData);
     if (!validation.success) {
-        return { success: false, error: validation.error.format()._errors.join(', ') || 'Invalid input' };
+        const errors = validation.error.flatten().fieldErrors;
+        const firstError = Object.values(errors)[0]?.[0] || 'Invalid input';
+        return { success: false, error: firstError };
     }
 
     try {

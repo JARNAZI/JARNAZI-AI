@@ -10,8 +10,8 @@ const app = express();
 app.use(morgan("tiny"));
 app.use(express.json({ limit: "10mb" }));
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
 const SECRET = process.env.CLOUD_RUN_COMPOSER_SECRET;
 
 console.log("Starting advanced composer service...");

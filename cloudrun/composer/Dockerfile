@@ -8,13 +8,12 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# IMPORTANT: In Cloud Run "Source" deployments, the build context is usually the repository root.
-# We copy the files specifically from the cloudrun/composer directory.
-COPY cloudrun/composer/package*.json ./
+# IMPORTANT: The build context should be the directory containing this Dockerfile.
+COPY package*.json ./
 RUN npm install --omit=dev && npm cache clean --force
 
-# Copy source from the subfolder
-COPY cloudrun/composer/server.js ./
+# Copy source from the current folder
+COPY server.js ./
 
 # Standard Cloud Run port
 ENV PORT=8080
