@@ -1,7 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database.types';
 
-type AdminClient = ReturnType<typeof createClient<Database>>;
+type AdminClient = SupabaseClient<Database>;
 
 type PendingRow = {
   id: string;
@@ -67,7 +67,7 @@ async function runVideoComposeFromPending(admin: AdminClient, userId: string, pe
   const jobId = crypto.randomUUID();
 
   // Create video_job record first
-  const { error: jErr } = await admin.from('video_jobs').insert({
+  const { error: jErr } = await (admin.from('video_jobs') as any).insert({
     id: jobId,
     user_id: userId,
     debate_id: debateId,
@@ -76,7 +76,7 @@ async function runVideoComposeFromPending(admin: AdminClient, userId: string, pe
   if (jErr) return { ok: false, error: jErr.message };
 
   // Create a job_run to track execution
-  const { error: runErr } = await admin.from('job_runs').insert({
+  const { error: runErr } = await (admin.from('job_runs') as any).insert({
     video_job_id: jobId,
     run_type: 'compose',
     status: 'starting',
@@ -85,7 +85,7 @@ async function runVideoComposeFromPending(admin: AdminClient, userId: string, pe
   if (runErr) return { ok: false, error: runErr.message };
 
   // Delete pending request as it is now processed (since status col is missing)
-  await admin.from('pending_requests').delete().eq('id', pending.id);
+  await (admin.from('pending_requests') as any).delete().eq('id', pending.id);
 
   return { ok: true, jobId };
 }
@@ -97,7 +97,7 @@ export async function processPendingForUser(userId: string) {
 
   // Check expiry
   if (new Date(pending.expires_at) <= new Date()) {
-    await admin.from('pending_requests').delete().eq('id', pending.id);
+    await (admin.from('pending_requests') as any).delete().eq('id', pending.id);
     return { ok: true, resumed: false, expired: true };
   }
 
