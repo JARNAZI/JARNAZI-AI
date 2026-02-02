@@ -34,7 +34,7 @@ function getLocale(request: NextRequest): string {
     return DEFAULT_LANGUAGE;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Skip public files and API routes
@@ -97,7 +97,7 @@ export async function middleware(request: NextRequest) {
         const { data } = await supabase.auth.getUser();
         user = data.user;
     } catch (e) {
-        console.error("Middleware auth error", e);
+        console.error("Proxy auth error", e);
     }
 
     // Strip locale for auth checks
