@@ -2,18 +2,20 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { triggerComposerJob } from '@/lib/cloud-run';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-    auth: { persistSession: false },
-});
+function getAdmin() {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    return createClient(url, key, {
+        auth: { persistSession: false },
+    });
+}
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 export async function GET(req: Request) {
     try {
+        const admin = getAdmin();
         const results = {
             runs_dispatched: 0,
             errors: [] as string[]
