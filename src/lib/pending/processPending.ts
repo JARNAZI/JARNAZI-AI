@@ -44,7 +44,7 @@ async function getLatestPending(admin: AdminClient, userId: string): Promise<Pen
 
 async function reserveTokens(admin: AdminClient, userId: string, tokens: number) {
   if (!tokens || tokens <= 0) return { ok: true };
-  const { error } = await admin.rpc('reserve_tokens', {
+  const { error } = await (admin.rpc as any)('reserve_tokens', {
     p_user_id: userId,
     p_tokens: tokens,
   });
