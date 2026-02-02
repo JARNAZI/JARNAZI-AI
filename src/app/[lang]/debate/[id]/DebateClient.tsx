@@ -916,8 +916,8 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
 
             // Update local balance (best-effort)
             if (profileInfo) {
-                const newBalance = Math.max(0, Number(profileInfo.token_balance_cents) - totalDeducted);
-                setProfileInfo({ token_balance_cents: newBalance });
+                const newBalance = Math.max(0, Number(profileInfo.token_balance) - totalDeducted);
+                setProfileInfo({ token_balance: newBalance });
             }
 
             // Player: if long video, store playlist; otherwise keep single url behavior.
