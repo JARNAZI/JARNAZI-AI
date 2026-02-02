@@ -43,17 +43,13 @@ async function countActiveTextProviders(supabaseAdmin: any) {
   const { count, error } = await supabaseAdmin
     .from('ai_providers')
     .select('id', { count: 'exact', head: true })
-    .eq('is_active', true)
-    .eq('category', 'text');
+    .eq('enabled', true)
+    .eq('kind', 'text');
   if (error) throw error;
   return Number(count || 0);
 }
 
 function computeTokenCost(providerCount: number, rounds: number, requestType: RequestType) {
-  // Simple, predictable pricing:
-  // - base: 1 token
-  // - each AI turn: 1 token (participants * rounds)
-  // - media planning adds small overhead (2 tokens) because prompts are longer/more complex
   const base = 1;
   const perTurn = 1;
   const mediaOverhead = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? 2 : 0;
@@ -69,7 +65,6 @@ async function reserveTokens(supabaseAdmin: any, userId: string, tokens: number)
 async function refundTokens(supabaseAdmin: any, userId: string, tokens: number) {
   const { error } = await supabaseAdmin.rpc('refund_tokens', { p_user_id: userId, p_tokens: tokens });
   if (error) {
-    // Best-effort refund; log but do not throw to avoid masking original error.
     console.error('refund_tokens failed', error);
   }
 }
@@ -84,11 +79,9 @@ export async function POST(req: Request) {
 
     if (!rawTopic) return NextResponse.json({ error: 'Missing topic' }, { status: 400 });
 
-    // 1) Basic safety + rate limit (keep existing protections)
     const headerList = await headers();
     const ip = headerList.get('x-forwarded-for')?.split(',')[0]?.trim() || '0.0.0.0';
 
-    // Turnstile (optional)
     const turnstileToken = body?.turnstileToken;
     if (turnstileToken) {
       const ok = await verifyTurnstileToken(turnstileToken, ip);
@@ -100,7 +93,6 @@ export async function POST(req: Request) {
     await validateContentSafety(topic);
     await checkSafeBrowsing(topic);
 
-    // 2) Authenticate user via bearer token
     const authHeader = req.headers.get('authorization') || '';
     const jwt = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
     if (!jwt) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -110,27 +102,25 @@ export async function POST(req: Request) {
 
     const user = userData.user;
 
-    // 3) Create debate record
     const { data: debate, error: debErr } = await supabaseAdmin
       .from('debates')
       .insert({
         user_id: user.id,
         topic,
-        status: 'processing',
+        status: 'active', // Changed from processing to active to match common states or pending
+        mode: requestType,
       })
       .select('*')
       .single();
 
     if (debErr || !debate) throw debErr || new Error('Failed to create debate');
 
-    // 4) Token accounting (reserve upfront)
-    const rounds = 2; // finite debate; not infinite
+    const rounds = 2;
     const providerCount = await countActiveTextProviders(supabaseAdmin);
     const tokenCost = computeTokenCost(providerCount, rounds, requestType);
 
     await reserveTokens(supabaseAdmin, user.id, tokenCost);
 
-    // 5) Kick off unified orchestrator in Edge Function (keys stay in Edge secrets)
     try {
       await callEdgeOrchestrator({
         debateId: debate.id,
@@ -141,10 +131,8 @@ export async function POST(req: Request) {
           "Multi-AI debate. Each participant must respond to another AI by name. Use LaTeX for math: inline $...$ and block $$...$$. For image/video/file requests, debate to produce a single final generation prompt, then output the final agreement under the heading 'الاتفاق'.",
       });
     } catch (e) {
-      // Refund reserved tokens on failure
       await refundTokens(supabaseAdmin, user.id, tokenCost);
-      // Mark debate error
-      await supabaseAdmin.from('debates').update({ status: 'error' }).eq('id', debate.id);
+      await supabaseAdmin.from('debates').update({ status: 'failed' }).eq('id', debate.id);
       throw e;
     }
 

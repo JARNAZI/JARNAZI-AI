@@ -19,16 +19,15 @@ async function callEdgeOrchestrator(body: any, userAuthHeader?: string | null) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      // Prefer forwarding the end-user JWT (so the Edge Function can identify the user)
       ...(userAuthHeader
         ? {
-            'Authorization': userAuthHeader,
-            'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          }
+          'Authorization': userAuthHeader,
+          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        }
         : {
-            'Authorization': `Bearer ${serviceKey}`,
-            'apikey': serviceKey,
-          }),
+          'Authorization': `Bearer ${serviceKey}`,
+          'apikey': serviceKey,
+        }),
     },
     body: JSON.stringify(body),
   });
@@ -43,17 +42,13 @@ async function countActiveTextProviders(supabaseAdmin: any) {
   const { count, error } = await supabaseAdmin
     .from('ai_providers')
     .select('id', { count: 'exact', head: true })
-    .eq('is_active', true)
-    .eq('category', 'text');
+    .eq('enabled', true)
+    .eq('kind', 'text');
   if (error) throw error;
   return Number(count || 0);
 }
 
-
 async function getNumericSetting(supabaseAdmin: any, key: string, fallback: number) {
-  // Supports BOTH schemas:
-  // A) KV schema: site_settings(key text primary key, value text/json)
-  // B) Single-row schema: site_settings(features jsonb)
   try {
     const { data, error } = await supabaseAdmin
       .from('site_settings')
@@ -65,30 +60,12 @@ async function getNumericSetting(supabaseAdmin: any, key: string, fallback: numb
       const n = Number(raw);
       return Number.isFinite(n) && n > 0 ? n : fallback;
     }
-  } catch (_) {
-    // fall through
-  }
-
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('site_settings')
-      .select('features')
-      .limit(1)
-      .maybeSingle();
-    if (error) return fallback;
-    const features = (data as any)?.features || {};
-    const raw = (features as any)[key];
-    const n = Number(raw);
-    return Number.isFinite(n) && n > 0 ? n : fallback;
-  } catch (_) {
-    return fallback;
-  }
+  } catch (_) { }
+  return fallback;
 }
-
 
 function computeTokenCost(providerCount: number, rounds: number, requestType: RequestType, base: number, perTurn: number, mediaOverhead: number) {
   const media = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? mediaOverhead : 0;
-  // base + (providers * rounds * perTurn) + optional media overhead
   const total = base + (Math.max(providerCount, 0) * Math.max(rounds, 1) * perTurn) + media;
   return Math.max(1, total);
 }
@@ -115,7 +92,6 @@ export async function POST(req: Request) {
     if (!debateId) return NextResponse.json({ error: 'Missing debateId' }, { status: 400 });
     if (!rawPrompt) return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
 
-    // Authenticate
     const authHeader = req.headers.get('authorization') || '';
     const jwt = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
     if (!jwt) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -125,15 +101,14 @@ export async function POST(req: Request) {
 
     const user = userData.user;
 
-// Ensure the debate belongs to the authenticated user
-const { data: debRow, error: debErr } = await supabaseAdmin
-  .from('debates')
-  .select('id,user_id')
-  .eq('id', debateId)
-  .single();
+    const { data: debRow, error: debErr } = await supabaseAdmin
+      .from('debates')
+      .select('id,user_id')
+      .eq('id', debateId)
+      .single();
 
-if (debErr || !debRow) return NextResponse.json({ error: 'Debate not found' }, { status: 404 });
-if (debRow.user_id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (debErr || !debRow) return NextResponse.json({ error: 'Debate not found' }, { status: 404 });
+    if (debRow.user_id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const rounds = await getNumericSetting(supabaseAdmin, 'debate_rounds', 3);
     const baseCost = await getNumericSetting(supabaseAdmin, 'debate_base_cost', 1);
@@ -143,31 +118,25 @@ if (debRow.user_id !== user.id) return NextResponse.json({ error: 'Forbidden' },
     const providerCount = await countActiveTextProviders(supabaseAdmin);
     const tokenCost = computeTokenCost(providerCount, rounds, requestType, baseCost, perTurn, mediaOverhead);
 
-    // Reserve tokens atomically. If insufficient, return 402 so UI can prompt purchase.
     try {
       await reserveTokens(supabaseAdmin, user.id, tokenCost);
     } catch (e: any) {
       const msg = String(e?.message || '');
       if (msg.includes('INSUFFICIENT_TOKENS')) {
-        // Fetch current balance (best-effort) to compute missing
         const { data: prof } = await supabaseAdmin
           .from('profiles')
-          .select('token_balance_cents')
+          .select('token_balance')
           .eq('id', user.id)
           .maybeSingle();
-        const current = Number((prof as any)?.token_balance_cents ?? 0) || 0;
+        const current = Number(prof?.token_balance ?? 0);
         const missing = Math.max(0, tokenCost - current);
         return NextResponse.json(
           { error: 'INSUFFICIENT_TOKENS', requiredTokens: tokenCost, currentTokens: current, missingTokens: missing },
           { status: 402 }
         );
       }
-      if (msg.includes('INVALID_TOKEN_AMOUNT')) {
-        return NextResponse.json({ error: 'INVALID_TOKEN_AMOUNT' }, { status: 400 });
-      }
       throw e;
     }
-
 
     try {
       await callEdgeOrchestrator({
@@ -175,12 +144,9 @@ if (debRow.user_id !== user.id) return NextResponse.json({ error: 'Forbidden' },
         prompt: rawPrompt,
         requestType,
         rounds,
-        // The API route already reserved tokens via reserve_tokens().
-        // The Edge Function should NOT reserve again, but it SHOULD write a ledger entry on success.
         tokens: tokenCost,
         alreadyReserved: true,
-        systemMessage:
-          "Multi-AI debate. Each participant must respond to another AI by name. Use LaTeX for math: inline $...$ and block $$...$$. For image/video/file requests, debate to produce a single final generation prompt, then output the final agreement under the heading 'الاتفاق'.",
+        systemMessage: "Multi-AI debate context continued.",
       }, authHeader);
     } catch (e) {
       await refundTokens(supabaseAdmin, user.id, tokenCost);

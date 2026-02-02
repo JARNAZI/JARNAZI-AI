@@ -9,17 +9,14 @@ export const dynamic = 'force-dynamic';
 type RequestType = 'video';
 
 function estimateVideoTokens(input: { durationSec?: number }) {
-  // Conservative default until provider pricing is wired.
   const duration = Math.max(1, Math.min(600, Number(input.durationSec ?? 6)));
-  // 6s baseline ~ 35 tokens, scale linearly-ish
   const base = 35;
   return Math.round(base * (duration / 6));
 }
 
-
 type VideoCostRate = { cost_per_unit: number; unit: string } | null;
 
-async function getActiveVideoCostRate(admin: ReturnType<typeof getSupabaseAdmin>): Promise<VideoCostRate> {
+async function getActiveVideoCostRate(admin: any): Promise<VideoCostRate> {
   const { data, error } = await admin
     .from('ai_costs')
     .select('cost_per_unit, unit')
@@ -38,8 +35,6 @@ async function getActiveVideoCostRate(admin: ReturnType<typeof getSupabaseAdmin>
 }
 
 function calcVideoTokensFromRate(durationSec: number, rate: { cost_per_unit: number; unit: string }) {
-  // Admin enters REAL provider cost. We charge: sell_cost = real_cost / 0.75 (75% cost, 25% profit)
-  // Token price is fixed: 42 tokens = $14  =>  tokens_per_usd = 3
   const tokensPerUsd = 3;
   const real = rate.cost_per_unit;
   const unit = rate.unit;
@@ -49,14 +44,10 @@ function calcVideoTokensFromRate(durationSec: number, rate: { cost_per_unit: num
   else if (unit === 'per_minute') realCostUsd = (durationSec / 60) * real;
   else if (unit === 'per_video') realCostUsd = real;
   else if (unit === 'per_10_seconds') realCostUsd = (durationSec / 10) * real;
-  else {
-    // unknown unit => fallback handled by caller
-    return null;
-  }
+  else return null;
 
-  // avoid float drift using cents
   const realCents = Math.max(0, Math.round(realCostUsd * 100));
-  const sellCents = Math.ceil(realCents / 0.75); // profit margin
+  const sellCents = Math.ceil(realCents / 0.75);
   const tokensNeeded = Math.max(1, Math.ceil((sellCents * tokensPerUsd) / 100));
   return tokensNeeded;
 }
@@ -67,21 +58,20 @@ function getSupabaseAdmin() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-async function getFeatures(admin: ReturnType<typeof getSupabaseAdmin>) {
+async function getFeatures(admin: any) {
   const { data: row } = await admin.from('site_settings').select('value').eq('key', 'features').maybeSingle();
   return (row?.value ?? {}) as any;
 }
 
 async function getActiveProvidersFor(
-  admin: ReturnType<typeof getSupabaseAdmin>,
-  category: 'image' | 'video'
+  admin: any,
+  kind: 'image' | 'video'
 ) {
   const { data, error } = await admin
     .from('ai_providers')
-    .select('id,name,provider,model_id,base_url,capabilities,priority,config,category,is_active')
-    .eq('is_active', true)
-    .eq('category', category)
-    .order('priority', { ascending: true });
+    .select('id, name, kind, enabled, config')
+    .eq('enabled', true)
+    .eq('kind', kind);
 
   if (error) throw new Error(error.message);
   return data ?? [];
@@ -89,7 +79,6 @@ async function getActiveProvidersFor(
 
 export async function POST(req: Request) {
   try {
-    // 1) Authenticate user via session cookies (anon client)
     const supabase = await createBrowserServerClient();
     const {
       data: { user },
@@ -116,18 +105,15 @@ export async function POST(req: Request) {
 
     const { data: profile, error: profileErr } = await admin
       .from('profiles')
-      .select('token_balance_cents, free_trial_used')
+      .select('token_balance, free_trial_used')
       .eq('id', user.id)
       .maybeSingle();
     if (profileErr) return NextResponse.json({ error: profileErr.message }, { status: 500 });
 
-    // Free trial is text-only (when enabled).
     if (features?.free_trial_enabled && !profile?.free_trial_used) {
       return NextResponse.json({ error: 'Free trial is text-only. Buy tokens to generate videos.' }, { status: 403 });
     }
 
-    // Token cost (video): uses admin AI Costs (real cost) with 75% cost / 25% profit.
-    // Fallbacks: site_settings.video_base_tokens (fixed) -> heuristic estimate.
     const perVideoBase = Number((await getSetting('video_base_tokens', null)) ?? 0);
 
     let tokensNeeded: number | null = null;
@@ -139,20 +125,18 @@ export async function POST(req: Request) {
       if (!tokensNeeded) tokensNeeded = estimateVideoTokens({ durationSec });
     }
 
-
     tokensNeeded = Number(tokensNeeded ?? 0) || 0;
-    if (!profile || (profile.token_balance_cents ?? 0) < (tokensNeeded ?? 0)) {
-      const tokenBalance = Number(profile?.token_balance_cents ?? 0);
-      const requiredTokens = Number(tokensNeeded ?? 0);
-      const missingTokens = Math.max(0, requiredTokens - tokenBalance);
+    const currentBalance = Number(profile?.token_balance ?? 0);
 
-      // Create short-lived pending request so user can buy missing tokens and auto-resume.
+    if (currentBalance < tokensNeeded) {
+      const missingTokens = Math.max(0, tokensNeeded - currentBalance);
+
       try {
         const { data: pendingId, error: pendErr } = await admin.rpc('create_pending_request', {
           p_user_id: user.id,
           p_kind: 'video',
           p_payload: { debateId, prompt, durationSec },
-          p_required_tokens: requiredTokens,
+          p_required_tokens: tokensNeeded,
           p_missing_tokens: missingTokens,
           p_ttl_minutes: 10,
         } as any);
@@ -164,8 +148,8 @@ export async function POST(req: Request) {
           return NextResponse.json(
             {
               error: 'INSUFFICIENT_TOKENS',
-              tokensNeeded: requiredTokens,
-              tokenBalance,
+              tokensNeeded,
+              tokenBalance: currentBalance,
               missingTokens,
               pendingId,
               expiresAt,
@@ -175,25 +159,21 @@ export async function POST(req: Request) {
           );
         }
       } catch {
-        // ignore and return basic response
+        // ignore
       }
 
       return NextResponse.json(
-        { error: 'INSUFFICIENT_TOKENS', tokensNeeded: requiredTokens, tokenBalance, missingTokens },
+        { error: 'INSUFFICIENT_TOKENS', tokensNeeded, tokenBalance: currentBalance, missingTokens },
         { status: 402 }
       );
     }
 
-
-    // 3) Reserve tokens atomically
     const { error: reserveErr } = await admin.rpc('reserve_tokens', { p_user_id: user.id, p_tokens: tokensNeeded } as any);
     if (reserveErr) {
       const msg = reserveErr.message || 'INSUFFICIENT_TOKENS';
-      const status = msg.includes('INSUFFICIENT') ? 402 : 500;
-      return NextResponse.json({ error: msg, tokensNeeded }, { status });
+      return NextResponse.json({ error: msg, tokensNeeded }, { status: 402 });
     }
 
-    // 4) Call edge function responsible for router+generation
     const fnName = process.env.MEDIA_EDGE_FUNCTION || 'media-generate';
     const providers = await getActiveProvidersFor(admin, 'video');
 
@@ -229,19 +209,18 @@ export async function POST(req: Request) {
         storage_path,
         public_url,
         cost_cents: tokensNeeded,
-        meta: { durationSec },
       } as any)
       .select('*')
       .single();
 
     if (assetErr) return NextResponse.json({ error: assetErr.message }, { status: 500 });
 
-    const { data: p2 } = await admin.from('profiles').select('token_balance_cents').eq('id', user.id).maybeSingle();
+    const { data: p2 } = await admin.from('profiles').select('token_balance').eq('id', user.id).maybeSingle();
 
     return NextResponse.json({
       ok: true,
       tokensDeducted: tokensNeeded,
-      tokenBalance: p2?.token_balance_cents ?? null,
+      tokenBalance: p2?.token_balance ?? null,
       asset,
     });
   } catch (e: any) {

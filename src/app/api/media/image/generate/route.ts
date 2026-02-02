@@ -7,10 +7,6 @@ export const dynamic = 'force-dynamic';
 
 type RequestType = 'image';
 
-/**
- * Token estimation (TOKENS stored in token_balance_cents bigint).
- * Keep conservative. Can be tuned later via site_settings if desired.
- */
 function estimateImageTokens({ quality }: { quality?: string }) {
   const base = 18;
   const q = (quality || '').toLowerCase();
@@ -24,21 +20,20 @@ function getSupabaseAdmin() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-async function getFeatures(admin: ReturnType<typeof getSupabaseAdmin>) {
+async function getFeatures(admin: any) {
   const { data: row } = await admin.from('site_settings').select('value').eq('key', 'features').maybeSingle();
   return (row?.value ?? {}) as any;
 }
 
 async function getActiveProvidersFor(
-  admin: ReturnType<typeof getSupabaseAdmin>,
-  category: 'image' | 'video'
+  admin: any,
+  kind: 'image' | 'video'
 ) {
   const { data, error } = await admin
     .from('ai_providers')
-    .select('id,name,provider,model_id,base_url,capabilities,priority,config,category,is_active')
-    .eq('is_active', true)
-    .eq('category', category)
-    .order('priority', { ascending: true });
+    .select('id, name, kind, enabled, config')
+    .eq('enabled', true)
+    .eq('kind', kind);
 
   if (error) throw new Error(error.message);
   return data ?? [];
@@ -46,7 +41,6 @@ async function getActiveProvidersFor(
 
 export async function POST(req: Request) {
   try {
-    // 1) Authenticate user via session cookies (anon client)
     const supabase = await createBrowserServerClient();
     const {
       data: { user },
@@ -65,42 +59,36 @@ export async function POST(req: Request) {
     if (!prompt || prompt.trim().length < 3)
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
 
-    // 2) Use admin client for token ops + provider lookup + inserts
     const admin = getSupabaseAdmin();
-
     const features = await getFeatures(admin);
 
     const { data: profile, error: profileErr } = await admin
       .from('profiles')
-      .select('token_balance_cents, free_trial_used')
+      .select('token_balance, free_trial_used')
       .eq('id', user.id)
       .maybeSingle();
     if (profileErr) return NextResponse.json({ error: profileErr.message }, { status: 500 });
 
-    // Free trial is text-only (when enabled).
     if (features?.free_trial_enabled && !profile?.free_trial_used) {
       return NextResponse.json({ error: 'Free trial is text-only. Buy tokens to generate images.' }, { status: 403 });
     }
 
     const tokensNeeded = estimateImageTokens({ quality });
+    const currentBalance = Number(profile?.token_balance ?? 0);
 
-    if (!profile || (profile.token_balance_cents ?? 0) < tokensNeeded) {
+    if (currentBalance < tokensNeeded) {
       return NextResponse.json(
-        { error: 'Insufficient tokens', tokensNeeded, tokenBalance: profile?.token_balance_cents ?? 0 },
+        { error: 'Insufficient tokens', tokensNeeded, tokenBalance: currentBalance },
         { status: 402 }
       );
     }
 
-    // 3) Reserve tokens atomically (prevents double-charge in races)
     const { error: reserveErr } = await admin.rpc('reserve_tokens', { p_user_id: user.id, p_tokens: tokensNeeded } as any);
     if (reserveErr) {
       const msg = reserveErr.message || 'INSUFFICIENT_TOKENS';
-      const status = msg.includes('INSUFFICIENT') ? 402 : 500;
-      return NextResponse.json({ error: msg, tokensNeeded }, { status });
+      return NextResponse.json({ error: msg, tokensNeeded }, { status: 402 });
     }
 
-    // 4) Call edge function responsible for router+generation.
-    // We pass the available providers so OpenAI (inside Edge) can pick the best one for this task.
     const fnName = process.env.MEDIA_EDGE_FUNCTION || 'media-generate';
     const providers = await getActiveProvidersFor(admin, 'image');
 
@@ -119,7 +107,6 @@ export async function POST(req: Request) {
     });
 
     if (fnErr) {
-      // 5) Refund tokens on failure (best-effort)
       await admin.rpc('refund_tokens', { p_user_id: user.id, p_tokens: tokensNeeded } as any);
       return NextResponse.json({ error: fnErr.message || 'Generation failed' }, { status: 500 });
     }
@@ -128,7 +115,6 @@ export async function POST(req: Request) {
     const storage_path = gen?.storage_path ?? null;
     const provider_name = gen?.provider_name ?? gen?.provider ?? 'unknown';
 
-    // 6) Persist asset record (3-day cleanup handled by cron/retention job)
     const { data: asset, error: assetErr } = await admin
       .from('generated_assets')
       .insert({
@@ -146,13 +132,12 @@ export async function POST(req: Request) {
 
     if (assetErr) return NextResponse.json({ error: assetErr.message }, { status: 500 });
 
-    // Return fresh balance
-    const { data: p2 } = await admin.from('profiles').select('token_balance_cents').eq('id', user.id).maybeSingle();
+    const { data: p2 } = await admin.from('profiles').select('token_balance').eq('id', user.id).maybeSingle();
 
     return NextResponse.json({
       ok: true,
       tokensDeducted: tokensNeeded,
-      tokenBalance: p2?.token_balance_cents ?? null,
+      tokenBalance: p2?.token_balance ?? null,
       asset,
     });
   } catch (e: any) {

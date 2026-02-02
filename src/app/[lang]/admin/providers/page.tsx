@@ -11,7 +11,7 @@ export default async function AdminProvidersPage(props: { params: Promise<{ lang
   const supabase = await createClient();
 
   // Fetch DB providers
-  const { data: providers } = await supabase.from('ai_providers').select('*').order('priority');
+  const { data: providers } = await supabase.from('ai_providers').select('*').order('name');
 
   return (
     <div className="p-8 max-w-5xl mx-auto">

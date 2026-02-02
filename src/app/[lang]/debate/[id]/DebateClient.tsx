@@ -78,7 +78,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
         }
     };
 
-    const [profileInfo, setProfileInfo] = useState<{ token_balance_cents: number } | null>(null);
+    const [profileInfo, setProfileInfo] = useState<{ token_balance: number } | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const searchParams = useSearchParams();
@@ -259,8 +259,8 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
 
                     // Update local balance (best-effort)
                     if (profileInfo) {
-                        const newBalance = Math.max(0, Number(profileInfo.token_balance_cents) - totalDeducted);
-                        setProfileInfo({ token_balance_cents: newBalance });
+                        const newBalance = Math.max(0, Number(profileInfo.token_balance) - totalDeducted);
+                        setProfileInfo({ token_balance: newBalance });
                     }
 
                     if (urls.length) {
@@ -444,10 +444,10 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
                 if (user) {
                     const { data: p } = await supabase
                         .from('profiles')
-                        .select('token_balance_cents')
+                        .select('token_balance')
                         .eq('id', user.id)
                         .maybeSingle();
-                    if (p) setProfileInfo({ token_balance_cents: Number((p as any).token_balance_cents || 0) });
+                    if (p) setProfileInfo({ token_balance: Number((p as any).token_balance || 0) });
                 }
             } catch {
                 // ignore
@@ -456,7 +456,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
             const { data: debate } = await supabase.from('debates').select('topic').eq('id', debateId).single();
             if (debate?.topic) setDebateTopic(debate.topic);
 
-            const { data: turns } = await supabase.from('debate_turns').select('*').eq('debate_id', debateId).order('sequence_index', { ascending: true }).order('created_at', { ascending: true });
+            const { data: turns } = await supabase.from('debate_turns').select('*').eq('debate_id', debateId).order('created_at', { ascending: true });
             if (turns && turns.length > 0) {
                 setMessages(turns.map((t: any) => ({
                     id: t.id,
@@ -693,8 +693,7 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
                 debate_id: debateId,
                 content: contentToSend,
                 ai_name_snapshot: 'User',
-                ai_provider_id: null,
-                sequence_index: Date.now()
+                ai_provider_id: null
             });
 
             if (dbError) throw dbError;
@@ -782,8 +781,8 @@ export default function DebateClient({ dict, lang }: { dict: any; lang: string }
             if (!res.ok) throw new Error(j.error || 'Failed to generate image');
 
             if (profileInfo) {
-                const newBalance = Math.max(0, Number(profileInfo.token_balance_cents) - Number(j.tokensCost || 0));
-                setProfileInfo({ token_balance_cents: newBalance });
+                const newBalance = Math.max(0, Number(profileInfo.token_balance) - Number(j.tokensCost || 0));
+                setProfileInfo({ token_balance: newBalance });
             }
 
             setMessages((prev: Message[]) => ([...prev, {

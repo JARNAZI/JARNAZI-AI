@@ -3,20 +3,21 @@ import { sendAdminAlert } from './email';
 
 export type NotificationType = 'info' | 'warning' | 'error' | 'success';
 
-export async function createNotification(userId: string, message: string, type: NotificationType = 'info', link?: string) {
+export async function createNotification(userId: string, body: string, type: NotificationType = 'info', title: string = 'Update') {
     const supabase = await createClient();
 
     try {
         const { error } = await supabase.from('notifications').insert({
             user_id: userId,
-            message,
+            title,
+            body,
             type,
-            link
+            is_read: false
         });
 
         if (error) throw error;
 
-        // Keep only the newest 10 notifications per user (Phase 10)
+        // Keep only the newest 10 notifications per user
         const { data: ids, error: selErr } = await supabase
             .from('notifications')
             .select('id')
@@ -35,7 +36,6 @@ export async function createNotification(userId: string, message: string, type: 
 export async function notifyAdmin(subject: string, message: string) {
     const supabase = await createClient();
 
-    // In-app notifications for admins (preferred)
     try {
         const { data: admins } = await supabase
             .from('profiles')
@@ -46,9 +46,10 @@ export async function notifyAdmin(subject: string, message: string) {
             await supabase.from('notifications').insert(
                 admins.map(a => ({
                     user_id: a.id,
-                    message: `${subject}: ${message}`,
+                    title: subject,
+                    body: message,
                     type: 'error',
-                    link: '/admin'
+                    is_read: false
                 }))
             );
         }
@@ -56,6 +57,5 @@ export async function notifyAdmin(subject: string, message: string) {
         console.error('Failed to notify admins in-app:', e);
     }
 
-    // Email alert (optional fallback)
     await sendAdminAlert(subject, message);
 }

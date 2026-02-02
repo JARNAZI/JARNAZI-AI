@@ -5,9 +5,6 @@ import { createClient } from '@supabase/supabase-js';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Image-edit handler: reserves tokens then delegates to a media Edge Function.
-// Supports text-guided edits (source image URL + prompt).
-
 function estimateEditTokens(prompt: string) {
   const len = (prompt || '').length;
   return Math.min(45, 10 + Math.ceil(len / 200) * 5);
@@ -19,18 +16,17 @@ function getSupabaseAdmin() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-async function getFeatures(admin: ReturnType<typeof getSupabaseAdmin>) {
+async function getFeatures(admin: any) {
   const { data: row } = await admin.from('site_settings').select('value').eq('key', 'features').maybeSingle();
   return (row?.value ?? {}) as any;
 }
 
-async function getActiveProvidersFor(admin: ReturnType<typeof getSupabaseAdmin>, category: 'image' | 'video') {
+async function getActiveProvidersFor(admin: any, kind: 'image' | 'video') {
   const { data, error } = await admin
     .from('ai_providers')
-    .select('id,name,provider,model_id,base_url,capabilities,priority,config,category,is_active')
-    .eq('is_active', true)
-    .eq('category', category)
-    .order('priority', { ascending: true });
+    .select('id, name, kind, enabled, config')
+    .eq('enabled', true)
+    .eq('kind', kind);
 
   if (error) throw new Error(error.message);
   return data ?? [];
@@ -55,7 +51,6 @@ export async function POST(req: Request) {
 
     const tokensNeeded = estimateEditTokens(prompt);
 
-    // Allow client to ask for quote first
     if (!confirmed) return NextResponse.json({ ok: true, tokensNeeded });
 
     const admin = getSupabaseAdmin();
@@ -63,26 +58,24 @@ export async function POST(req: Request) {
 
     const { data: profile, error: profileErr } = await admin
       .from('profiles')
-      .select('token_balance_cents, free_trial_used')
+      .select('token_balance, free_trial_used')
       .eq('id', user.id)
       .maybeSingle();
     if (profileErr) return NextResponse.json({ error: profileErr.message }, { status: 500 });
     if (!profile) return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
 
-    // Free trial is text-only (when enabled).
     if (features?.free_trial_enabled && !profile.free_trial_used) {
       return NextResponse.json({ error: 'Free trial is text-only. Buy tokens to edit images.' }, { status: 403 });
     }
 
-    if ((profile.token_balance_cents ?? 0) < tokensNeeded)
-      return NextResponse.json({ error: 'Insufficient tokens', tokensNeeded }, { status: 402 });
+    const currentBalance = Number(profile.token_balance ?? 0);
+    if (currentBalance < tokensNeeded)
+      return NextResponse.json({ error: 'Insufficient tokens', tokensNeeded, tokenBalance: currentBalance }, { status: 402 });
 
-    // Reserve tokens atomically
     const { error: reserveErr } = await admin.rpc('reserve_tokens', { p_user_id: user.id, p_tokens: tokensNeeded } as any);
     if (reserveErr) {
       const msg = reserveErr.message || 'INSUFFICIENT_TOKENS';
-      const status = msg.includes('INSUFFICIENT') ? 402 : 500;
-      return NextResponse.json({ error: msg, tokensNeeded }, { status });
+      return NextResponse.json({ error: msg, tokensNeeded }, { status: 402 });
     }
 
     const fnName = process.env.MEDIA_EDGE_FUNCTION || 'media-generate';
@@ -122,9 +115,9 @@ export async function POST(req: Request) {
 
     if (assetErr) return NextResponse.json({ error: 'Failed to save asset' }, { status: 500 });
 
-    const { data: p2 } = await admin.from('profiles').select('token_balance_cents').eq('id', user.id).maybeSingle();
+    const { data: p2 } = await admin.from('profiles').select('token_balance').eq('id', user.id).maybeSingle();
 
-    return NextResponse.json({ ok: true, tokensDeducted: tokensNeeded, tokenBalance: p2?.token_balance_cents ?? null, asset });
+    return NextResponse.json({ ok: true, tokensDeducted: tokensNeeded, tokenBalance: p2?.token_balance ?? null, asset });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || 'Unexpected error' }, { status: 500 });
   }
