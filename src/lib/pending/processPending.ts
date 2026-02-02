@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
+import { Database } from '@/types/database.types';
 
-type AdminClient = ReturnType<typeof createClient>;
+type AdminClient = ReturnType<typeof createClient<Database>>;
 
 type PendingRow = {
   id: string;
@@ -11,7 +12,7 @@ type PendingRow = {
 };
 
 function getAdmin(): AdminClient {
-  return createClient(
+  return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false } }
@@ -31,12 +32,13 @@ async function getLatestPending(admin: AdminClient, userId: string): Promise<Pen
     .maybeSingle();
 
   if (error || !data) return null;
+  const d = data as any;
   return {
-    id: data.id,
-    kind: data.kind ?? '',
-    payload: data.payload ?? {},
-    tokens_required: data.tokens_required ?? 0,
-    expires_at: data.expires_at ?? '',
+    id: d.id,
+    kind: d.kind ?? '',
+    payload: d.payload ?? {},
+    tokens_required: d.tokens_required ?? 0,
+    expires_at: d.expires_at ?? '',
   };
 }
 
