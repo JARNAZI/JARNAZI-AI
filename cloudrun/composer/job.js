@@ -21,11 +21,15 @@ async function run() {
     const runId = process.env.RUN_ID;
 
     if (!jobId) {
-        console.error("[Error] No JOB_ID provided in environment");
+        console.error("[Fatal] No JOB_ID provided. This container must be run as a Cloud Run Job.");
         process.exit(1);
     }
 
-    console.log(`[JobStart] ID: ${jobId}, RunID: ${runId || 'N/A'}`);
+    console.log("---------------------------------------------------------");
+    console.log(">> WORKER MODE: jarnazi-composer-job STARTING <<");
+    console.log(`>> JobID: ${jobId}`);
+    console.log(`>> RunID: ${runId || 'N/A'}`);
+    console.log("---------------------------------------------------------");
 
     try {
         // 1. Update Job/Run Status to Running
@@ -125,7 +129,11 @@ async function run() {
             });
             if (assetErr) console.warn(`[Warning] Failed to insert generated_asset: ${assetErr.message}`);
 
-            console.log(`[Success] Job ${jobId} completed successfully.`);
+            console.log("---------------------------------------------------------");
+            console.log(`>> WORKER MODE: jarnazi-composer-job SUCCESS <<`);
+            console.log(`>> Completed Job ${jobId}`);
+            console.log("---------------------------------------------------------");
+            process.exit(0);
 
         } finally {
             try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch (e) { }

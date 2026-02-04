@@ -8,16 +8,17 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# IMPORTANT: The build context should be the directory containing this Dockerfile.
+# Copy dependency files first for better caching
 COPY package*.json ./
 RUN npm install --omit=dev && npm cache clean --force
 
-# Copy source from the current folder
-COPY server.js ./
+# Copy all source files (server.js, job.js, etc.)
+COPY . .
 
 # Standard Cloud Run port
 ENV PORT=8080
 EXPOSE 8080
 
-# Use node directly for better process management and logs
+# Default command starts the service. 
+# The Cloud Run Job will override this via API args.
 CMD ["node", "server.js"]

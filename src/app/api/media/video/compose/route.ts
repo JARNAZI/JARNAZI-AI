@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient as createBrowserServerClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
-import { triggerComposerJob } from '@/lib/cloud-run';
+import { triggerComposerJob, authenticatedFetch } from '@/lib/cloud-run';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -259,7 +259,7 @@ export async function POST(req: Request) {
 
     let dispatchOk = false;
     try {
-      const dispatch = await fetch(`${composerUrl.replace(/\/$/, '')}/compose`, {
+      const dispatch = await authenticatedFetch(`${composerUrl.replace(/\/$/, '')}/compose`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -269,13 +269,10 @@ export async function POST(req: Request) {
       });
 
       if (dispatch.ok) {
-        console.log(`[Composer] Successfully called jarnazi-composer service for jobId: ${jobId}`);
         dispatchOk = true;
-      } else {
-        console.error(`[Composer] Failed to call jarnazi-composer. Status: ${dispatch.status}`);
       }
     } catch (err) {
-      console.error(`[Composer] Error calling jarnazi-composer:`, err);
+      console.error(`[Composer] Failed to reach service:`, err);
     }
 
     // Trigger Cloud Run Job
