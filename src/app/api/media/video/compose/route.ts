@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient as createBrowserServerClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
+import { triggerComposerJob } from '@/lib/cloud-run';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -202,29 +203,54 @@ export async function POST(req: Request) {
 
     await bestEffortSaveCanonToDb(admin, jobId, body?.canon);
 
-    const composerUrl = process.env.CLOUD_RUN_COMPOSER_URL;
+    const composerUrl = process.env.COMPOSER_BASE_URL;
     const composerSecret = process.env.CLOUD_RUN_COMPOSER_SECRET;
 
-    if (!composerUrl || !composerSecret) {
+    if (!composerUrl) {
+      console.error('[Composer] COMPOSER_BASE_URL is not defined');
       await admin.from('video_jobs').update({ status: 'failed' }).eq('id', jobId);
       return NextResponse.json({ error: 'Composer service not configured' }, { status: 500 });
     }
 
-    const dispatch = await fetch(`${composerUrl.replace(/\/$/, '')}/compose`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Composer-Secret': composerSecret,
-      },
-      body: JSON.stringify({ jobId, inputUrls, outputPath }),
-    });
+    console.log(`[Composer] Initiating connection to jarnazi-composer at: ${composerUrl}`);
 
-    if (!dispatch.ok) {
-      await admin.from('video_jobs').update({ status: 'failed' }).eq('id', jobId);
-      return NextResponse.json({ error: 'Composer dispatch failed' }, { status: 500 });
+    let dispatchOk = false;
+    try {
+      const dispatch = await fetch(`${composerUrl.replace(/\/$/, '')}/compose`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(composerSecret ? { 'X-Composer-Secret': composerSecret } : {}),
+        },
+        body: JSON.stringify({ jobId, inputUrls, outputPath }),
+      });
+
+      if (dispatch.ok) {
+        console.log(`[Composer] Successfully called jarnazi-composer service for jobId: ${jobId}`);
+        dispatchOk = true;
+      } else {
+        console.error(`[Composer] Failed to call jarnazi-composer. Status: ${dispatch.status}`);
+      }
+    } catch (err) {
+      console.error(`[Composer] Error calling jarnazi-composer:`, err);
     }
 
-    return NextResponse.json({ ok: true, jobId, outputPath }, { status: 202 });
+    // Trigger Cloud Run Job
+    console.log(`[CloudRunJob] Triggering jarnazi-composer-job for jobId: ${jobId}`);
+    const jobTriggered = await triggerComposerJob(jobId);
+
+    if (jobTriggered) {
+      console.log(`[CloudRunJob] Cloud Run Job triggered successfully for jobId: ${jobId}`);
+    } else {
+      console.error(`[CloudRunJob] Cloud Run Job trigger failed for jobId: ${jobId}`);
+    }
+
+    if (!dispatchOk && !jobTriggered) {
+      await admin.from('video_jobs').update({ status: 'failed' }).eq('id', jobId);
+      return NextResponse.json({ error: 'Composer dispatch and Job trigger failed' }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true, jobId, outputPath, jobTriggered }, { status: 202 });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || 'Unexpected error' }, { status: 500 });
   }
