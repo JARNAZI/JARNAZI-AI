@@ -138,6 +138,20 @@ export async function POST(req: Request) {
     }
 
     const admin = getSupabaseAdmin();
+
+    // Idempotency check: Don't start a new job if one is already active for this debate
+    const { data: existingActiveJob } = await admin
+      .from('video_jobs')
+      .select('id, status')
+      .eq('debate_id', debateId)
+      .in('status', ['composing', 'pending'])
+      .maybeSingle();
+
+    if (existingActiveJob) {
+      console.log(`[Idempotency] Active job already exists for debate ${debateId}: ${existingActiveJob.id}`);
+      return NextResponse.json({ ok: true, jobId: existingActiveJob.id, status: existingActiveJob.status, alreadyRunning: true }, { status: 200 });
+    }
+
     let requiredTokens = 0;
     try {
       const rate = await getActiveComposeCostRate(admin);
@@ -151,6 +165,7 @@ export async function POST(req: Request) {
     } catch { }
 
     if (requiredTokens > 0) {
+      console.log(`[TokenCheck] User ${user.id} needs ${requiredTokens} tokens for compose job`);
       const { data: prof } = await admin
         .from('profiles')
         .select('token_balance')
@@ -158,15 +173,25 @@ export async function POST(req: Request) {
         .maybeSingle();
 
       const tokenBalance = Number(prof?.token_balance ?? 0);
+      console.log(`[TokenCheck] Current balance for ${user.id}: ${tokenBalance}`);
+
       if (tokenBalance < requiredTokens) {
+        console.warn(`[TokenCheck] Insufficient tokens. Needed: ${requiredTokens}, Has: ${tokenBalance}`);
         return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', tokensNeeded: requiredTokens, tokenBalance }, { status: 402 });
       }
 
+      console.log(`[TokenDebit] Atomically reserving ${requiredTokens} tokens for user ${user.id}`);
       const { error: rErr } = await admin.rpc('reserve_tokens', {
         p_user_id: user.id,
         p_tokens: requiredTokens,
       });
-      if (rErr) return NextResponse.json({ error: rErr.message }, { status: 500 });
+      if (rErr) {
+        console.error(`[TokenDebit] Failed to reserve tokens: ${rErr.message}`);
+        return NextResponse.json({ error: rErr.message }, { status: 500 });
+      }
+      console.log(`[TokenDebit] Successfully reserved ${requiredTokens} tokens (once)`);
+    } else {
+      console.log(`[TokenCheck] No tokens required for this compose request`);
     }
 
     const { data: assets, error: aErr } = await admin
@@ -195,11 +220,29 @@ export async function POST(req: Request) {
       id: jobId,
       user_id: user.id,
       debate_id: debateId,
-      status: 'composing',
+      status: 'pending',
       output_url: outputPath
     });
 
-    if (jErr) return NextResponse.json({ error: jErr.message }, { status: 500 });
+    if (jErr) {
+      console.error(`[DB] Failed to create video_job: ${jErr.message}`);
+      return NextResponse.json({ error: jErr.message }, { status: 500 });
+    }
+
+    const runId = crypto.randomUUID();
+    const { error: runErr } = await admin.from('job_runs').insert({
+      id: runId,
+      video_job_id: jobId,
+      run_type: 'compose',
+      status: 'starting',
+      cloud_run_job_name: 'jarnazi-composer-job',
+      metadata: { debateId, assetIds, outputPath, inputUrls }
+    } as any);
+
+    if (runErr) {
+      console.warn(`[DB] Failed to create job_run record: ${runErr.message}`);
+      // Continue anyway, but log it
+    }
 
     await bestEffortSaveCanonToDb(admin, jobId, body?.canon);
 
@@ -236,21 +279,24 @@ export async function POST(req: Request) {
     }
 
     // Trigger Cloud Run Job
-    console.log(`[CloudRunJob] Triggering jarnazi-composer-job for jobId: ${jobId}`);
-    const jobTriggered = await triggerComposerJob(jobId);
+    console.log(`[CloudRunJob] Triggering jarnazi-composer-job for jobId: ${jobId}, runId: ${runId}`);
+    const jobTriggered = await triggerComposerJob(jobId, runId);
 
     if (jobTriggered) {
-      console.log(`[CloudRunJob] Cloud Run Job triggered successfully for jobId: ${jobId}`);
+      console.log(`[CloudRunJob] Cloud Run Job triggered SUCCESSFULLY for jobId: ${jobId}`);
+      await admin.from('video_jobs').update({ status: 'composing' }).eq('id', jobId);
+      if (runId) await admin.from('job_runs').update({ status: 'running' }).eq('id', runId);
     } else {
-      console.error(`[CloudRunJob] Cloud Run Job trigger failed for jobId: ${jobId}`);
+      console.error(`[CloudRunJob] Cloud Run Job trigger FAILED for jobId: ${jobId}`);
+      await admin.from('video_jobs').update({ status: 'failed' }).eq('id', jobId);
+      if (runId) await admin.from('job_runs').update({ status: 'failed', error_message: 'Trigger failed' }).eq('id', runId);
     }
 
     if (!dispatchOk && !jobTriggered) {
-      await admin.from('video_jobs').update({ status: 'failed' }).eq('id', jobId);
       return NextResponse.json({ error: 'Composer dispatch and Job trigger failed' }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true, jobId, outputPath, jobTriggered }, { status: 202 });
+    return NextResponse.json({ ok: true, jobId, runId, outputPath, jobTriggered }, { status: 202 });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || 'Unexpected error' }, { status: 500 });
   }

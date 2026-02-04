@@ -1,8 +1,8 @@
 
 import { GoogleAuth } from 'google-auth-library';
 
-export async function triggerComposerJob(jobId: string) {
-    console.log(`[CloudRunJob] Initiating trigger for job: jarnazi-composer-job, ID: ${jobId}`);
+export async function triggerComposerJob(jobId: string, runId?: string) {
+    console.log(`[CloudRunJob] Initiating trigger for job: jarnazi-composer-job, ID: ${jobId}${runId ? `, RunID: ${runId}` : ''}`);
     try {
         const project = process.env.GOOGLE_CLOUD_PROJECT;
         const region = "europe-west1"; // Required region
@@ -22,6 +22,13 @@ export async function triggerComposerJob(jobId: string) {
 
         console.log(`[CloudRunJob] Calling API: ${url}`);
 
+        const envVars = [
+            { name: "JOB_ID", value: jobId }
+        ];
+        if (runId) {
+            envVars.push({ name: "RUN_ID", value: runId });
+        }
+
         const res = await client.request({
             url,
             method: 'POST',
@@ -29,9 +36,7 @@ export async function triggerComposerJob(jobId: string) {
                 overrides: {
                     containerOverrides: [
                         {
-                            env: [
-                                { name: "JOB_ID", value: jobId }
-                            ]
+                            env: envVars
                         }
                     ]
                 }

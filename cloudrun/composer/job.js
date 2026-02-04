@@ -10,109 +10,162 @@ const SUPABASE_URL = (process.env.SUPABASE_URL || "").trim();
 const SERVICE_ROLE = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
 
 if (!SUPABASE_URL || !SERVICE_ROLE) {
-    console.error("CRITICAL: Missing Supabase Credentials");
+    console.error("[CRITICAL] Missing Supabase Credentials (SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY)");
     process.exit(1);
 }
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
 
-// Main Job Logic
 async function run() {
-    const jobId = process.env.JOB_ID || process.argv[2]; // Passed via env or arg
+    const jobId = process.env.JOB_ID;
+    const runId = process.env.RUN_ID;
+
     if (!jobId) {
-        console.error("No JOB_ID provided");
+        console.error("[Error] No JOB_ID provided in environment");
         process.exit(1);
     }
 
-    console.log(`Starting Job: ${jobId}`);
+    console.log(`[JobStart] ID: ${jobId}, RunID: ${runId || 'N/A'}`);
 
     try {
-        // 1. Fetch Job
-        const { data: job, error } = await supabase.from("video_jobs").select("*").eq("id", jobId).single();
-        if (error || !job) throw new Error(`Job not found: ${error?.message}`);
-
-        if (job.status === 'done') {
-            console.log("Job already done, exiting.");
-            process.exit(0);
+        // 1. Update Job/Run Status to Running
+        await updateJob(jobId, { status: "composing", error: null });
+        if (runId) {
+            await supabase.from("job_runs").update({ status: "running", started_at: new Date().toISOString() }).eq("id", runId);
         }
 
-        // 2. Fetch Shots
-        const { data: shots } = await supabase.from("video_shots").select("*").eq("job_id", jobId).order("metadata->sequence", { ascending: true });
-        if (!shots || shots.length === 0) throw new Error("No shots found");
+        // 2. Fetch Job Details
+        console.log(`[DB] Fetching job details for ${jobId}`);
+        const { data: job, error: jobErr } = await supabase.from("video_jobs").select("*").eq("id", jobId).single();
+        if (jobErr || !job) throw new Error(`Job not found: ${jobErr?.message || 'Empty result'}`);
 
-        // Verify all done
-        const notDone = shots.filter(s => s.status !== 'done');
-        if (notDone.length > 0) throw new Error(`${notDone.length} shots are not ready.`);
+        if (job.status === 'done' && job.output_url) {
+            console.log("[Job] Status is already 'done'. Checking if we should re-process...");
+            // Optionally exit early if idempotent
+        }
 
-        // 3. Prepare Work
-        await updateJob(jobId, { status: "composing", error: null });
+        // 3. Fetch Inputs (Metadata from job_runs preferred, fallback to video_shots)
+        let inputs = [];
+        if (runId) {
+            console.log(`[DB] Fetching metadata from job_run ${runId}`);
+            const { data: runData } = await supabase.from("job_runs").select("metadata").eq("id", runId).single();
+            if (runData?.metadata?.inputUrls) {
+                console.log(`[Job] Found ${runData.metadata.inputUrls.length} urls in metadata`);
+                inputs = runData.metadata.inputUrls;
+            }
+        }
 
-        // Directory Setup
+        if (inputs.length === 0) {
+            console.log("[DB] Fallback: Fetching shots from video_shots table");
+            const { data: shots } = await supabase.from("video_shots").select("*").eq("job_id", jobId).order("metadata->sequence", { ascending: true });
+            if (shots && shots.length > 0) {
+                inputs = shots.map(s => s.output_url).filter(Boolean);
+            }
+        }
+
+        if (inputs.length === 0) {
+            throw new Error("No input video segments found for composition");
+        }
+
+        // 4. Processing
+        console.log(`[Processing] Starting composition of ${inputs.length} segments`);
         const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "compose-"));
-        const outputPath = `composed/${job.user_id}/${job.id}.mp4`;
+        const outputPath = job.output_url || `composed/${job.user_id}/${job.id}.mp4`;
 
         try {
-            console.log("Downloading assets...");
-            const inputs = [];
-            for (let i = 0; i < shots.length; i++) {
-                if (!shots[i].output_url) continue;
-                const localPath = path.join(tmpDir, `seg_${i}.mp4`);
-                await downloadToFile(shots[i].output_url, localPath);
-
-                // Normalize (ensure standard fps/res)
+            const localPaths = [];
+            for (let i = 0; i < inputs.length; i++) {
+                const segPath = path.join(tmpDir, `seg_${i}.mp4`);
                 const normPath = path.join(tmpDir, `norm_${i}.mp4`);
-                await normalizeSegment(localPath, normPath);
-                inputs.push(normPath);
+
+                console.log(`[Download] Segment ${i + 1}/${inputs.length}`);
+                await downloadToFile(inputs[i], segPath);
+
+                console.log(`[FFmpeg] Normalizing segment ${i + 1}`);
+                await normalizeSegment(segPath, normPath);
+                localPaths.push(normPath);
             }
 
-            console.log("Merging...");
+            console.log("[FFmpeg] Merging all segments...");
             const mergedPath = path.join(tmpDir, "output.mp4");
-            await concatSegments(inputs, mergedPath);
+            await concatSegments(localPaths, mergedPath);
 
-            // Upload
-            console.log("Uploading...");
+            console.log(`[Storage] Uploading final video to ${outputPath}`);
             const fileContent = fs.readFileSync(mergedPath);
-            const { error: upErr } = await supabase.storage.from("videos").upload(outputPath, fileContent, { contentType: "video/mp4", upsert: true });
-            if (upErr) throw upErr;
+            const { error: upErr } = await supabase.storage.from("videos").upload(outputPath, fileContent, {
+                contentType: "video/mp4",
+                upsert: true
+            });
+            if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
 
-            // Finalize
-            await updateJob(jobId, { status: "done", output_url: outputPath, error: null });
-            console.log("Success!");
+            // 5. Finalize
+            console.log("[Finalizing] Updating database records");
+            const now = new Date().toISOString();
 
-        } catch (innerErr) {
-            throw innerErr;
+            // Update Job
+            await updateJob(jobId, { status: "done", output_url: outputPath, updated_at: now });
+
+            // Update Run
+            if (runId) {
+                await supabase.from("job_runs").update({ status: "completed", finished_at: now }).eq("id", runId);
+            }
+
+            // Create Generated Asset (Logical integration)
+            console.log("[DB] Creating generated_assets record");
+            const { error: assetErr } = await supabase.from("generated_assets").insert({
+                user_id: job.user_id,
+                debate_id: job.debate_id,
+                job_run_id: runId || null,
+                asset_type: "video",
+                prompt: "Full Composed Video",
+                provider_name: "jarnazi-composer",
+                storage_path: outputPath,
+                public_url: null, // Will be signed on demand
+                created_at: now
+            });
+            if (assetErr) console.warn(`[Warning] Failed to insert generated_asset: ${assetErr.message}`);
+
+            console.log(`[Success] Job ${jobId} completed successfully.`);
+
         } finally {
-            fs.rmSync(tmpDir, { recursive: true, force: true });
+            try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch (e) { }
         }
 
     } catch (err) {
-        console.error("Job Failed:", err);
+        console.error(`[FatalError] Job ${jobId} failed:`, err.message);
         await updateJob(jobId, { status: "failed", error: err.message });
+        if (runId) {
+            await supabase.from("job_runs").update({
+                status: "failed",
+                error_message: err.message,
+                finished_at: new Date().toISOString()
+            }).eq("id", runId);
+        }
         process.exit(1);
     }
 }
 
 // Helpers
 async function updateJob(id, patch) {
-    await supabase.from("video_jobs").update(patch).eq("id", id);
+    const { error } = await supabase.from("video_jobs").update(patch).eq("id", id);
+    if (error) console.error(`[DBError] Failed to update video_job ${id}:`, error.message);
 }
 
 async function downloadToFile(url, dest) {
     const r = await fetch(url);
-    if (!r.ok) throw new Error(`Fetch failed: ${r.status}`);
-    const buf = Buffer.from(await r.arrayBuffer());
-    fs.writeFileSync(dest, buf);
+    if (!r.ok) throw new Error(`Download failed for ${url}: ${r.status}`);
+    const arrayBuffer = await r.arrayBuffer();
+    fs.writeFileSync(dest, Buffer.from(arrayBuffer));
 }
 
 function runCmd(cmd, args) {
     return new Promise((resolve, reject) => {
         const p = spawn(cmd, args);
-        p.on("close", (code) => code === 0 ? resolve() : reject(new Error(`Command failed: ${cmd}`)));
+        p.on("close", (code) => code === 0 ? resolve() : reject(new Error(`Command ${cmd} failed with code ${code}`)));
     });
 }
 
 async function normalizeSegment(input, output) {
-    // Ensure consistency: 1280x720, 30fps, aac audio (add silence if missing)
     const args = [
         "-y", "-i", input,
         "-vf", "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,fps=30",
@@ -127,8 +180,6 @@ async function concatSegments(inputs, output) {
     const listPath = output + ".txt";
     const content = inputs.map(p => `file '${p}'`).join("\n");
     fs.writeFileSync(listPath, content);
-
-    // Safe concat
     await runCmd("ffmpeg", ["-y", "-f", "concat", "-safe", "0", "-i", listPath, "-c", "copy", output]);
 }
 
