@@ -8,8 +8,8 @@ const auth = new GoogleAuth();
 export async function getIdToken(audience: string): Promise<string | null> {
     try {
         const client = await auth.getIdTokenClient(audience);
-        const headers = await client.getRequestHeaders();
-        const authHeader = headers['Authorization'];
+        const headers = await client.getRequestHeaders() as Record<string, string>;
+        const authHeader = headers['Authorization'] || headers['authorization'];
         if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
             return authHeader.substring(7);
         }

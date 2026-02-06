@@ -27,7 +27,7 @@ export default function ProviderForm({ lang }: { lang: string }) {
 
         try {
             // Parse config if present
-            let configJson = {};
+            let configJson: any = {};
             if (formData.config) {
                 try {
                     configJson = JSON.parse(formData.config);
@@ -36,19 +36,26 @@ export default function ProviderForm({ lang }: { lang: string }) {
                 }
             }
 
+            // Merge form fields into config for runtime usage
+            const finalConfig = {
+                ...configJson,
+                provider: formData.provider,
+                model_id: formData.model_id,
+                priority: formData.priority
+            };
+
+            const payload = {
+                name: formData.name,
+                kind: formData.category, // DB column is 'kind'
+                enabled: formData.is_active, // DB column is 'enabled'
+                env_key: formData.env_key || null,
+                base_url: formData.base_url || null,
+                config: finalConfig
+            };
+
             const { error } = await supabase
                 .from('ai_providers')
-                .insert([{
-                    name: formData.name,
-                    provider: formData.provider,
-                    model_id: formData.model_id,
-                    category: formData.category,
-                    env_key: formData.env_key || null,
-                    base_url: formData.base_url || null,
-                    is_active: formData.is_active,
-                    priority: formData.priority,
-                    config: configJson
-                }]);
+                .insert([payload]);
 
             if (error) throw error;
 
