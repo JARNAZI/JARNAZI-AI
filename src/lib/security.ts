@@ -43,6 +43,9 @@ export function sanitizeInput(input: string): string {
  */
 export async function verifyTurnstileToken(token: string, ip?: string): Promise<boolean> {
     const secret = process.env.CLOUDFLARE_TURNSTILE_API_SECRET_KEY;
+
+    console.log(`[Diagnostic] Turnstile Secret Key configured: ${!!secret}`);
+
     if (!secret) {
         console.warn("CLOUDFLARE_TURNSTILE_API_SECRET_KEY not set. Bypassing check (Dev mode).");
         return true;
