@@ -142,7 +142,7 @@ export default function ProviderForm({ lang }: { lang: string }) {
                     <input
                         type="text"
                         className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                        placeholder="e.g. Openai_api_key"
+                        placeholder="e.g. OPENAI_API_KEY"
                         value={formData.env_key}
                         onChange={e => setFormData({ ...formData, env_key: e.target.value })}
                     />
@@ -169,7 +169,7 @@ export default function ProviderForm({ lang }: { lang: string }) {
                         type="text"
                         required
                         className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                        placeholder="e.g. Openai_api_key (stored in Supabase Edge Function secrets)"
+                        placeholder="e.g. OPENAI_API_KEY (stored in Supabase Edge Function secrets)"
                         value={formData.env_key}
                         onChange={e => setFormData({ ...formData, env_key: e.target.value })}
                     />

@@ -1,36 +1,93 @@
-# Environment Variables Configuration Template
+# Environment Variables Configuration
+# Standardized List - Use EXACTLY as written below.
+# Do NOT rename, merge, or change casing.
 
-Copy this template to create your `.env.local` file:
+# -----------------------------------------------------------------------------
+# VERTEX AI (Google Cloud)
+# -----------------------------------------------------------------------------
+VERTEX_AUTH_URI=
+VERTEX_TOKEN_URI=
+VERTEX_PRIVATE_KEY_ID=
+VERTEX_PRIVATE_KEY=
+VERTEX_CLIENT_EMAIL=
+VERTEX_CLIENT_ID=
+VERTEX_AUTH_PROVIDER_X509_CERT_URL=
+VERTEX_CLIENT_X509_CERT_URL=
+VERTEX_UNIVERSE_DOMAIN=
+VERTEX_PROJECT_ID=
 
-```bash
-# App Configuration (Required for Production/Staging)
-NEXT_PUBLIC_BASE_URL=https://your-site.com
+# -----------------------------------------------------------------------------
+# SUPABASE
+# -----------------------------------------------------------------------------
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_DB_URL=
 
-# Supabase Configuration (Required)
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+# -----------------------------------------------------------------------------
+# MANAGEMENT
+# -----------------------------------------------------------------------------
+MANAGEMENT_API_URL=
 
-# AI Provider API Keys (At least one required for debates)
-OPENAI_API_KEY=sk-your_openai_api_key_here
-DEEPSEEK_API_KEY=your_deepseek_api_key_here
+# -----------------------------------------------------------------------------
+# CLOUDFLARE TURNSTILE
+# -----------------------------------------------------------------------------
+CLOUDFLARE_TURNSTILE_API_SECRET_KEY=
+NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_API_SITE_KEY=
 
-# Security & Anti-Abuse (Required for Strict Mode)
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=your_cloudflare_site_key
-TURNSTILE_SECRET_KEY=your_cloudflare_secret_key
-GOOGLE_SAFE_BROWSING_KEY=your_google_safe_browsing_key
+# -----------------------------------------------------------------------------
+# AI MODELS
+# -----------------------------------------------------------------------------
+OPENAI_API_KEY=
+DEEPSEEK_API_KEY=
+GEMINI_API_KEY=
+CLOUDE_API_KEY=
+MISTRAL_ID_KEY=
+MISTRAL_API_KEY=
+COHERE_API_KEY=
+QWEN_ACCESS_KEY_ID=
+QWEN_ACCESS_KEY_SECRET=
+REPLICATE_API_KEY=
 
-# Payment Providers
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
-NOWPAYMENTS_API_KEY=your_nowpayments_api_key
-NOWPAYMENTS_IPN_SECRET=your_nowpayments_ipn_secret
+RUNWAYML_API_KEY=
+LUMALABS_API_KEY=
+FAL_API_KEY=
+ELEVENLABS_API_KEY=
+STABILITY_API_KEY=
+GOOGLE_SAFE_BROWSING_API_KEY=
 
-# Optional AI Providers
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
-GOOGLE_API_KEY=your_google_gemini_api_key_here
-# System & Maintenance
-CRON_SECRET=your_long_random_secret_string_here
-```
+# -----------------------------------------------------------------------------
+# NOWPAYMENTS
+# -----------------------------------------------------------------------------
+NOWPATMENTS_API_KEY=
+NOWPAYMENTS_PUBLIC_KEY=
+NOWPAYMENTS_IPN_SECRET_KEY=
+NOWPAYMENTS_WEBHOOK_URL=
 
-**Note**: For production deployment, add these as Supabase Edge Function Secrets instead of using `.env.local`.
+# -----------------------------------------------------------------------------
+# STRIPE
+# -----------------------------------------------------------------------------
+STRIPE_SECRET_LIVE_KEY=
+STRIPE_PUBLISH_LIVE_KEY=
+STRIPE_WEBHOOK=
+STRIPE_URL=
+STRIPE_TEST_PUBLISH_KEY=
+STRIPE_TEST_SECRET_KEY=
+
+# -----------------------------------------------------------------------------
+# EMAIL (RESEND)
+# -----------------------------------------------------------------------------
+RESEND_API_KEY=
+
+# -----------------------------------------------------------------------------
+# CRON & INTERNAL
+# -----------------------------------------------------------------------------
+CRON_SECRET=
+INTERNAL_WEBHOOK_SECRET=
+
+# -----------------------------------------------------------------------------
+# CLOUD RUN COMPOSER
+# -----------------------------------------------------------------------------
+CLOUD_RUN_COMPOSER_URL=
+CLOUD_RUN_COMPOSER_SECRET=
+COMPOSER_BASE_URL=

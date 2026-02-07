@@ -4,13 +4,13 @@ import crypto from 'crypto';
 import { sendTokenPurchaseInvoice } from '@/lib/email';
 import { processPendingForUser } from '@/lib/pending/processPending';
 
-const IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET!;
+const IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET_KEY!;
 
 export const runtime = 'nodejs';
 
 export async function POST(req: Request) {
     const supabaseAdmin = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
     try {
@@ -39,34 +39,34 @@ export async function POST(req: Request) {
             if (userId && tokensStr) {
                 const tokensToAdd = parseInt(tokensStr);
 
-const eventId = String(data.payment_id || data.invoice_id || data.order_id || '');
-if (!eventId) {
-    return NextResponse.json({ error: 'Missing payment id' }, { status: 400 });
-}
+                const eventId = String(data.payment_id || data.invoice_id || data.order_id || '');
+                if (!eventId) {
+                    return NextResponse.json({ error: 'Missing payment id' }, { status: 400 });
+                }
 
-// Idempotency: prevent double-grant if NowPayments retries the IPN
-const amountCents = (typeof data.price_amount === 'number' || typeof data.price_amount === 'string')
-    ? Math.round(parseFloat(String(data.price_amount)) * 100)
-    : null;
+                // Idempotency: prevent double-grant if NowPayments retries the IPN
+                const amountCents = (typeof data.price_amount === 'number' || typeof data.price_amount === 'string')
+                    ? Math.round(parseFloat(String(data.price_amount)) * 100)
+                    : null;
 
-const { error: peInsertErr } = await supabaseAdmin.from('payment_events').insert({
-    provider: 'nowpayments',
-    event_id: eventId,
-    user_id: userId,
-    amount_cents: amountCents,
-    tokens_added: tokensToAdd,
-    status: 'received',
-    raw: data,
-});
+                const { error: peInsertErr } = await supabaseAdmin.from('payment_events').insert({
+                    provider: 'nowpayments',
+                    event_id: eventId,
+                    user_id: userId,
+                    amount_cents: amountCents,
+                    tokens_added: tokensToAdd,
+                    status: 'received',
+                    raw: data,
+                });
 
-if (peInsertErr) {
-    const isDuplicate = (peInsertErr as any).code === '23505' || /duplicate key/i.test(peInsertErr.message || '');
-    if (isDuplicate) {
-        return NextResponse.json({ ok: true, duplicate: true });
-    }
-    console.error('Failed to record payment event (nowpayments):', peInsertErr);
-    return NextResponse.json({ error: 'Failed to record payment event' }, { status: 500 });
-}
+                if (peInsertErr) {
+                    const isDuplicate = (peInsertErr as any).code === '23505' || /duplicate key/i.test(peInsertErr.message || '');
+                    if (isDuplicate) {
+                        return NextResponse.json({ ok: true, duplicate: true });
+                    }
+                    console.error('Failed to record payment event (nowpayments):', peInsertErr);
+                    return NextResponse.json({ error: 'Failed to record payment event' }, { status: 500 });
+                }
                 const { data: profile } = await supabaseAdmin.from('profiles').select('token_balance_cents').eq('id', userId).single();
 
                 if (profile) {
@@ -95,18 +95,18 @@ if (peInsertErr) {
                         );
                     }
 
-// Mark processed
-await supabaseAdmin.from('payment_events')
-    .update({ status: 'processed' })
-    .eq('provider', 'nowpayments')
-    .eq('event_id', eventId);
+                    // Mark processed
+                    await supabaseAdmin.from('payment_events')
+                        .update({ status: 'processed' })
+                        .eq('provider', 'nowpayments')
+                        .eq('event_id', eventId);
 
-// Attempt server-side resume of latest pending request (if still valid)
-try {
-    await processPendingForUser(userId);
-} catch (e) {
-    console.error('Failed to auto-resume pending request:', e);
-}
+                    // Attempt server-side resume of latest pending request (if still valid)
+                    try {
+                        await processPendingForUser(userId);
+                    } catch (e) {
+                        console.error('Failed to auto-resume pending request:', e);
+                    }
 
                 }
             }

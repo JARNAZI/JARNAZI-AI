@@ -38,7 +38,7 @@ export class DebateOrchestrator {
     constructor() {
         // Admin access required to read providers and write turns securely
         this.supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_URL!,
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         );
     }
@@ -338,7 +338,7 @@ export class DebateOrchestrator {
         try {
             const response = await fetch('https://api.anthropic.com/v1/messages', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY!, 'anthropic-version': '2023-06-01' },
+                headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.CLOUDE_API_KEY!, 'anthropic-version': '2023-06-01' },
                 body: JSON.stringify({ model: agent.model_id, max_tokens: 1024, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }] })
             });
             const data = await response.json();
@@ -348,7 +348,7 @@ export class DebateOrchestrator {
 
     private async callGoogle(agent: AIProvider, systemPrompt: string, userPrompt: string) {
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${agent.model_id}:generateContent?key=${process.env.GOOGLE_API_KEY}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${agent.model_id}:generateContent?key=${process.env.GEMINI_API_KEY}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }] })
@@ -361,7 +361,7 @@ export class DebateOrchestrator {
     // Mistral Integration
     private async callMistral(agent: AIProvider, systemPrompt: string, userPrompt: string) {
         try {
-            const apiKey = process.env.Mistral_api_key;
+            const apiKey = process.env.MISTRAL_API_KEY;
             if (!apiKey) throw new Error("Missing Mistral_api_key");
 
             const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
@@ -385,7 +385,7 @@ export class DebateOrchestrator {
     // Cohere Integration
     private async callCohere(agent: AIProvider, systemPrompt: string, userPrompt: string) {
         try {
-            const apiKey = process.env.Cohere_api_key;
+            const apiKey = process.env.COHERE_API_KEY;
             if (!apiKey) throw new Error("Missing Cohere_api_key");
 
             const response = await fetch('https://api.cohere.ai/v1/chat', {
@@ -409,7 +409,7 @@ export class DebateOrchestrator {
 
     private async callReplicateText(agent: AIProvider, systemPrompt: string, userPrompt: string) {
         try {
-            const apiKey = process.env.Replicate_api_key;
+            const apiKey = process.env.REPLICATE_API_KEY;
             if (!apiKey) throw new Error("Missing Replicate_api_key");
 
             const response = await fetch('https://api.replicate.com/v1/predictions', {

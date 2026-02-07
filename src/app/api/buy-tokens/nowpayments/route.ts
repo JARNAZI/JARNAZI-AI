@@ -6,13 +6,13 @@ export const runtime = 'nodejs';
 
 export async function POST(req: Request) {
     try {
-        const apiKey = process.env.NOWPAYMENTS_API_KEY;
+        const apiKey = process.env.NOWPATMENTS_API_KEY;
         if (!apiKey) {
             return NextResponse.json({ error: 'NOWTokens is not configured' }, { status: 500 });
         }
 
         // Auth (server side)
-        const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const url = process.env.SUPABASE_URL;
         const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
         if (!url || !serviceKey) {
             return NextResponse.json({ error: 'Supabase admin credentials missing' }, { status: 500 });
@@ -48,7 +48,6 @@ export async function POST(req: Request) {
         // This keeps NOWPayments token granting independent from the web host (Vercel/Cloud Run/etc.).
         const webhookUrl =
             process.env.NOWPAYMENTS_WEBHOOK_URL ||
-            (process.env as any).Nowpayments_webhook_url ||
             `${appUrl}/api/webhooks/nowpayments`;
 
         // Call NowPayments API

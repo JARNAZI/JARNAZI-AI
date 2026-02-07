@@ -14,7 +14,7 @@ const SAFE_BROWSING_URL = 'https://safebrowsing.googleapis.com/v4/threatMatches:
 // --- Zod Schemas ---
 export const DebateSchema = z.object({
     topic: z.string().min(5).max(200).trim(), // Strict length limits
-    requestType: z.enum(['text','image','video','audio','file']).optional(),
+    requestType: z.enum(['text', 'image', 'video', 'audio', 'file']).optional(),
     userId: z.string().uuid(),
     turnstileToken: z.string().optional()
 });
@@ -42,9 +42,9 @@ export function sanitizeInput(input: string): string {
  * 2. Cloudflare Turnstile Verification
  */
 export async function verifyTurnstileToken(token: string, ip?: string): Promise<boolean> {
-    const secret = process.env.TURNSTILE_SECRET_KEY;
+    const secret = process.env.CLOUDFLARE_TURNSTILE_API_SECRET_KEY;
     if (!secret) {
-        console.warn("TURNSTILE_SECRET_KEY not set. Bypassing check (Dev mode).");
+        console.warn("CLOUDFLARE_TURNSTILE_API_SECRET_KEY not set. Bypassing check (Dev mode).");
         return true;
     }
 
@@ -72,7 +72,7 @@ export async function verifyTurnstileToken(token: string, ip?: string): Promise<
  * Checks if the topic contains malicious URLs or phrases (if text analysis is supported, mainly for URLs within text).
  */
 export async function checkSafeBrowsing(text: string): Promise<boolean> {
-    const apiKey = process.env.GOOGLE_SAFE_BROWSING_KEY;
+    const apiKey = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
     if (!apiKey) return true; // Bypass if no key
 
     // Extract URLs from text
@@ -117,7 +117,7 @@ export async function checkSafeBrowsing(text: string): Promise<boolean> {
  */
 export async function checkRateLimit(userId: string): Promise<boolean> {
     const supabaseAdmin = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 

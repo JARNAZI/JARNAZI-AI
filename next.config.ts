@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
   // },
 
   serverExternalPackages: ["isomorphic-dompurify", "jsdom"],
+  env: {
+    // Expose Supabase vars that lost NEXT_PUBLIC_ prefix but are needed on client
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+  },
 };
 
 export default nextConfig;

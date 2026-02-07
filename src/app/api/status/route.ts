@@ -9,11 +9,11 @@ export async function GET() {
         const configured = {
             openai: !!process.env.OPENAI_API_KEY,
             deepseek: !!process.env.DEEPSEEK_API_KEY,
-            anthropic: !!process.env.ANTHROPIC_API_KEY,
-            google: !!process.env.GOOGLE_API_KEY,
-            resend: !!process.env.RESEND_API_KEY || !!process.env.RESEND_API_KEY_LIVE,
+            anthropic: !!process.env.CLOUDE_API_KEY,
+            google: !!process.env.GEMINI_API_KEY,
+            resend: !!process.env.RESEND_API_KEY,
             resend_from: !!process.env.RESEND_FROM_EMAIL,
-            supabase: !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+            supabase: !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY,
             timestamp: new Date().toISOString()
         };
 

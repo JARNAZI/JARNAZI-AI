@@ -1,6 +1,12 @@
 import { GoogleAuth } from 'google-auth-library';
 
-const auth = new GoogleAuth();
+const auth = new GoogleAuth({
+    projectId: process.env.VERTEX_PROJECT_ID,
+    credentials: (process.env.VERTEX_CLIENT_EMAIL && process.env.VERTEX_PRIVATE_KEY) ? {
+        client_email: process.env.VERTEX_CLIENT_EMAIL,
+        private_key: process.env.VERTEX_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    } : undefined
+});
 
 /**
  * Gets an ID token for a given audience (service-to-service auth)
@@ -51,12 +57,12 @@ export async function authenticatedFetch(url: string, options: RequestInit = {})
 export async function triggerComposerJob(jobId: string, runId?: string) {
     console.log(`[CloudRunJob] Initiating trigger for job: jarnazi-composer-job, ID: ${jobId}${runId ? `, RunID: ${runId}` : ''}`);
     try {
-        const project = process.env.GOOGLE_CLOUD_PROJECT;
+        const project = process.env.VERTEX_PROJECT_ID;
         const region = "europe-west1"; // Required region
         const jobName = "jarnazi-composer-job"; // Required job name
 
         if (!project) {
-            console.warn("[CloudRunJob] Skipping Job Trigger: No GOOGLE_CLOUD_PROJECT environment variable found");
+            console.warn("[CloudRunJob] Skipping Job Trigger: No VERTEX_PROJECT_ID environment variable found");
             return false;
         }
 
