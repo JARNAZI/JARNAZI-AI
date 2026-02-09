@@ -8,7 +8,7 @@ interface TurnstileWidgetProps {
 }
 
 export default function TurnstileWidget({ onVerify, onError, className, siteKey: propSiteKey }: TurnstileWidgetProps & { className?: string, siteKey?: string }) {
-    const siteKey = propSiteKey || process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_API_SITE_KEY;
+    const siteKey = propSiteKey || process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_API_SITE_KEY;
 
     // Production-safe diagnostic (log only boolean)
     if (typeof window !== 'undefined') {
@@ -16,7 +16,7 @@ export default function TurnstileWidget({ onVerify, onError, className, siteKey:
     }
 
     if (!siteKey) {
-        console.warn("NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_API_SITE_KEY is missing. Widget disabled.");
+        console.warn("NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY (or API variant) is missing. Widget disabled.");
         return <div className="text-yellow-500 text-xs p-2 border border-yellow-500/30 rounded">Security Check (Turnstile) Key Missing</div>;
     }
 

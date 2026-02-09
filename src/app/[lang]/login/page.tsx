@@ -6,7 +6,8 @@ export default async function LoginPage(props: { params: Promise<{ lang: string 
     const dict = await getDictionary(params.lang);
 
     // Runtime injection: Read from process.env on the server (Cloud Run) and pass to client
-    const turnstileSiteKey = process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_API_SITE_KEY;
+    // Support both naming conventions (env.example vs ENV_SETUP) to prevent "Key Missing"
+    const turnstileSiteKey = process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_API_SITE_KEY;
 
     return (
         <LoginClient

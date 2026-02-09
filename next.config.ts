@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
     // Expose Supabase vars that lost NEXT_PUBLIC_ prefix but are needed on client
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY,
     NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_API_SITE_KEY: process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_API_SITE_KEY,
   },
 };
