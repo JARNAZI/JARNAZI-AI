@@ -6,7 +6,7 @@ import { Lock, Mail, User, Loader2, AlertCircle, CheckCircle } from 'lucide-reac
 import { toast } from 'sonner'
 import TurnstileWidget from '@/components/turnstile-widget'
 
-export default function RegisterClient({ dict, lang }: { dict: any; lang: string }) {
+export default function RegisterClient({ dict, lang, siteKey }: { dict: any; lang: string; siteKey?: string }) {
     const d = dict.auth || {};
     const [fullName, setFullName] = useState('')
     const [email, setEmail] = useState('')
@@ -160,7 +160,7 @@ export default function RegisterClient({ dict, lang }: { dict: any; lang: string
                         </label>
                     </div>
 
-                    <TurnstileWidget onVerify={setTurnstileToken} />
+                    <TurnstileWidget onVerify={setTurnstileToken} siteKey={siteKey} />
 
                     <button
                         type="submit"

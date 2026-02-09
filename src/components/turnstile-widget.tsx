@@ -7,8 +7,8 @@ interface TurnstileWidgetProps {
     onError?: () => void;
 }
 
-export default function TurnstileWidget({ onVerify, onError, className }: TurnstileWidgetProps & { className?: string }) {
-    const siteKey = process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_API_SITE_KEY;
+export default function TurnstileWidget({ onVerify, onError, className, siteKey: propSiteKey }: TurnstileWidgetProps & { className?: string, siteKey?: string }) {
+    const siteKey = propSiteKey || process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_API_SITE_KEY;
 
     // Production-safe diagnostic (log only boolean)
     if (typeof window !== 'undefined') {

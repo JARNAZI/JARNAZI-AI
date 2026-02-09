@@ -37,9 +37,6 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <div className="fixed bottom-2 right-2 z-[9999] px-2 py-1 bg-primary/10 border border-primary/20 rounded-md text-[10px] text-primary/70 pointer-events-none select-none backdrop-blur-sm">
-            UI Verified – Lang OK – Build v28-HARDENED
-          </div>
           <Toaster />
         </ThemeProvider>
       </body>

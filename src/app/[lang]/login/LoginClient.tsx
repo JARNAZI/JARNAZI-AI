@@ -8,7 +8,7 @@ import { Lock, Mail, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner'
 import TurnstileWidget from '@/components/turnstile-widget'
 
-export default function LoginClient({ dict, lang }: { dict: any; lang: string }) {
+export default function LoginClient({ dict, lang, siteKey }: { dict: any; lang: string; siteKey?: string }) {
     const d = dict.auth || {};
     const router = useRouter()
     const [email, setEmail] = useState('')
@@ -104,7 +104,7 @@ export default function LoginClient({ dict, lang }: { dict: any; lang: string })
                         </div>
                     </div>
 
-                    <TurnstileWidget onVerify={setTurnstileToken} />
+                    <TurnstileWidget onVerify={setTurnstileToken} siteKey={siteKey} />
 
                     <button
                         type="submit"
