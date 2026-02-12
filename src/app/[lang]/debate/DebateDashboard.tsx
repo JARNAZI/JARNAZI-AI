@@ -27,7 +27,17 @@ import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
 import { LANGUAGES } from '@/i18n/config';
 
-export default function DebateDashboard({ params: propsParams, dict }: { params: Promise<{ lang: string }>, dict: any }) {
+export default function DebateDashboard({
+    params: propsParams,
+    dict,
+    supabaseUrl,
+    supabaseAnonKey
+}: {
+    params: Promise<{ lang: string }>,
+    dict: any,
+    supabaseUrl?: string,
+    supabaseAnonKey?: string
+}) {
     const params = use(propsParams);
     const lang = params.lang;
     const d = dict?.dashboard || {};
@@ -42,7 +52,7 @@ export default function DebateDashboard({ params: propsParams, dict }: { params:
     };
 
     const [debates, setDebates] = useState<DebateRecord[]>([]);
-    const [supabase] = useState(() => createClient());
+    const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
     const [topicInput, setTopicInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);

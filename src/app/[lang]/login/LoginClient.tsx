@@ -8,7 +8,13 @@ import { Lock, Mail, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner'
 import TurnstileWidget from '@/components/turnstile-widget'
 
-export default function LoginClient({ dict, lang, siteKey }: { dict: any; lang: string; siteKey?: string }) {
+export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabaseAnonKey }: {
+    dict: any;
+    lang: string;
+    siteKey?: string;
+    supabaseUrl?: string;
+    supabaseAnonKey?: string;
+}) {
     const d = dict.auth || {};
     const router = useRouter()
     const [email, setEmail] = useState('')
@@ -17,7 +23,8 @@ export default function LoginClient({ dict, lang, siteKey }: { dict: any; lang: 
     const [error, setError] = useState<string | null>(null)
     const [turnstileToken, setTurnstileToken] = useState("")
 
-    const supabase = createClient()
+    // Use injected credentials if available (runtime config), else fallback to env vars (build-time config)
+    const supabase = createClient({ supabaseUrl, supabaseAnonKey })
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()

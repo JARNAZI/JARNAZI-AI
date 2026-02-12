@@ -13,7 +13,9 @@ export async function GET() {
             google: !!process.env.GEMINI_API_KEY,
             resend: !!process.env.RESEND_API_KEY,
             resend_from: !!process.env.RESEND_FROM_EMAIL,
-            supabase: !!(process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL) && !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+            supabase_url: !!(process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL),
+            supabase_anon_key: !!(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY),
+            supabase_service_role: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
             timestamp: new Date().toISOString()
         };
 

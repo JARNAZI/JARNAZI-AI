@@ -31,10 +31,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
     }
 
-    const supabaseAdmin = createClient(
-      (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL)!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!url || !serviceKey) {
+      console.error('Missing Supabase credentials for admin client:', { url: !!url, serviceKey: !!serviceKey });
+      return NextResponse.json({ error: 'Supabase admin credentials missing. Please check server environment variables.' }, { status: 500 });
+    }
+
+    const supabaseAdmin = createClient(url, serviceKey);
 
     // 1) Create user (unconfirmed)
     const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({

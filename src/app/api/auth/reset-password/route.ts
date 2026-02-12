@@ -8,10 +8,14 @@ export async function POST(req: Request) {
     try {
         const { email, lang } = await req.json();
 
-        const supabaseAdmin = createClient(
-            (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL)!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        );
+        const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+        const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+        if (!url || !serviceKey) {
+            return NextResponse.json({ error: 'Supabase admin credentials missing' }, { status: 500 });
+        }
+
+        const supabaseAdmin = createClient(url, serviceKey);
 
         const siteUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://jarnazi.com';
         // Redirect to the update-password page

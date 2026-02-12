@@ -34,12 +34,21 @@ type Message = {
 };
 
 // --- MAIN CLIENT COMPONENT ---
-export default function DebateClient({ dict, lang }: { dict: any; lang: string }) {
+export default function DebateClient({
+    dict,
+    lang,
+    supabaseUrl,
+    supabaseAnonKey
+}: {
+    dict: any;
+    lang: string;
+    supabaseUrl?: string;
+    supabaseAnonKey?: string;
+}) {
     const params = useParams();
     const router = useRouter();
     const debateId = params.id as string;
-    // ... (rest of simple init)
-    const [supabase] = useState(() => createClient());
+    const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
 
 
 
