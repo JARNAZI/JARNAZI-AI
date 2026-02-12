@@ -8,17 +8,24 @@ export async function POST(req: Request) {
     try {
         const { email, lang } = await req.json();
 
-        const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+        const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
         const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
         if (!url || !serviceKey) {
             const missing = [];
             if (!url) missing.push('SUPABASE_URL');
             if (!serviceKey) missing.push('SUPABASE_SERVICE_ROLE_KEY');
-            return NextResponse.json({ error: `Supabase admin credentials missing: ${missing.join(', ')}` }, { status: 500 });
+            return NextResponse.json({
+                error: `Supabase admin credentials missing: ${missing.join(', ')}. Ensure these are set in your Cloud Run variables.`
+            }, { status: 500 });
         }
 
-        const supabaseAdmin = createClient(url, serviceKey);
+        const supabaseAdmin = createClient(url, serviceKey, {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false
+            }
+        });
 
         const siteUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://jarnazi.com';
         // Redirect to the update-password page

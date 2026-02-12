@@ -6,6 +6,16 @@ import { NextResponse } from 'next/server';
  */
 export async function GET() {
     try {
+        const env_summary = {
+            NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+            SUPABASE_URL: !!process.env.SUPABASE_URL,
+            NEXT_PUBLIC_SUPABASE_ANON_KEY: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            SUPABASE_ANON_KEY: !!process.env.SUPABASE_ANON_KEY,
+            SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+            RESEND_API_KEY: !!process.env.RESEND_API_KEY,
+            NODE_ENV: process.env.NODE_ENV
+        };
+
         const configured = {
             openai: !!process.env.OPENAI_API_KEY,
             deepseek: !!process.env.DEEPSEEK_API_KEY,
@@ -25,6 +35,7 @@ export async function GET() {
 
         return NextResponse.json({
             configured,
+            env_summary,
             ready,
             message: ready
                 ? 'At least one AI provider is configured'

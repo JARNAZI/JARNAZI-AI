@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
     }
 
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+    const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!url || !serviceKey) {
@@ -39,18 +39,23 @@ export async function POST(req: Request) {
       if (!url) missing.push('SUPABASE_URL');
       if (!serviceKey) missing.push('SUPABASE_SERVICE_ROLE_KEY');
 
-      console.error('Missing Supabase credentials for admin client:', {
-        url: !!url,
-        serviceKey: !!serviceKey,
+      console.error('[AUTH REGISTER] Missing Supabase credentials:', {
+        hasUrl: !!url,
+        hasServiceKey: !!serviceKey,
         envKeys: Object.keys(process.env).filter(k => k.includes('SUPABASE'))
       });
 
       return NextResponse.json({
-        error: `Supabase admin credentials missing: ${missing.join(', ')}. Please check server environment variables.`
+        error: `Supabase admin credentials missing: ${missing.join(', ')}. Ensure these are set in your Cloud Run variables.`
       }, { status: 500 });
     }
 
-    const supabaseAdmin = createClient(url, serviceKey);
+    const supabaseAdmin = createClient(url, serviceKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false
+      }
+    });
 
     // 1) Create user (unconfirmed)
     const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({

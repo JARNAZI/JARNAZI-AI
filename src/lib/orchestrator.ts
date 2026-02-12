@@ -36,11 +36,15 @@ export class DebateOrchestrator {
     private supabase;
 
     constructor() {
+        const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+        if (!url || !key) {
+            throw new Error(`Orchestrator missing Supabase credentials: ${!url ? 'URL ' : ''}${!key ? 'KEY' : ''}`);
+        }
+
         // Admin access required to read providers and write turns securely
-        this.supabase = createClient(
-            ((process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL) || process.env.SUPABASE_URL)!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        );
+        this.supabase = createClient(url, key);
     }
 
     // Helper to normalize provider row from DB

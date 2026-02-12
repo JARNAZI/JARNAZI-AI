@@ -6,14 +6,16 @@ export const runtime = 'nodejs';
 type RequestType = 'text' | 'latex' | 'image' | 'video' | 'file';
 
 function getSupabaseAdmin() {
-  const url = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL)!;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("Missing Supabase Admin credentials in debate/message");
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
 async function callEdgeOrchestrator(body: any, userAuthHeader?: string | null) {
-  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL)!;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceKey) throw new Error("Missing credentials for Edge Orchestrator in debate/message");
   const fnUrl = `${supabaseUrl}/functions/v1/ai-orchestrator`;
   const res = await fetch(fnUrl, {
     method: 'POST',
@@ -22,7 +24,7 @@ async function callEdgeOrchestrator(body: any, userAuthHeader?: string | null) {
       ...(userAuthHeader
         ? {
           'Authorization': userAuthHeader,
-          'apikey': (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY)!,
+          'apikey': (process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)!,
         }
         : {
           'Authorization': `Bearer ${serviceKey}`,

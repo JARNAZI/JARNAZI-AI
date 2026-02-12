@@ -4,15 +4,17 @@ import { cookies } from 'next/headers'
 export async function createClient() {
     const cookieStore = await cookies()
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
     if (!supabaseUrl || !supabaseAnonKey) {
-        // Return a dummy client or throw a more descriptive error that Next.js can handle
-        // For now, we return a client that will fail on use but won't crash on creation
+        if (process.env.NODE_ENV !== 'production') {
+            console.warn("DEBUG [Supabase Server Client]: Missing credentials. Check env vars.");
+        }
+
         return createServerClient(
-            supabaseUrl || 'https://placeholder.supabase.co',
-            supabaseAnonKey || 'placeholder',
+            supabaseUrl || 'https://missing-url.local',
+            supabaseAnonKey || 'missing-key',
             { cookies: { getAll: () => [], setAll: () => { } } }
         )
     }
