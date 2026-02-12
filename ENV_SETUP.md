@@ -19,8 +19,8 @@ VERTEX_PROJECT_ID=
 # -----------------------------------------------------------------------------
 # SUPABASE
 # -----------------------------------------------------------------------------
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 SUPABASE_DB_URL=
 
@@ -59,7 +59,7 @@ GOOGLE_SAFE_BROWSING_API_KEY=
 # -----------------------------------------------------------------------------
 # NOWPAYMENTS
 # -----------------------------------------------------------------------------
-NOWPATMENTS_API_KEY=
+NOWPAYMENTS_API_KEY=
 NOWPAYMENTS_PUBLIC_KEY=
 NOWPAYMENTS_IPN_SECRET_KEY=
 NOWPAYMENTS_WEBHOOK_URL=

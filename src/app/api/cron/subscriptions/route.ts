@@ -17,7 +17,7 @@ export async function GET(req: Request) {
 
     // Example: Downgrade expired Pro users to Free
     // Example implementation (once schema exists):
-    // const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+    // const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
     return NextResponse.json({
         status: 'checked',

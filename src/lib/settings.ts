@@ -22,7 +22,6 @@ export async function getSetting<T = unknown>(key: string, fallback?: T): Promis
   return (data?.value ?? fallback) as T;
 }
 
-// For privileged server routes (webhooks/cron) that need to bypass RLS
 export function getAdminClient() {
   return createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
