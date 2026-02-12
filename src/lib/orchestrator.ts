@@ -38,7 +38,7 @@ export class DebateOrchestrator {
     constructor() {
         // Admin access required to read providers and write turns securely
         this.supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            ((process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL) || process.env.SUPABASE_URL)!,
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         );
     }
@@ -484,3 +484,4 @@ export class DebateOrchestrator {
         return null;
     }
 }
+

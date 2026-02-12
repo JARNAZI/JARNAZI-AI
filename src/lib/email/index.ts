@@ -14,7 +14,7 @@ const resendFrom = process.env.RESEND_FROM_EMAIL || 'system@jarnazi.com';
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 function getSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL);
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) {
     return null;
@@ -138,4 +138,5 @@ export async function sendAdminAlert(subject: string, message: string) {
 
   return callEmailFunction({ to, subject, html });
 }
+
 

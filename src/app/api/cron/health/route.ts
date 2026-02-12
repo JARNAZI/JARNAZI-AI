@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 
 export async function GET(req: Request) {
     const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL)!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
     const secret = req.headers.get('authorization')?.split(' ')[1];
@@ -51,3 +51,4 @@ export async function GET(req: Request) {
 
     return NextResponse.json(health);
 }
+

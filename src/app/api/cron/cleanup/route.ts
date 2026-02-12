@@ -7,7 +7,7 @@ export const runtime = 'nodejs';
 export async function GET(req: Request) {
     // Initialize Supabase client inside the handler to avoid build-time errors
     const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL)!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
     try {
@@ -138,3 +138,4 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
     }
 }
+

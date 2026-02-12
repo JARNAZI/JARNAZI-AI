@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const amountCents = Math.round(amount * 100);
 
     // Auth (server side)
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const url = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL);
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !serviceKey) {
       return NextResponse.json({ error: 'Supabase admin credentials missing' }, { status: 500 });
@@ -81,3 +81,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) || 'Checkout failed' }, { status: 500 });
   }
 }
+

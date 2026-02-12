@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { triggerComposerJob } from '@/lib/cloud-run';
 
 function getAdmin() {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const url = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL)!;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     return createClient(url, key, {
         auth: { persistSession: false },
@@ -61,3 +61,4 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: e.message }, { status: 500 });
     }
 }
+

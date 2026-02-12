@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     }
 
     const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL)!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
@@ -71,3 +71,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) || 'Registration failed' }, { status: 400 });
   }
 }
+
