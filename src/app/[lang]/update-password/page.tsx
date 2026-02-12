@@ -1,6 +1,8 @@
 import { getDictionary } from "@/i18n/get-dictionary";
 import UpdatePasswordClient from "./UpdatePasswordClient";
 
+export const dynamic = 'force-dynamic';
+
 export default async function UpdatePasswordPage({ params }: { params: Promise<{ lang: string }> }) {
     const { lang } = await params;
     const dict = await getDictionary(lang);

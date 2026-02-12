@@ -12,7 +12,10 @@ export async function POST(req: Request) {
         const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
         if (!url || !serviceKey) {
-            return NextResponse.json({ error: 'Supabase admin credentials missing' }, { status: 500 });
+            const missing = [];
+            if (!url) missing.push('SUPABASE_URL');
+            if (!serviceKey) missing.push('SUPABASE_SERVICE_ROLE_KEY');
+            return NextResponse.json({ error: `Supabase admin credentials missing: ${missing.join(', ')}` }, { status: 500 });
         }
 
         const supabaseAdmin = createClient(url, serviceKey);

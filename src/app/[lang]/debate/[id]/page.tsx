@@ -1,6 +1,8 @@
 import { getDictionary } from '@/i18n/get-dictionary';
 import DebateClient from './DebateClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DebatePage(props: { params: Promise<{ lang: string, id: string }> }) {
     const params = await props.params;
     const dict = await getDictionary(params.lang);
