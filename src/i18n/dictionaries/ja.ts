@@ -16,8 +16,8 @@ const ja = {
     back: "戻る"
   },
   home: {
-    heroTitle: "議論。合意。創造。",
-    heroSubtitle: "一度質問。複数のAIが独立して回答し相互レビューし、最後にOpenAIが最終合意へ導きます — 画像・動画・音声・コードに対応。",
+    heroTitle: "AIコンセンサス — 集合知による明晰さ。",
+    heroSubtitle: "一度の質問で。複数のAIが評価、検証、洗練を行い、明確なAIコンセンサスを導き出します。",
     startDebate: "ディベートを開始",
     howItWorks: "仕組み"
   },

@@ -16,8 +16,8 @@ const de = {
     back: "Zurück"
   },
   home: {
-    heroTitle: "Debattieren. Einigen. Erschaffen.",
-    heroSubtitle: "Einmal fragen. Mehrere AIs antworten unabhängig, prüfen sich gegenseitig, dann führt OpenAI zu einem finalen Konsens — bereit für Bilder, Video, Audio oder Code.",
+    heroTitle: "KI-Konsens — Klarheit durch kollektive Intelligenz.",
+    heroSubtitle: "Fragen Sie einmal. Mehrere KIs bewerten, hinterfragen und verfeinern — dann erhalten Sie einen klaren KI-Konsens.",
     startDebate: "Debatte starten",
     howItWorks: "Wie es funktioniert"
   },

@@ -16,8 +16,8 @@ const sv = {
     back: "Tillbaka"
   },
   home: {
-    heroTitle: "Debatt. Enighet. Skapa.",
-    heroSubtitle: "Fråga en gång. Flera AI:er svarar oberoende, granskar varandra och sedan leder OpenAI fram till en slutlig konsensus — redo för bild, video, ljud eller kod.",
+    heroTitle: "AI-konsensus — Klarhet från kollektiv intelligens.",
+    heroSubtitle: "Fråga en gång. Flera AI-modeller utvärderar, utmanar och förfinar — sedan får du ett tydligt AI-konsensus.",
     startDebate: "Starta Debatt",
     howItWorks: "Hur det fungerar"
   },

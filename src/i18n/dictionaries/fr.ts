@@ -16,8 +16,8 @@ const fr = {
     back: "Retour"
   },
   home: {
-    heroTitle: "Débat. Accord. Création.",
-    heroSubtitle: "Posez une question. Plusieurs IA répondent indépendamment, se relisent entre elles, puis OpenAI conduit à un consensus final — prêt pour image, vidéo, audio ou code.",
+    heroTitle: "Consensus d'IA — La clarté issue de l'intelligence collective.",
+    heroSubtitle: "Posez une question. Plusieurs IA évaluent, contestent et affinent — vous obtenez ensuite un consensus d'IA clair.",
     startDebate: "Commencer le débat",
     howItWorks: "Comment ça marche"
   },

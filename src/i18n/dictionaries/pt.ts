@@ -16,8 +16,8 @@ const pt = {
     back: "Voltar"
   },
   home: {
-    heroTitle: "Debate. Acordo. Criação.",
-    heroSubtitle: "Pergunte uma vez. Várias IAs respondem de forma independente, se revisam entre si e a OpenAI lidera um consenso final — pronto para imagem, vídeo, áudio ou código.",
+    heroTitle: "Consenso de IA — Clareza da inteligência coletiva.",
+    heroSubtitle: "Pergunte uma vez. Várias IAs avaliam, desafiam e refinam — então você obtém um consenso de IA claro.",
     startDebate: "Iniciar Debate",
     howItWorks: "Como Funciona"
   },

@@ -28,10 +28,12 @@ export default async function Home(props: { params: Promise<{ lang: string }> })
 
           <h1 className="text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.1]">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-muted-foreground">
-              AI Consensus —
+              {dict.home.heroTitle.split(' — ')[0]} —
             </span>
             <br />
-            <span className="text-gradient text-5xl md:text-7xl">Clarity from Collective Intelligence.</span>
+            <span className="text-gradient text-5xl md:text-7xl">
+              {dict.home.heroTitle.split(' — ')[1]}
+            </span>
           </h1>
 
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">

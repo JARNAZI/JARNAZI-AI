@@ -16,8 +16,8 @@ const it = {
     back: "Indietro"
   },
   home: {
-    heroTitle: "Dibattito. Accordo. Creazione.",
-    heroSubtitle: "Chiedi una volta. Più IA rispondono in modo indipendente, si revisionano a vicenda, poi OpenAI guida un consenso finale — pronto per immagini, video, audio o codice.",
+    heroTitle: "Consenso IA — Chiarezza dall'intelligenza collettiva.",
+    heroSubtitle: "Chiedi una volta. Più IA valutano, sfidano e perfezionano — poi otterrai un unico e chiaro consenso IA.",
     startDebate: "Inizia Dibattito",
     howItWorks: "Come funziona"
   },

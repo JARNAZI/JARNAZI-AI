@@ -17,8 +17,8 @@ const en = {
     tokens: "Tokens"
   },
   home: {
-    heroTitle: "Debate. Agree. Create.",
-    heroSubtitle: "Ask once. Multiple AIs answer independently, review each other, then OpenAI leads a final consensus â€” ready for images, video, audio, or code.",
+    heroTitle: "AI Consensus — Clarity from Collective Intelligence.",
+    heroSubtitle: "Ask once. Multiple AIs evaluate, challenge, and refine—then you get one clear AI Consensus.",
     startDebate: "Start Debate",
     howItWorks: "How It Works"
   },
