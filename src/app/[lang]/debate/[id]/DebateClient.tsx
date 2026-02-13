@@ -1001,7 +1001,7 @@ export default function DebateClient({
                     </Link>
 
                     {/* Notifications */}
-                    <NotificationBell />
+                    <NotificationBell supabaseUrl={supabaseUrl} supabaseAnonKey={supabaseAnonKey} />
 
                     <div className="w-px h-6 bg-border mx-1" />
 

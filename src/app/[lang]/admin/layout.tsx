@@ -18,19 +18,27 @@ export default async function AdminLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Avoid returning different shapes from a ternary (which can produce `unknown` unions).
+  // Resolve role from profiles table with fallback to app_metadata (JWT)
   let profileRole: string | null = null;
   if (user) {
     const { data } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    profileRole = (data?.role as string | null) ?? null;
+    profileRole = (data?.role as string | null) || (user.app_metadata?.role as string | null) || null;
   }
 
   const role = profileRole ?? "user";
   const isSupport = role === "support";
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+
   return (
     <div className="min-h-screen bg-background text-foreground flex">
-      <SessionBackGuard lang={lang} redirectPath="login" />
+      <SessionBackGuard
+        lang={lang}
+        redirectPath="login"
+        supabaseUrl={supabaseUrl}
+        supabaseAnonKey={supabaseAnonKey}
+      />
       {/* Sidebar */}
       <aside className="w-64 border-r border-border bg-card/60 p-6 hidden md:block">
         <Link href={`/${lang}/admin`} className="flex items-center gap-2 mb-8 group">

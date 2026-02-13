@@ -14,9 +14,15 @@ type NotificationRow = {
   is_read: boolean;
 };
 
-export default function NotificationBell() {
+export default function NotificationBell({
+  supabaseUrl,
+  supabaseAnonKey
+}: {
+  supabaseUrl?: string;
+  supabaseAnonKey?: string;
+}) {
   // Create once per component instance
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = useMemo(() => createClient({ supabaseUrl, supabaseAnonKey }), [supabaseUrl, supabaseAnonKey]);
 
   const [notifications, setNotifications] = useState<NotificationRow[]>([]);
   const [isOpen, setIsOpen] = useState(false);

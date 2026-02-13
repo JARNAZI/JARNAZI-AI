@@ -9,13 +9,15 @@ import { useState, useEffect } from "react";
 interface SidebarProps {
     lang: string;
     dict: any;
+    supabaseUrl?: string;
+    supabaseAnonKey?: string;
 }
 
-export default function Sidebar({ lang, dict }: SidebarProps) {
+export default function Sidebar({ lang, dict, supabaseUrl, supabaseAnonKey }: SidebarProps) {
     const router = useRouter();
     const params = useParams();
     const currentId = params?.id as string;
-    const [supabase] = useState(() => createClient());
+    const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
     const [recentDebates, setRecentDebates] = useState<any[]>([]);
 
     useEffect(() => {

@@ -6,10 +6,20 @@ import { createClient } from '@/lib/supabase/client';
 import { User, Mail, Save, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function ProfileSettingsClient({ dict, lang }: { dict: any; lang: string }) {
+export default function ProfileSettingsClient({
+    dict,
+    lang,
+    supabaseUrl,
+    supabaseAnonKey
+}: {
+    dict: any;
+    lang: string;
+    supabaseUrl?: string;
+    supabaseAnonKey?: string;
+}) {
     const d = dict?.dashboard || {};
     const router = useRouter();
-    const [supabase] = useState(() => createClient());
+    const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);

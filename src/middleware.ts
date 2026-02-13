@@ -26,22 +26,31 @@ function getLocale(request: NextRequest): string {
   return DEFAULT_LANGUAGE;
 }
 
-export function middleware(request: NextRequest) {
+import { updateSession } from '@/lib/supabase/middleware';
+
+export async function middleware(request: NextRequest) {
+  // 1. Update Supabase session (refreshes token if needed)
+  const response = await updateSession(request);
+
   const { pathname } = request.nextUrl;
 
-  // Check if there is any supported locale in the pathname
+  // 2. Check if there is any supported locale in the pathname
   const pathnameHasLocale = locales.some(
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
-  if (pathnameHasLocale) return;
+  if (pathnameHasLocale) return response;
 
-  // Redirect if there is no locale
+  // 3. Redirect if there is no locale
   const locale = getLocale(request);
-  request.nextUrl.pathname = `/${locale}${pathname}`;
-  
+  const redirectUrl = new URL(`/${locale}${pathname}`, request.url);
+
   // Preserve query parameters
-  return NextResponse.redirect(request.nextUrl);
+  request.nextUrl.searchParams.forEach((value, key) => {
+    redirectUrl.searchParams.set(key, value);
+  });
+
+  return NextResponse.redirect(redirectUrl);
 }
 
 export const config = {

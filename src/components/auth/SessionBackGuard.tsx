@@ -6,12 +6,16 @@ import { createClient } from "@/lib/supabase/client";
 export default function SessionBackGuard({
   lang,
   redirectPath = "login",
+  supabaseUrl,
+  supabaseAnonKey,
 }: {
   lang: string;
   redirectPath?: string;
+  supabaseUrl?: string;
+  supabaseAnonKey?: string;
 }) {
   useEffect(() => {
-    const supabase = createClient();
+    const supabase = createClient({ supabaseUrl, supabaseAnonKey });
 
     const redirect = () => {
       // Force a full navigation so the browser can't show a cached protected page.
