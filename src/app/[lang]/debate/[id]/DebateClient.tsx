@@ -1134,7 +1134,7 @@ export default function DebateClient({
 
                         {/* Input Field */}
                         <div className="flex items-end gap-3 mt-4">
-                            <div className={`flex-1 bg-background border border-border rounded-xl p-3 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/50 transition-all shadow-inner chat-input`}>
+                            <div className={`flex-1 bg-background border border-border rounded-xl p-3 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/50 transition-all shadow-inner`}>
                                 <textarea
                                     ref={textareaRef}
                                     value={inputContent}
@@ -1144,7 +1144,7 @@ export default function DebateClient({
                                     rows={1}
                                     onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
                                 />
-                                )}
+
                             </div>
                             <button
                                 onClick={handleSend}
@@ -1553,7 +1553,7 @@ Suggested amount: $${amount}`
                                                         )}
                                                     </div>
                                                     <div className={`p-4 rounded-2xl text-sm leading-relaxed ${isUser ? 'bg-primary/20 text-foreground border border-primary/30' : 'bg-card text-foreground border-border border shadow-sm'}`}>
-                                                        <MathDisplay content={msg.content} />
+                                                        <div className="whitespace-pre-wrap">{msg.content}</div>
                                                     </div>
                                                 </div>
                                             </div>

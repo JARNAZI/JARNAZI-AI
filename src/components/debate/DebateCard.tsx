@@ -1,5 +1,5 @@
 import { Bot, User, BadgeCheck, Copy, Download, Printer, Check, Play, Share2 } from "lucide-react";
-import { MathDisplay } from '@/components/math/MathDisplay';
+
 import { useState } from "react";
 
 interface DebateCardProps {
@@ -75,8 +75,8 @@ export function DebateCard({ role, name, content, provider }: DebateCardProps) {
 
     const style = getProviderStyle();
 
-    // Check for LaTeX delimiters
-    const hasLatex = /\$\$[\s\S]*?\$\$|\$[\s\S]*?\$/.test(content);
+
+
 
     // Check for Visual Output (Image/Video) - Hide header
     const isVisual = name === 'Visual Output' || name === 'System Visual';
@@ -152,7 +152,7 @@ export function DebateCard({ role, name, content, provider }: DebateCardProps) {
             <div className="flex flex-col gap-2 w-full max-w-4xl mx-auto items-center my-6 group animate-fade-in">
                 <div className="relative rounded-[2rem] overflow-hidden glass-card border border-white/10 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] hover:scale-[1.02] transition-all duration-700">
                     <div className="prose prose-invert max-w-none p-2">
-                        <MathDisplay content={content} />
+                        {content}
                     </div>
                     <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-xl rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -193,7 +193,7 @@ export function DebateCard({ role, name, content, provider }: DebateCardProps) {
                 )}
 
                 <div className="prose prose-invert prose-p:leading-relaxed prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/5 overflow-hidden break-words mb-4 text-zinc-100 font-medium tracking-tight">
-                    {hasLatex ? <MathDisplay content={content} /> : content}
+                    {content}
                 </div>
 
                 {isVideo && content.match(/\((.*?)\)/)?.[1] && (

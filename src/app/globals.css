@@ -136,23 +136,7 @@ html {
   background: var(--primary);
 }
 
-/* MathLive Dark Mode Correction */
-math-field {
-  --caret-color: var(--primary);
-  --selection-background-color: var(--primary);
-  --text-field-color: var(--foreground);
-  --text-field-background-color: transparent;
-  color: var(--foreground);
-}
 
-math-field::part(content) {
-  color: var(--foreground);
-}
-
-.dark math-field {
-  background-color: rgba(255, 255, 255, 0.03);
-  color: white;
-}
 
 /* Global Pointer Consistency */
 button, 
@@ -185,8 +169,3 @@ a,
 }
 
 /* Chat Input Scoped MathLive UI Hiding */
-.chat-input .ML__menu-toggle,
-.chat-input .ML__virtual-keyboard-toggle,
-.chat-input .ML__toolbar {
-  display: none !important;
-}
