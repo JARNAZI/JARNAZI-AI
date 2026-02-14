@@ -24,7 +24,7 @@ export function MediaUploader({ onFileSelected, accept, label, icon: Icon = Uplo
 
     return (
         <div className="relative group flex flex-col items-center justify-center gap-1 p-2 w-16 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-            <div className="p-2 bg-zinc-800 rounded-full border border-zinc-700 text-zinc-400 group-hover:text-emerald-400 group-hover:border-emerald-500/50 transition-colors">
+            <div className="p-2 bg-zinc-800 rounded-full border border-zinc-700 text-zinc-400 group-hover:text-emerald-400 group-hover:border-emerald-500/50 shadow-lg group-hover:shadow-emerald-500/50 transition-all">
                 <Icon className="w-5 h-5" />
             </div>
             <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 select-none">{label}</span>

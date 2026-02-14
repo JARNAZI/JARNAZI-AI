@@ -80,7 +80,7 @@ export function AudioRecorder({ onRecordingComplete, label = "Audio", title = "R
             className="flex flex-col items-center justify-center gap-1 p-2 w-16 group"
             title={title}
         >
-            <div className="p-2 bg-zinc-800 rounded-full border border-zinc-700 text-zinc-400 group-hover:text-red-400 group-hover:border-red-500/50 transition-colors">
+            <div className="p-2 bg-zinc-800 rounded-full border border-zinc-700 text-zinc-400 group-hover:text-red-400 group-hover:border-red-500/50 shadow-lg group-hover:shadow-red-500/50 transition-all">
                 <Mic className="w-5 h-5" />
             </div>
             <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 select-none">{label}</span>

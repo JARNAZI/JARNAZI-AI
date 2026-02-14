@@ -10,17 +10,16 @@ import {
     LayoutTemplate, Menu, History, Zap, ChevronRight,
     MessageSquare, CreditCard, User, Phone, Sun,
     Moon, Globe, LogOut, Loader2, AlertCircle,
-    CheckCircle2, Info, X, Type, Sigma, Keyboard,
+    CheckCircle2, Info, X,
     FileText, Image as ImageIcon, Video, Mic, Trash2
 } from 'lucide-react';
 
 // Dynamic imports for heavy components
-const MathInput = dynamic(() => import('@/components/math/MathInput').then(mod => mod.MathInput), { ssr: false });
 const MediaUploader = dynamic(() => import('@/components/debate/MediaUploader').then(mod => mod.MediaUploader), { ssr: false });
 const FilePreview = dynamic(() => import('@/components/debate/MediaUploader').then(mod => mod.FilePreview), { ssr: false });
 const AudioRecorder = dynamic(() => import('@/components/debate/AudioRecorder').then(mod => mod.AudioRecorder), { ssr: false });
 const AudioPreview = dynamic(() => import('@/components/debate/AudioRecorder').then(mod => mod.AudioPreview), { ssr: false });
-const MathPanel = dynamic(() => import('@/components/math/MathPanel'), { ssr: false });
+
 
 import NotificationBell from '@/components/notifications/NotificationBell';
 import { useTheme } from 'next-themes';
@@ -59,8 +58,7 @@ export default function DebateDashboard({
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     // Advanced Input States
-    const [isMathMode, setIsMathMode] = useState(false);
-    const [showMathPanel, setShowMathPanel] = useState(false);
+
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [recordedAudio, setRecordedAudio] = useState<Blob | null>(null);
 
@@ -117,11 +115,7 @@ export default function DebateDashboard({
                 return;
             }
 
-            // Construct Final Topic String
             let finalTopic = topicInput;
-            if (isMathMode) {
-                finalTopic = `LaTeX: $$ ${topicInput} $$`;
-            }
 
             // Append markers for attachments
             const attachments = [];
@@ -222,27 +216,7 @@ export default function DebateDashboard({
                             {/* Toolbar Top - with scroll hint */}
                             <div className="relative mb-4">
                                 <div className="flex items-center gap-1 md:gap-2 overflow-x-auto pb-2 no-scrollbar border-b border-border pr-12">
-                                    <button
-                                        onClick={() => { setIsMathMode(false); setShowMathPanel(false); }}
-                                        className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all min-w-[56px] ${!isMathMode ? 'text-indigo-400' : 'text-muted-foreground opacity-50 hover:opacity-100'}`}
-                                    >
-                                        <div className={`p-2 rounded-full border transition-colors ${!isMathMode ? 'bg-indigo-500/20 border-indigo-500/50' : 'bg-transparent border-border'}`}>
-                                            <Type className="w-4 h-4 md:w-5 md:h-5" />
-                                        </div>
-                                        <span className="text-[8px] font-black uppercase tracking-widest leading-none">{d.text || "Text"}</span>
-                                    </button>
 
-                                    <button
-                                        onClick={() => { setIsMathMode(true); setShowMathPanel(true); }}
-                                        className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all min-w-[56px] ${isMathMode ? 'text-indigo-400' : 'text-muted-foreground opacity-50 hover:opacity-100'}`}
-                                    >
-                                        <div className={`p-2 rounded-full border transition-colors ${isMathMode ? 'bg-indigo-500/20 border-indigo-500/50' : 'bg-transparent border-border'}`}>
-                                            <Sigma className="w-4 h-4 md:w-5 md:h-5" />
-                                        </div>
-                                        <span className="text-[8px] font-black uppercase tracking-widest leading-none">{d.math || "Math"}</span>
-                                    </button>
-
-                                    <div className="w-px h-8 bg-border mx-1" />
 
                                     <div className="flex items-center gap-1 md:gap-2">
                                         <MediaUploader label={d.files || "Files"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
@@ -258,30 +232,18 @@ export default function DebateDashboard({
                             {/* Main Input Area */}
                             <div className="flex flex-col gap-4">
                                 <div className="min-h-[120px] max-h-[300px] overflow-y-auto custom-scrollbar bg-muted/50 rounded-2xl p-2">
-                                    {isMathMode ? (
-                                        <div className="p-2">
-                                            <MathInput
-                                                value={topicInput}
-                                                onChange={setTopicInput}
-                                                placeholder={d.mathPlaceholder || "Enter complex mathematical formula..."}
-                                                className="border-none bg-transparent"
-                                                clean={true}
-                                            />
-                                        </div>
-                                    ) : (
-                                        <textarea
-                                            value={topicInput}
-                                            onChange={(e) => setTopicInput(e.target.value)}
-                                            placeholder={d.textPlaceholder || "What shall the Council deliberate today?"}
-                                            className="w-full bg-transparent border-none text-foreground px-4 py-2 focus:ring-0 placeholder:text-muted-foreground/50 font-semibold outline-none text-lg resize-none min-h-[100px]"
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' && !e.shiftKey && !isMathMode) {
-                                                    e.preventDefault();
-                                                    handleCreate();
-                                                }
-                                            }}
-                                        />
-                                    )}
+                                    <textarea
+                                        value={topicInput}
+                                        onChange={(e) => setTopicInput(e.target.value)}
+                                        placeholder={d.textPlaceholder || "What shall the Council deliberate today?"}
+                                        className="w-full bg-transparent border-none text-foreground px-4 py-2 focus:ring-0 placeholder:text-muted-foreground/50 font-semibold outline-none text-lg resize-none min-h-[100px]"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleCreate();
+                                            }
+                                        }}
+                                    />
                                 </div>
 
                                 {/* Previews */}
@@ -317,14 +279,7 @@ export default function DebateDashboard({
                                     </button>
                                 </div>
 
-                                {/* External Math Panel */}
-                                <MathPanel
-                                    open={showMathPanel}
-                                    value={topicInput}
-                                    onChange={setTopicInput}
-                                    onClose={() => setShowMathPanel(false)}
-                                    dict={d}
-                                />
+
                             </div>
                         </div>
 

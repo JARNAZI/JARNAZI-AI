@@ -9,17 +9,14 @@ import { createClient } from '@/lib/supabase/client';
 
 // ICONS
 import { LANGUAGES } from '@/i18n/config';
-import { Menu, Send, Type, Image as ImageIcon, Video, FileText, Printer, Copy, ArrowLeft, ChevronLeft, ChevronRight, Sigma, User, CreditCard, LogOut, Sun, Moon, PlusCircle, Globe, Keyboard, Trash2, Mail, Coins, MessageSquare, X, Zap } from 'lucide-react';
+import { Menu, Send, Image as ImageIcon, Video, FileText, Printer, Copy, ArrowLeft, ChevronLeft, ChevronRight, User, CreditCard, LogOut, Sun, Moon, PlusCircle, Globe, Trash2, Mail, Coins, MessageSquare, X, Zap } from 'lucide-react';
 
 // REMOVED LOCAL TYPE DEF - moved to src/types/mathlive.d.ts
 
 // COMPONENTS
 import { MediaUploader, FilePreview } from '@/components/debate/MediaUploader';
 import { AudioRecorder, AudioPreview } from '@/components/debate/AudioRecorder';
-import { MathInput } from '@/components/math/MathInput';
 import NotificationBell from '@/components/notifications/NotificationBell';
-import { MathDisplay } from '@/components/math/MathDisplay';
-import MathPanel from '@/components/math/MathPanel';
 
 // --- TYPES ---
 type Message = {
@@ -56,8 +53,6 @@ export default function DebateClient({
     // State
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputContent, setInputContent] = useState('');
-    const [isMathMode, setIsMathMode] = useState(false);
-    const [showMathPanel, setShowMathPanel] = useState(false);
     const { theme, setTheme, resolvedTheme } = useTheme();
     const isDarkMode = resolvedTheme === 'dark';
     const handleLangToggle = (targetLang: string) => {
@@ -425,6 +420,7 @@ export default function DebateClient({
 
     // Mobile horizontal input strip scroll hints
     const inputStripRef = useRef<HTMLDivElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
 
@@ -626,15 +622,7 @@ export default function DebateClient({
 
 
         // --- LATEX ENFORCEMENT RULE ---
-        // --- LATEX ENFORCEMENT RULE ---
-        if (isMathMode) {
-            // Wrap in delimiters for MathLive/AI recognition
-            // If already wrapped, leave it. If not, wrap it.
-            const trimmed = contentToSend.trim();
-            if (!trimmed.startsWith('$$')) {
-                contentToSend = `$$${trimmed}$$`;
-            }
-        }
+
 
         // Upload selected file (image/video/any file) to Supabase Storage via server route, then attach the signed URL to the prompt.
         if (selectedFile) {
@@ -688,7 +676,7 @@ export default function DebateClient({
             id: tempId,
             role: 'user',
             name: 'User',
-            content: contentToSend + (isMathMode ? "" : ""), // Store the delimited content directly
+            content: contentToSend,
             timestamp: Date.now()
         };
         setMessages((prev: Message[]) => [...prev, newMsg]);
@@ -721,7 +709,7 @@ export default function DebateClient({
                 body: JSON.stringify({
                     debateId,
                     prompt: contentToSend,
-                    requestType: isMathMode ? 'latex' : (contentToSend.includes('[ASSET_KIND: image]') ? 'image' : (contentToSend.includes('[ASSET_KIND: video]') ? 'video' : 'text')),
+                    requestType: (contentToSend.includes('[ASSET_KIND: image]') ? 'image' : (contentToSend.includes('[ASSET_KIND: video]') ? 'video' : 'text')),
 
                 }),
             });
@@ -1126,66 +1114,14 @@ export default function DebateClient({
 
                         {/* Toolstrip */}
                         <div className="relative">
-                            <div ref={inputStripRef} onScroll={updateInputStripScrollHints} className="flex items-center gap-1 overflow-x-auto pb-2 no-scrollbar border-b border-border mb-1 pr-12">
-                                <button
-                                    onClick={() => { setIsMathMode(false); setShowMathPanel(false); }}
-                                    className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all w-16 group ${!isMathMode ? (isDarkMode ? 'text-indigo-400' : 'text-indigo-600') : 'opacity-50'}`}
-                                >
-                                    <div className={`p-2 rounded-full border transition-colors ${!isMathMode ? (isDarkMode ? 'bg-indigo-500/20 border-indigo-500/50' : 'bg-indigo-100 border-indigo-200') : (isDarkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-300')}`}>
-                                        <Type className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-[9px] font-bold uppercase tracking-wider">{dict.dashboard?.text || 'Text'}</span>
-                                </button>
+                            <div ref={inputStripRef} onScroll={updateInputStripScrollHints} className="flex items-center gap-1 flex-wrap pb-2 border-b border-border mb-1">
 
-                                <button
-                                    onClick={() => { setIsMathMode(true); setShowMathPanel(true); }}
-                                    className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all w-16 group ${isMathMode ? (isDarkMode ? 'text-indigo-400' : 'text-indigo-600') : 'opacity-50'}`}
-                                >
-                                    <div className={`p-2 rounded-full border transition-colors ${isMathMode ? (isDarkMode ? 'bg-indigo-500/20 border-indigo-500/50' : 'bg-indigo-100 border-indigo-200') : (isDarkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-300')}`}>
-                                        <Sigma className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-[9px] font-bold uppercase tracking-wider">{dict.dashboard?.math || 'Math'}</span>
-                                </button>
-
-
-
-                                <div className="w-px h-8 bg-border mx-2" />
 
                                 <MediaUploader label={dict.dashboard?.files || "File"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
                                 <MediaUploader label={dict.dashboard?.pics || "Image"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
                                 <MediaUploader label={dict.dashboard?.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
                                 <AudioRecorder onRecordingComplete={setRecordedAudio} label={dict.dashboard?.audio || "Audio"} />
                             </div>
-                            {/* Mobile scroll hints for hidden input buttons */}
-                            {canScrollLeft && (
-                                <>
-                                    <div className="pointer-events-none absolute left-0 top-0 h-10 w-8 bg-gradient-to-r from-background to-transparent" />
-                                    <button
-                                        type="button"
-                                        aria-label="Scroll left"
-                                        onClick={() => inputStripRef.current?.scrollBy({ left: -180, behavior: 'smooth' })}
-                                        className="absolute left-1 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-background/80 shadow-sm backdrop-blur pointer-events-auto"
-                                    >
-                                        <ChevronLeft className="h-4 w-4" />
-                                    </button>
-                                </>
-                            )}
-                            {canScrollRight && (
-                                <>
-                                    <div className="pointer-events-none absolute right-0 top-0 h-10 w-8 bg-gradient-to-l from-background to-transparent" />
-                                    <button
-                                        type="button"
-                                        aria-label="Scroll right"
-                                        onClick={() => inputStripRef.current?.scrollBy({ left: 180, behavior: 'smooth' })}
-                                        className="absolute right-1 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-background/80 shadow-sm backdrop-blur pointer-events-auto"
-                                    >
-                                        <ChevronRight className="h-4 w-4" />
-                                    </button>
-                                </>
-                            )}
-
-                            {/* Scroll hint gradient for mobile */}
-                            <div className="absolute right-0 top-0 bottom-2 w-12 bg-gradient-to-l from-card to-transparent pointer-events-none md:hidden" />
                         </div>
 
                         {/* Previews */}
@@ -1199,22 +1135,15 @@ export default function DebateClient({
                         {/* Input Field */}
                         <div className="flex items-end gap-3 mt-4">
                             <div className={`flex-1 bg-background border border-border rounded-xl p-3 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/50 transition-all shadow-inner chat-input`}>
-                                {isMathMode ? (
-                                    <MathInput
-                                        value={inputContent}
-                                        onChange={setInputContent}
-                                        placeholder={dict.debate?.mathPlaceholder || "Enter complex mathematical formula..."}
-                                        clean={true}
-                                    />
-                                ) : (
-                                    <textarea
-                                        value={inputContent}
-                                        onChange={(e) => setInputContent(e.target.value)}
-                                        placeholder={dict?.debate?.placeholder || "Enter your argument..."}
-                                        className={`w-full bg-transparent border-none text-foreground outline-none resize-none min-h-[48px] max-h-32 placeholder:text-muted-foreground/30 font-medium`}
-                                        rows={1}
-                                        onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                                    />
+                                <textarea
+                                    ref={textareaRef}
+                                    value={inputContent}
+                                    onChange={(e) => setInputContent(e.target.value)}
+                                    placeholder={dict?.debate?.placeholder || "Enter your argument..."}
+                                    className={`w-full bg-transparent border-none text-foreground outline-none resize-none min-h-[48px] max-h-32 placeholder:text-muted-foreground/30 font-medium`}
+                                    rows={1}
+                                    onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+                                />
                                 )}
                             </div>
                             <button
@@ -1226,14 +1155,7 @@ export default function DebateClient({
                             </button>
                         </div>
 
-                        {/* External Math Panel */}
-                        <MathPanel
-                            open={showMathPanel}
-                            value={inputContent}
-                            onChange={setInputContent}
-                            onClose={() => setShowMathPanel(false)}
-                            dict={dict.dashboard}
-                        />
+
 
                     </div>
                 </aside>
@@ -1447,7 +1369,7 @@ Suggested amount: $${amount}`
                                     <div className="flex flex-col max-w-[90%] items-start">
                                         <span className="text-[10px] uppercase font-bold opacity-50 mb-1 px-1">{dict?.debate?.finalConsensus || 'Final Consensus'}</span>
                                         <div className={`p-5 rounded-2xl text-sm leading-relaxed bg-card text-foreground border border-border shadow-sm`}>
-                                            <MathDisplay content={finalConsensus.content} />
+                                            <div className="whitespace-pre-wrap">{finalConsensus.content}</div>
                                             {usedAis.length > 0 && (
                                                 <div className={`mt-4 text-[10px] font-bold uppercase tracking-wider opacity-70 text-muted-foreground`}>
                                                     {dict?.debate?.usedAis || 'Used AIs'}: {usedAis.join(', ')}
@@ -1547,7 +1469,7 @@ Suggested amount: $${amount}`
                                                             {dict?.debate?.agreementTitle || 'الاتفاق'}
                                                         </span>
                                                         <div className={`p-5 rounded-2xl text-sm leading-relaxed bg-card text-foreground border border-border shadow-sm`}>
-                                                            <MathDisplay content={msg.content} />
+                                                            <div className="whitespace-pre-wrap">{msg.content}</div>
                                                         </div>
 
                                                         {/* Actions under agreement */}
@@ -1658,38 +1580,40 @@ Suggested amount: $${amount}`
 
 
             {/* Image fullscreen preview modal */}
-            {isImageFullscreenOpen && lastImageAssetUrl && (
-                <div className="fixed inset-0 z-[90] bg-black/90 flex items-center justify-center p-4">
-                    <div className="w-full max-w-6xl">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="text-xs font-black uppercase tracking-wider text-white/80">
-                                {dict?.debate?.imagePreviewTitle || 'Image Preview'}
+            {
+                isImageFullscreenOpen && lastImageAssetUrl && (
+                    <div className="fixed inset-0 z-[90] bg-black/90 flex items-center justify-center p-4">
+                        <div className="w-full max-w-6xl">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="text-xs font-black uppercase tracking-wider text-white/80">
+                                    {dict?.debate?.imagePreviewTitle || 'Image Preview'}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <a
+                                        href={lastImageAssetUrl}
+                                        download
+                                        className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider bg-white/10 text-white hover:bg-white/20 transition-all active:scale-95"
+                                    >
+                                        <FileText className="w-4 h-4" />
+                                        {dict?.debate?.downloadImage || 'Download Image'}
+                                    </a>
+                                    <button
+                                        onClick={() => setIsImageFullscreenOpen(false)}
+                                        className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider bg-white/10 text-white hover:bg-white/20 transition-all active:scale-95"
+                                    >
+                                        <X className="w-4 h-4" />
+                                        {dict?.common?.close || 'Close'}
+                                    </button>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <a
-                                    href={lastImageAssetUrl}
-                                    download
-                                    className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider bg-white/10 text-white hover:bg-white/20 transition-all active:scale-95"
-                                >
-                                    <FileText className="w-4 h-4" />
-                                    {dict?.debate?.downloadImage || 'Download Image'}
-                                </a>
-                                <button
-                                    onClick={() => setIsImageFullscreenOpen(false)}
-                                    className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider bg-white/10 text-white hover:bg-white/20 transition-all active:scale-95"
-                                >
-                                    <X className="w-4 h-4" />
-                                    {dict?.common?.close || 'Close'}
-                                </button>
+                            <div className="rounded-2xl overflow-hidden border border-white/10 bg-black">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={lastImageAssetUrl} alt="Generated" className="w-full h-auto" />
                             </div>
-                        </div>
-                        <div className="rounded-2xl overflow-hidden border border-white/10 bg-black">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={lastImageAssetUrl} alt="Generated" className="w-full h-auto" />
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
             {/* Phase 14: Image generation modal */}
             {
                 isImageModalOpen && (
