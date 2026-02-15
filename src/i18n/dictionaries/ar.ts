@@ -92,7 +92,10 @@ const ar = {
     loginRequired: "يرجى تسجيل الدخول لبدء مناظرة",
     councilError: "خطأ في المجلس",
     themeSwitched: "تم التغيير إلى وضع {theme}",
-    langSwitched: "تم تغيير اللغة إلى {lang}"
+    langSwitched: "تم تغيير اللغة إلى {lang}",
+    notifications: "التنبيهات",
+    noNotifications: "لا توجد تنبيهات",
+    markAllAsRead: "تحديد الكل كمقروء"
   },
   nav: {
     features: "المميزات",
@@ -255,11 +258,13 @@ const ar = {
     privacyDesc: "بياناتك مشفرة أثناء الحفظ وأثناء النقل. جارنازي لا تشارك هويتك مع مزودي الطرف الثالث. يتم إخفاء هوية جميع سجلات المداولة ما لم يتم مشاركتها صراحةً.",
     identityVerified: "الغرض من الهوية هو التحقق عبر Supabase Auth",
     buyTokens: "شراء نقاط",
-    enterAmount: "أدخل مبلغًا (بحد أدنى {min})",
+    enterAmount: "أدخل مبلغًا (بحد أدنى ${min})",
     tokensReceive: "سوف تستلم",
     payWithStripe: "الدفع وإضافة النقاط",
     payWithCrypto: "الدفع بالعملات المشفرة",
+    insufficientTokensPrefill: "لقد قمنا بتعبئة المبلغ لتغطية النقاط المفقودة لديك.",
     stripeDisabled: "مدفوعات Stripe معطلة حاليًا.",
+    invalidAmount: "مبلغ غير صالح. الحد الأدنى هو ${min}.",
     signInFirst: "يرجى تسجيل الدخول أولاً",
     checkoutFailed: "فشلت عملية الدفع",
     underConstruction: "هذا النموذج قيد الإنشاء حاليًا. سيعمل Neural Hub كطبقة تنظيم مركزية لمهام سير العمل المتقدمة متعددة العوامل.",

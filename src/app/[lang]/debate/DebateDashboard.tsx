@@ -183,7 +183,7 @@ export default function DebateDashboard({
                 </div>
 
                 <div className="flex items-center gap-2 md:gap-4">
-                    <NotificationBell supabaseUrl={supabaseUrl} supabaseAnonKey={supabaseAnonKey} />
+                    <NotificationBell supabaseUrl={supabaseUrl} supabaseAnonKey={supabaseAnonKey} dict={dict} />
                     <button
                         onClick={() => setIsMenuOpen(true)}
                         className="p-3 bg-muted hover:bg-secondary rounded-xl text-muted-foreground hover:text-foreground transition-all shadow-inner border border-border"

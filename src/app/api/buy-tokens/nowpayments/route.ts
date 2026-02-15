@@ -50,6 +50,8 @@ export async function POST(req: Request) {
             process.env.NOWPAYMENTS_WEBHOOK_URL ||
             `${appUrl}/api/webhooks/nowpayments`;
 
+        const orderId = `${user.id}_${tokensToAdd}_${Date.now()}`;
+
         // Call NowPayments API
         // Doc: https://documenter.getpostman.com/view/7928690/TszD8dxc#create-invoice
         // We'll use the "invoice" endpoint or "payment" endpoint. "invoice" generates a link.
@@ -62,13 +64,11 @@ export async function POST(req: Request) {
             body: JSON.stringify({
                 price_amount: amount,
                 price_currency: 'usd',
-                // Keep webhook parsing compatible: order_id = "<USER_ID>_<TOKENS_TO_ADD>"
-                order_id: `${user.id}_${tokensToAdd}`,
+                // Keep webhook parsing compatible: order_id = "<USER_ID>_<TOKENS_TO_ADD>_<TS>"
+                order_id: orderId,
                 order_description: `Purchase Tokens (+${tokensToAdd}) (${amount} USD)`,
                 ipn_callback_url: webhookUrl,
-                success_url: returnTo
-                    ? `${appUrl}${returnTo}${returnTo.includes('?') ? '&' : '?'}purchase=success${pendingId ? `&pendingId=${pendingId}` : ''}`
-                    : `${appUrl}/${lang || 'en'}/debate?purchase=success`,
+                success_url: `${appUrl}/${lang || 'en'}/buy-tokens/processing?orderId=${orderId}`,
                 cancel_url: returnTo
                     ? `${appUrl}${returnTo}${returnTo.includes('?') ? '&' : '?'}purchase=cancel`
                     : `${appUrl}/${lang || 'en'}/buy-tokens?purchase=cancel`,

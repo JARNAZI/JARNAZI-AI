@@ -92,7 +92,10 @@ const en = {
     loginRequired: "Please login to start a debate",
     councilError: "Council Error",
     themeSwitched: "Switched to {theme} mode",
-    langSwitched: "Language switched to {lang}"
+    langSwitched: "Language switched to {lang}",
+    notifications: "Notifications",
+    noNotifications: "No notifications",
+    markAllAsRead: "Mark all as read"
   },
   nav: {
     features: "Features",
@@ -255,11 +258,13 @@ const en = {
     privacyDesc: "Your data is encrypted at rest and in transit. Jarnazi AI does not share your identity with third-party providers. All deliberation logs are anonymized unless explicitly shared.",
     identityVerified: "Identity is verified via Supabase Auth",
     buyTokens: "Buy Tokens",
-    enterAmount: "Enter an amount (min {min})",
+    enterAmount: "Enter an amount (min ${min})",
     tokensReceive: "You will receive",
     payWithStripe: "Pay & Add Tokens",
     payWithCrypto: "Pay with Crypto",
+    insufficientTokensPrefill: "We prefilled the amount to cover your missing tokens.",
     stripeDisabled: "Stripe payments are currently disabled.",
+    invalidAmount: "Invalid amount. Minimum is ${min}.",
     signInFirst: "Please sign in first",
     checkoutFailed: "Checkout failed",
     underConstruction: "This module is currently under construction. The Neural Hub will serve as the central orchestration layer for advanced multi-agent workflows.",

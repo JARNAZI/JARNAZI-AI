@@ -112,11 +112,11 @@ export default function BuyTokensClient({ dict, lang }: { dict: any; lang: strin
 
   const validateAmountOrToast = (): boolean => {
     if (!isValidPurchaseAmount(amountNum)) {
-      toast.error(d.invalidAmount || `Invalid amount. Minimum is $${MIN_PURCHASE_AMOUNT_USD}.`);
+      toast.error(d.invalidAmount?.replace('{min}', String(MIN_PURCHASE_AMOUNT_USD)) || `Invalid amount. Minimum is $${MIN_PURCHASE_AMOUNT_USD}.`);
       return false;
     }
     if (tokens <= 0) {
-      toast.error(d.invalidAmount || `Invalid amount. Minimum is $${MIN_PURCHASE_AMOUNT_USD}.`);
+      toast.error(d.invalidAmount?.replace('{min}', String(MIN_PURCHASE_AMOUNT_USD)) || `Invalid amount. Minimum is $${MIN_PURCHASE_AMOUNT_USD}.`);
       return false;
     }
     return true;
@@ -198,7 +198,7 @@ export default function BuyTokensClient({ dict, lang }: { dict: any; lang: strin
             onChange={(e) => setAmount(e.target.value)}
             inputMode="decimal"
             className="w-full rounded-xl bg-muted border border-border px-4 py-3 text-foreground outline-none focus:ring-2 focus:ring-primary transition-all"
-            placeholder={String(MIN_PURCHASE_AMOUNT_USD)}
+            placeholder={`$${MIN_PURCHASE_AMOUNT_USD}`}
           />
 
           <div className="mt-3 text-sm text-muted-foreground">

@@ -16,11 +16,14 @@ type NotificationRow = {
 
 export default function NotificationBell({
   supabaseUrl,
-  supabaseAnonKey
+  supabaseAnonKey,
+  dict
 }: {
   supabaseUrl?: string;
   supabaseAnonKey?: string;
+  dict?: any;
 }) {
+  const d = dict?.notifications || {};
   // Create once per component instance
   const supabase = useMemo(() => createClient({ supabaseUrl, supabaseAnonKey }), [supabaseUrl, supabaseAnonKey]);
 
@@ -108,7 +111,7 @@ export default function NotificationBell({
       <button
         onClick={toggleOpen}
         className="relative p-2 rounded-lg hover:bg-white/5 transition-colors"
-        aria-label="Notifications"
+        aria-label={d.notifications || "Notifications"}
       >
         <Bell className="w-5 h-5 text-white" />
         {unreadCount > 0 && (
@@ -118,25 +121,30 @@ export default function NotificationBell({
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-80 bg-black/90 backdrop-blur-xl border border-white/10 rounded-xl shadow-xl z-50">
-          <div className="p-4 border-b border-white/10">
-            <h3 className="text-white font-semibold">Notifications</h3>
+          <div className="p-4 border-b border-white/10 flex items-center justify-between">
+            <h3 className="text-white font-semibold">{d.notifications || 'Notifications'}</h3>
+            {unreadCount > 0 && (
+              <button onClick={markAsRead} className="text-[10px] uppercase font-black text-indigo-400 hover:text-indigo-300 transition-colors">
+                {d.markAllAsRead || 'Mark all as read'}
+              </button>
+            )}
           </div>
 
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-96 overflow-y-auto custom-scrollbar">
             {notifications.length === 0 ? (
-              <div className="p-4 text-white/60 text-center">No notifications</div>
+              <div className="p-4 text-white/60 text-center">{d.noNotifications || 'No notifications'}</div>
             ) : (
               notifications.map((n) => (
-                <div key={n.id} className="p-4 border-b border-white/5 last:border-b-0">
+                <div key={n.id} className="p-4 border-b border-white/5 last:border-b-0 group hover:bg-white/5 transition-colors cursor-pointer">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h4 className="text-white font-medium text-sm">{n.title}</h4>
+                      <h4 className="text-white font-medium text-sm group-hover:text-indigo-300 transition-colors">{n.title}</h4>
                       <p className="text-white/70 text-sm mt-1">{n.message}</p>
                       <p className="text-white/40 text-xs mt-2">
                         {new Date(n.created_at).toLocaleString()}
                       </p>
                     </div>
-                    {!n.is_read && <div className="w-2 h-2 bg-blue-500 rounded-full mt-1" />}
+                    {!n.is_read && <div className="w-2 h-2 bg-blue-500 rounded-full mt-1 animate-pulse" />}
                   </div>
                 </div>
               ))

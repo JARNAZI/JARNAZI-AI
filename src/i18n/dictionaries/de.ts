@@ -13,7 +13,8 @@ const de = {
     save: "Speichern",
     cancel: "Abbrechen",
     delete: "Löschen",
-    back: "Zurück"
+    back: "Zurück",
+    tokens: "Tokens"
   },
   home: {
     heroTitle: "KI-Konsens — Klarheit durch kollektive Intelligenz.",
@@ -22,7 +23,7 @@ const de = {
     howItWorks: "Wie es funktioniert"
   },
   debate: {
-    currentPlan: 'Current plan',
+    currentPlan: 'Aktueller Plan',
     newTitle: "Neue Debatte",
     topicLabel: "Geben Sie ein Thema ein...",
     startBtn: "Debatte initiieren",
@@ -56,7 +57,14 @@ const de = {
     deleteAccount: "Konto löschen"
   },
   notifications: {
-    welcome: "Willkommen beim Jarnazi-Konsens. Der Rat ist bereit."
+    welcome: "Willkommen beim Jarnazi-Konsens. Der Rat ist bereit.",
+    debateInitialized: "Konsens initialisiert. Betreten der Ratskammer...",
+    logoutSuccess: "Erfolgreich abgemeldet",
+    networkFailure: "Netzwerkfehler: Überprüfen Sie Ihre Verbindung.",
+    loginRequired: "Bitte loggen Sie sich ein, um eine Debatte zu starten",
+    councilError: "Ratsfehler",
+    themeSwitched: "Modus zu {theme} gewechselt",
+    langSwitched: "Sprache zu {lang} gewechselt"
   },
   nav: {
     features: "Funktionen",
@@ -99,20 +107,66 @@ const de = {
     step1Title: "Multi-Agent-Debatte",
     step1Desc: "Beziehen Sie mehrere KI-Modelle in eine strukturierte Beratung ein, um die genauesten und kreativsten Ergebnisse zu erzielen.",
     step2Title: "Konsensbildung",
-    step2Desc: "Fortschrittliche Orchestrierungsebene synthetisiert unabh�ngige Modellausgaben zu einem einheitlichen Konsens.",
+    step2Desc: "Fortschrittliche Orchestrierungsebene synthetisiert unabhngige Modellausgaben zu einem einheitlichen Konsens.",
     step3Title: "Asset-Generierung",
     step3Desc: "Generieren Sie professionelle Bilder, Videos und Audio basierend auf dem erarbeiteten Konsens.",
     step4Title: "Langform-Video (Filme & Serien)",
-    step4Desc: "Erstellen Sie lange Videos�Filme, Serienepisoden oder TV-Programme. Wir k�nnen Ihre Idee in Szenen aufteilen, Segmente erstellen und dann eine einzelne MP4 zusammenstellen, die Sie ansehen und herunterladen k�nnen."
+    step4Desc: "Erstellen Sie lange VideosFilme, Serienepisoden oder TV-Programme. Wir knnen Ihre Idee in Szenen aufteilen, Segmente erstellen und dann eine einzelne MP4 zusammenstellen, die Sie ansehen und herunterladen knnen."
   },
   landing: {
     badge: "Die Zukunft der Konsensintelligenz",
     subtitle2: "AI-Konsens-Studio"
   },
   dashboard: {
+    commandConsole: "Befehlskonsole",
+    heroTitle: "Konsens-Architektur",
+    heroSubtitle: "Stellen Sie Ihre Anfrage. Orchestrieren Sie den globalen Verstand.",
+    text: "Text",
+    math: "Mathe",
+    files: "Dateien",
+    pics: "Bilder",
+    video: "Video",
+    audio: "Audio",
+    mathPlaceholder: "Geben Sie eine komplexe Formel ein...",
+    textPlaceholder: "Worüber soll der Rat heute beraten?",
+    initiateBtn: "Beratung einleiten",
+    syncing: "Synchronisierung...",
+    systemsOperational: "Systeme: Operativ",
+    secureRouting: "Sicheres Multi-Modell-Routing",
+    latency: "Latenz",
+    libraryTitle: "Konsens-Bibliothek",
+    librarySubtitle: "Historische Aufzeichnungen",
+    indexedSessions: "INDEXIERTE SITZUNGEN",
+    enterTerminal: "Terminal betreten",
+    emptyLibrary: "Datenbank leer",
+    emptyLibraryDesc: "Starten Sie eine Beratung, um die Indizierung zu beginnen",
+    nodeConsole: "Knotenkonsole",
+    version: "Version Stabil",
+    terminalRouting: "Terminal-Routing",
     neuralHub: "Neural Hub",
-    underConstruction: "Dieses Modul befindet sich derzeit im Aufbau. Der Neural Hub wird als zentrale Orchestrierungsebene f�r fortgeschrittene Multi-Agenten-Workflows dienen.",
-    returnToConsole: "Zur�ck zur Konsole"
+    archiveVault: "Archiv-Safe",
+    resourceManagement: "Ressourcenmanagement",
+    liquidityStatus: "Liquiditätsstatus",
+    tokenBalance: "Token-Guthaben",
+    allocateBudget: "Budget zuweisen",
+    userMatrix: "Benutzermatrix",
+    globalSettings: "Globale Einstellungen",
+    interfaceLocale: "Schnittstellensprache",
+    solarSpectrum: "Solares Spektrum",
+    lunarSpectrum: "Lunares Spektrum",
+    deauthorize: "Deautorisieren",
+    neuralLinkSecure: "Neuraler Link sicher",
+    encryptedStream: "Ende-zu-Ende verschlüsselter Stream.",
+    heroTitlePrefix: "Architektur",
+    openMenu: "Menü öffnen",
+    enterAmount: "Betrag eingeben (min ${min})",
+    tokensReceive: "Sie erhalten",
+    payWithStripe: "Mit Stripe bezahlen",
+    payWithCrypto: "Mit Crypto bezahlen",
+    signInFirst: "Bitte loggen Sie sich zuerst ein",
+    checkoutFailed: "Checkout fehlgeschlagen",
+    underConstruction: "Dieses Modul befindet sich derzeit im Aufbau.",
+    returnToConsole: "Zurück zur Konsole"
   },
   contactPage: {
     "title": "Kontakt",
@@ -128,8 +182,7 @@ const de = {
     "messagePh": "Wie können wir helfen? (Max. 250 Zeichen)",
     "max250": "Maximal 250 Zeichen",
     "sentToast": "Nachricht erfolgreich gesendet! Wir melden uns in Kürze."
-  }
-  ,
+  },
   profilePage: {
     "titleRecent": "Letzte Aktivitäten",
     "tokenBalance": "Token-Guthaben",
@@ -139,9 +192,7 @@ const de = {
     "noDebates": "Keine Debatten gefunden. Starte deine erste Sitzung!",
     "anonymous": "Anonymer Nutzer",
     "banned": "GESPERRT"
-  }
-
-  ,
+  },
   "debateSettingsPage": {
     "title": "Kontoeinstellungen",
     "subtitle": "Verwalte dein Profil und deine Einstellungen.",
@@ -210,162 +261,148 @@ const de = {
         ]
       }
     }
-  }
-  ,
-  debateMenu: {
-    menuTitle: "Menu",
-    tierLabel: "Tier",
-    balanceLabel: "Balance",
-    neuralHub: "Neural Hub",
-    myTokens: "My Tokens",
-    editUserData: "Edit User Data",
-    savedAssets: "Saved Assets",
-    pricing: "Pricing",
-    purchaseCredits: "Purchase Credits",
-    systemLabel: "System",
-    lightSpectrum: "Light Spectrum",
-    darkSpectrum: "Dark Spectrum",
-    languageLabel: "Language",
-    contactSupport: "Contact Support"
   },
-
+  debateMenu: {
+    menuTitle: "Menü",
+    tierLabel: "Tier",
+    balanceLabel: "Guthaben",
+    neuralHub: "Neural Hub",
+    myTokens: "Meine Tokens",
+    editUserData: "Nutzerdaten bearbeiten",
+    savedAssets: "Gespeicherte Assets",
+    pricing: "Preise",
+    purchaseCredits: "Guthaben kaufen",
+    systemLabel: "System",
+    lightSpectrum: "Hell",
+    darkSpectrum: "Dunkel",
+    languageLabel: "Sprache",
+    contactSupport: "Support kontaktieren"
+  },
   updatePasswordPage: {
-    title: "Set New Password",
-    subtitle: "Please enter your new secure password.",
-    newPassword: "New Password",
-    submit: "Update Password",
-    successTitle: "Password Updated",
-    successMessage: "Redirecting you to login...",
-    toastSuccess: "Password updated successfully!"
+    title: "Neues Passwort festlegen",
+    subtitle: "Bitte geben Sie Ihr neues Passwort ein.",
+    newPassword: "Neues Passwort",
+    submit: "Passwort aktualisieren",
+    successTitle: "Passwort aktualisiert",
+    successMessage: "Weiterleitung zum Login...",
+    toastSuccess: "Passwort erfolgreich aktualisiert!"
   },
   adminDashboard: {
-    title: "Super Admin Console",
+    title: "Super Admin Konsole",
     cards: {
-      providersTitle: "Plans",
-      providersDesc: "Manage subscription plans",
-      usersTitle: "User Management",
-      usersDesc: "Control access & tokens",
+      providersTitle: "Pläne",
+      providersDesc: "Abonnementpläne verwalten",
+      usersTitle: "Benutzerverwaltung",
+      usersDesc: "Zugriff & Tokens steuern",
       apiStatusTitle: "API Status",
-      apiStatusDesc: "Check API configuration",
-      financialsTitle: "Financials",
-      financialsDesc: "Revenue & subscriptions",
-      healthTitle: "System Health",
-      healthDesc: "Server status & logs",
-      settingsTitle: "Site Settings",
-      settingsDesc: "Privacy, Terms & Branding"
+      apiStatusDesc: "API Konfiguration prüfen",
+      financialsTitle: "Finanzen",
+      financialsDesc: "Umsatz & Abonnements",
+      healthTitle: "Systemgesundheit",
+      healthDesc: "Serverstatus & Logs",
+      settingsTitle: "Website-Einstellungen",
+      settingsDesc: "Datenschutz, Bedingungen & Branding"
     }
   },
-
-
   adminCosts: {
-
-    title: 'AI Cost Rates',
-
-    subtitle: 'Manage per-unit USD rates used by the pricing engine (75% cost / 25% margin).'
-
+    title: 'KI-Kostensätze',
+    subtitle: 'Verwalten Sie die USD-Sätze pro Einheit für die Preisberechnung.'
   },
-
   adminProviders: {
-    title: "AI Providers",
-    subtitle: "Configure models and priorities available to the Orchestrator.",
-    providersHeading: "Providers",
-    addProvider: "Add Provider",
-    editProvider: "Edit Provider",
-    confirmDeleteProvider: "Delete this provider?",
-    providerSaved: "Provider saved",
-    providerDeleted: "Provider deleted",
+    title: "KI-Anbieter",
+    subtitle: "Modelle und Prioritäten für den Orchestrator konfigurieren.",
+    providersHeading: "Anbieter",
+    addProvider: "Anbieter hinzufügen",
+    editProvider: "Anbieter bearbeiten",
+    confirmDeleteProvider: "Diesen Anbieter löschen?",
+    providerSaved: "Anbieter gespeichert",
+    providerDeleted: "Anbieter gelöscht",
     fieldName: "Name",
-    fieldProviderCode: "Provider Code",
-    fieldCategory: "Category",
-    fieldModelId: "Model ID",
-    fieldEnvKey: "Env Key (Edge Secret Name)",
-    fieldBaseUrl: "Base URL (optional)",
-    fieldPriority: "Priority (lower = earlier)",
-    fieldActive: "Active",
-    fieldConfig: "Config (JSON)",
-    save: "Save",
-    cancel: "Cancel",
-    edit: "Edit",
-    delete: "Delete"
+    fieldProviderCode: "Anbieter-Code",
+    fieldCategory: "Kategorie",
+    fieldModelId: "Modell-ID",
+    fieldEnvKey: "Env Key",
+    fieldBaseUrl: "Basis-URL",
+    fieldPriority: "Priorität",
+    fieldActive: "Aktiv",
+    fieldConfig: "Konfig (JSON)",
+    save: "Speichern",
+    cancel: "Abbrechen",
+    edit: "Bearbeiten",
+    delete: "Löschen"
   },
-
   adminUsers: {
-    title: "User Management",
-    searchPlaceholder: "Search by name or email...",
-    searchButton: "Search Users",
-    thUser: "User",
-    thRole: "Role",
+    title: "Benutzerverwaltung",
+    searchPlaceholder: "Nach Name oder E-Mail suchen...",
+    searchButton: "Benutzer suchen",
+    thUser: "Benutzer",
+    thRole: "Rolle",
     thTokens: "Tokens",
     thStatus: "Status",
-    thActions: "Actions",
-    noName: "No Name",
-    noEmail: "No Email",
-    active: "Active",
-    banned: "Banned",
-    createStaff: "Create Staff",
-    createStaffTitle: "Create Support Staff",
-    staffCreated: "Staff user created/updated successfully",
+    thActions: "Aktionen",
+    noName: "Kein Name",
+    noEmail: "Keine E-Mail",
+    active: "Aktiv",
+    banned: "Gesperrt",
+    createStaff: "Mitarbeiter erstellen",
+    createStaffTitle: "Support-Mitarbeiter erstellen",
+    staffCreated: "Mitarbeiter erfolgreich erstellt",
     staffEmailPlaceholder: "staff@company.com",
-    staffNamePlaceholder: "Full name",
-    staffPasswordPlaceholder: "Temporary password",
-    createOrUpdateStaff: "Create / Update Staff",
-    cancel: "Cancel",
-    deleteConfirm: "Type \"DELETE\" to confirm deleting {email} forever.",
-    userDeleted: "User deleted",
-    settings: "Settings",
-    delete: "Delete"
+    staffNamePlaceholder: "Vollständiger Name",
+    staffPasswordPlaceholder: "Temporäres Passwort",
+    createOrUpdateStaff: "Erstellen / Aktualisieren",
+    cancel: "Abbrechen",
+    deleteConfirm: "Geben Sie \"DELETE\" ein, um zu bestätigen.",
+    userDeleted: "Benutzer gelöscht",
+    settings: "Einstellungen",
+    delete: "Löschen"
   },
-
   adminModels: {
-    title: "Model Registry",
-    subtitle: "Only enabled models here can be used by the Orchestrator. Add or disable models without code changes.",
-    modelsHeading: "Models",
-    addModel: "Add Model",
-    editModel: "Edit Model",
-    confirmDeleteModel: "Delete this model?",
-    modelSaved: "Model saved",
-    modelDeleted: "Model deleted",
-    fieldProvider: "Provider",
-    fieldModelId: "Model ID",
-    fieldPriority: "Priority",
-    fieldEnabled: "Enabled",
-    fieldNotes: "Notes",
-    fieldCapabilities: "Capabilities (JSON)",
-    fieldCostProfile: "Cost Profile (JSON)",
-    save: "Save",
-    cancel: "Cancel",
-    edit: "Edit",
-    delete: "Delete"
+    title: "Modell-Register",
+    subtitle: "Nur aktivierte Modelle können vom Orchestrator verwendet werden.",
+    modelsHeading: "Modelle",
+    addModel: "Modell hinzufügen",
+    editModel: "Modell bearbeiten",
+    confirmDeleteModel: "Diesen Modell löschen?",
+    modelSaved: "Modell gespeichert",
+    modelDeleted: "Modell gelöscht",
+    fieldProvider: "Anbieter",
+    fieldModelId: "Modell-ID",
+    fieldPriority: "Priorität",
+    fieldEnabled: "Aktiviert",
+    fieldNotes: "Notizen",
+    fieldCapabilities: "Fähigkeiten (JSON)",
+    fieldCostProfile: "Kosteprofil (JSON)",
+    save: "Speichern",
+    cancel: "Abbrechen",
+    edit: "Bearbeiten",
+    delete: "Löschen"
   },
-
   adminMessages: {
-    title: "Inbox",
-    loadError: "Error loading messages:",
-    empty: "No messages yet.",
-    replied: "Replied",
-    reply: "Reply",
-    sendReply: "Send Reply",
-    replyPlaceholder: "Type your reply...",
-    replySent: "Reply sent successfully",
-    replyFailed: "Failed to send reply",
-    cancel: "Cancel",
-    send: "Send"
+    title: "Posteingang",
+    loadError: "Fehler beim Laden:",
+    empty: "Noch keine Nachrichten.",
+    replied: "Beantwortet",
+    reply: "Antworten",
+    sendReply: "Antwort senden",
+    replyPlaceholder: "Ihre Antwort...",
+    replySent: "Antwort erfolgreich gesendet",
+    replyFailed: "Fehler beim Senden",
+    cancel: "Abbrechen",
+    send: "Senden"
   },
   buyTokensPage: {
-    backToConsole: "Back to Console",
-    title: "Buy Tokens",
-    subtitle: "Purchase credits to unlock premium tools.",
-    amountLabel: "Amount (USD)",
-    minHelper: "Minimum purchase: ${MIN_PURCHASE_AMOUNT_USD}",
-    youWillReceive: "You will receive",
+    backToConsole: "Zurück zur Konsole",
+    title: "Tokens kaufen",
+    subtitle: "Guthaben kaufen, um Premium-Tools freizuschalten.",
+    amountLabel: "Betrag (USD)",
+    minHelper: "Mindestkauf: ${MIN_PURCHASE_AMOUNT_USD}",
+    youWillReceive: "Sie erhalten",
     tokens: "Tokens",
-    payAddTokens: "Pay & Add Tokens",
-    stripeDisabled: "Stripe payments are currently disabled.",
-    payWithCrypto: "Pay with Crypto"
+    payAddTokens: "Bezahlen & Tokens hinzufügen",
+    stripeDisabled: "Stripe-Zahlungen sind derzeit deaktiviert.",
+    payWithCrypto: "Mit Crypto bezahlen (NOWPayments)"
   }
 } as const;
 
 export default de;
-
-
-

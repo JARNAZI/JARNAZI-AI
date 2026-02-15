@@ -5,6 +5,12 @@ import { LANGUAGES, DEFAULT_LANGUAGE } from '@/i18n/config';
 const locales = LANGUAGES.map((lang) => lang.code);
 
 function getLocale(request: NextRequest): string {
+  // Check cookie first for consistency
+  const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
+  if (cookieLocale && locales.includes(cookieLocale as any)) {
+    return cookieLocale;
+  }
+
   const acceptLanguage = request.headers.get('accept-language');
   if (!acceptLanguage) return DEFAULT_LANGUAGE;
 
