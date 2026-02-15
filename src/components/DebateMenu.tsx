@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, Moon, Sun, Mail, Archive, CreditCard, Coins, User, Zap } from "lucide-react";
+import { Menu, Moon, Sun, Mail, Archive, CreditCard, Coins, User, Zap, Shield } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Dropdown, DropdownItem, DropdownLabel, DropdownSeparator } from "./ui/custom-dropdown";
@@ -15,6 +15,7 @@ export function DebateMenu() {
     const { setTheme, theme } = useTheme();
     const [balance, setBalance] = useState<number | null>(null);
     const [subscription, setSubscription] = useState<string>('Free');
+    const [role, setRole] = useState<string | null>(null);
     const supabase = useMemo(() => createClient(), []);
 
     const lang = (pathname?.split('/')[1] || 'en') as LanguageCode;
@@ -27,10 +28,15 @@ export function DebateMenu() {
         const fetchProfile = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                const { data: profile } = await supabase.from('profiles').select('token_balance_cents, subscription_tier').eq('id', user.id).single();
+                // Fallback to app_metadata role initially
+                setRole(user.app_metadata?.role || null);
+
+                const { data: profile } = await supabase.from('profiles').select('token_balance_cents, subscription_tier, role').eq('id', user.id).single();
                 if (profile) {
                     setBalance(profile.token_balance_cents);
                     setSubscription(profile.subscription_tier || 'Free');
+                    // Prefer profile role if available
+                    if (profile.role) setRole(profile.role);
                 }
 
                 channel = supabase
@@ -43,6 +49,7 @@ export function DebateMenu() {
                     }, (payload) => {
                         if (payload.new.token_balance_cents !== undefined) setBalance(payload.new.token_balance_cents);
                         if (payload.new.subscription_tier !== undefined) setSubscription(payload.new.subscription_tier);
+                        if (payload.new.role !== undefined) setRole(payload.new.role);
                     })
                     .subscribe();
             }
@@ -53,6 +60,8 @@ export function DebateMenu() {
             if (channel) supabase.removeChannel(channel);
         };
     }, [supabase]);
+
+    const isAdmin = role === 'admin';
 
     return (
         <Dropdown
@@ -86,6 +95,15 @@ export function DebateMenu() {
             <DropdownSeparator />
 
             {/* Main Navigation */}
+            {isAdmin && (
+                <>
+                    <DropdownItem onClick={() => router.push(`/${lang}/admin`)} icon={Shield} className="text-red-500 font-bold bg-red-500/10 hover:bg-red-500/20">
+                        Admin Dashboard
+                    </DropdownItem>
+                    <DropdownSeparator />
+                </>
+            )}
+
             <DropdownItem onClick={() => router.push(`/${lang}/neural-hub`)} icon={Zap}>
                 {t.neuralHub ?? "Neural Hub"}
             </DropdownItem>
