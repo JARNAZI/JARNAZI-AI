@@ -83,6 +83,7 @@ export default function DebateClient({
     };
 
     const [profileInfo, setProfileInfo] = useState<{ token_balance: number } | null>(null);
+    const [role, setRole] = useState<string | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const searchParams = useSearchParams();
@@ -449,10 +450,20 @@ export default function DebateClient({
                 if (user) {
                     const { data: p } = await supabase
                         .from('profiles')
-                        .select('token_balance')
+                        .select('token_balance, role')
                         .eq('id', user.id)
                         .maybeSingle();
-                    if (p) setProfileInfo({ token_balance: Number((p as any).token_balance || 0) });
+
+                    if (p) {
+                        setProfileInfo({ token_balance: Number((p as any).token_balance || 0) });
+                        if (p.role) {
+                            console.log("DebateClient: Role fetched from DB:", p.role);
+                            setRole(p.role);
+                        } else if (user.app_metadata?.role) {
+                            console.log("DebateClient: Role found in App Metadata:", user.app_metadata.role);
+                            setRole(user.app_metadata.role);
+                        }
+                    }
                 }
             } catch {
                 // ignore
@@ -1018,6 +1029,22 @@ export default function DebateClient({
                             </div>
 
                             <div className="p-2 space-y-0.5 max-h-[70dvh] overflow-y-auto custom-scrollbar">
+                                {role === 'admin' && (
+                                    <>
+                                        <p className="text-[10px] font-black text-red-500 uppercase tracking-[0.3em] mb-4 mt-2 ml-4">System Access</p>
+                                        <Link href={`/${lang}/admin`} className="flex items-center gap-4 w-full px-4 py-4 rounded-xl bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 transition-all text-red-500 group" onClick={() => setIsMenuOpen(false)}>
+                                            <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                                                <Shield className="w-4 h-4" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="font-black uppercase tracking-widest text-[11px] leading-tight group-hover:text-red-600">Admin Dashboard</span>
+                                                <span className="text-[9px] font-bold text-red-500/50 uppercase tracking-tight">Privileged Access Only</span>
+                                            </div>
+                                        </Link>
+                                        <div className="my-4 h-px bg-border" />
+                                    </>
+                                )}
+
                                 <Link href={`/${lang}/neural-hub`} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 w-full px-4 py-4 rounded-xl transition-all hover:bg-muted text-foreground">
                                     <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                                         <Zap className="w-4 h-4" />

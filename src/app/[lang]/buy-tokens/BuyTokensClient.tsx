@@ -7,12 +7,12 @@ import { createClient } from '@/lib/supabase/client';
 import { MIN_PURCHASE_AMOUNT_USD, TOKENS_PER_USD, amountToTokens, isValidPurchaseAmount, normalizeAmount } from '@/lib/tokens';
 import { toast } from 'sonner';
 
-export default function BuyTokensClient({ dict, lang }: { dict: any; lang: string }) {
+export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonKey }: { dict: any; lang: string; supabaseUrl?: string; supabaseAnonKey?: string }) {
   const d = { ...(dict?.dashboard || {}), ...(dict?.buyTokensPage || {}) };
   const common = dict?.common || {};
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [supabase] = useState(() => createClient());
+  const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
 
   const [amount, setAmount] = useState<string>(String(MIN_PURCHASE_AMOUNT_USD));
   const missingTokens = useMemo(() => {

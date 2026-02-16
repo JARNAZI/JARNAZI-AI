@@ -11,7 +11,7 @@ import {
     MessageSquare, CreditCard, User, Phone, Sun,
     Moon, Globe, LogOut, Loader2, AlertCircle,
     CheckCircle2, Info, X,
-    FileText, Image as ImageIcon, Video, Mic, Trash2
+    FileText, Image as ImageIcon, Video, Mic, Trash2, Shield
 } from 'lucide-react';
 
 // Dynamic imports for heavy components
@@ -51,11 +51,13 @@ export default function DebateDashboard({
     };
 
     const [debates, setDebates] = useState<DebateRecord[]>([]);
-    const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
+    const supabase = useMemo(() => createClient({ supabaseUrl, supabaseAnonKey }), [supabaseUrl, supabaseAnonKey]);
     const [topicInput, setTopicInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+    const [role, setRole] = useState<string | null>(null);
 
     // Advanced Input States
 
@@ -85,6 +87,23 @@ export default function DebateDashboard({
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
+                    // Fetch generic role first
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', user.id)
+                        .single();
+
+                    if (profile?.role) {
+                        console.log("DebateDashboard: Role fetched from DB:", profile.role);
+                        setRole(profile.role);
+                    } else if (user.app_metadata?.role) {
+                        console.log("DebateDashboard: Role found in App Metadata:", user.app_metadata.role);
+                        setRole(user.app_metadata.role);
+                    } else {
+                        console.log("DebateDashboard: No role found for user", user.id);
+                    }
+
                     const { data, error } = await supabase
                         .from('debates')
                         .select('*')
@@ -402,6 +421,21 @@ export default function DebateDashboard({
                         </div>
 
                         <nav className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar text-left font-black">
+                            {role === 'admin' && (
+                                <>
+                                    <p className="text-[10px] font-black text-red-500 uppercase tracking-[0.3em] mb-4 mt-2 ml-4">System Access</p>
+                                    <Link href={`/${lang}/admin`} className="flex items-center gap-5 p-5 rounded-[1.5rem] bg-red-500/5 hover:bg-red-500/10 active:bg-red-500/15 border border-red-500/10 group transition-all" onClick={() => setIsMenuOpen(false)}>
+                                        <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                                            <Shield className="w-5 h-5" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="font-black uppercase tracking-widest text-[12px] text-red-500 group-hover:text-red-600">Admin Dashboard</span>
+                                            <span className="text-[9px] font-bold text-red-500/50 uppercase tracking-tight">Privileged Access Only</span>
+                                        </div>
+                                    </Link>
+                                    <div className="my-6 h-px bg-border" />
+                                </>
+                            )}
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mb-4 mt-2 ml-4">{d.terminalRouting || "Terminal Routing"}</p>
 
                             <Link href={`/${lang}/neural-hub`} className="flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all" onClick={() => setIsMenuOpen(false)}>

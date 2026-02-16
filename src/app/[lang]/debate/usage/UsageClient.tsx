@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Zap, CreditCard, ArrowLeft, Loader2, ShieldCheck, BarChart3, Clock, TrendingUp } from 'lucide-react';
 
-export default function UsageClient({ dict, lang }: { dict: any; lang: string }) {
+export default function UsageClient({ dict, lang, supabaseUrl, supabaseAnonKey }: { dict: any; lang: string; supabaseUrl?: string; supabaseAnonKey?: string }) {
   const d = dict?.dashboard || {};
   const router = useRouter();
-  const [supabase] = useState(() => createClient());
+  const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
 
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);

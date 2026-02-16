@@ -26,17 +26,33 @@ export function DebateMenu() {
         let channel: any;
 
         const fetchProfile = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+            console.log("DebateMenu: Checking Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            console.log("DebateMenu: User", user, "Auth Error:", authError);
+
             if (user) {
                 // Fallback to app_metadata role initially
-                setRole(user.app_metadata?.role || null);
+                const metaRole = user.app_metadata?.role || null;
+                console.log("DebateMenu: App Metadata Role:", metaRole);
+                setRole(metaRole);
 
-                const { data: profile } = await supabase.from('profiles').select('token_balance_cents, subscription_tier, role').eq('id', user.id).single();
+                const { data: profile, error: dbError } = await supabase
+                    .from('profiles')
+                    .select('token_balance_cents, subscription_tier, role')
+                    .eq('id', user.id)
+                    .single();
+
+                console.log("DebateMenu: DB Profile:", profile, "DB Error:", dbError);
+
                 if (profile) {
                     setBalance(profile.token_balance_cents);
                     setSubscription(profile.subscription_tier || 'Free');
                     // Prefer profile role if available
-                    if (profile.role) setRole(profile.role);
+                    if (profile.role) {
+                        console.log("DebateMenu: Setting Role from DB:", profile.role);
+                        setRole(profile.role);
+                    }
                 }
 
                 channel = supabase
@@ -47,9 +63,13 @@ export function DebateMenu() {
                         table: 'profiles',
                         filter: `id=eq.${user.id}`
                     }, (payload) => {
+                        console.log("DebateMenu: Realtime Update:", payload);
                         if (payload.new.token_balance_cents !== undefined) setBalance(payload.new.token_balance_cents);
                         if (payload.new.subscription_tier !== undefined) setSubscription(payload.new.subscription_tier);
-                        if (payload.new.role !== undefined) setRole(payload.new.role);
+                        if (payload.new.role !== undefined) {
+                            console.log("DebateMenu: Realtime Role Update:", payload.new.role);
+                            setRole(payload.new.role);
+                        }
                     })
                     .subscribe();
             }
