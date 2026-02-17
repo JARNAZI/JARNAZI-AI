@@ -1,6 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, use } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+// workaround for React 18 types not having 'use'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const use = (React as any).use || ((p: any) => p);
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';

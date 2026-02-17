@@ -1,5 +1,7 @@
 "use client";
-import { useEffect, useMemo, useState, use } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const use = (React as any).use || ((p: any) => p);
 import { Check, Zap, Crown, Shield, CreditCard, Coins } from "lucide-react";
 import PurchaseButton from "@/components/PurchaseButton";
 import { createClient } from "@/lib/supabase/client";
@@ -36,7 +38,7 @@ export default function PricingPage(props: { params: Promise<{ lang: string }> }
     { id: "starter", amountUsd: 14, name: t.plans.starter.name, description: t.plans.starter.description, icon: <Zap className="w-6 h-6 text-emerald-400" />, features: t.plans.starter.features, highlight: false },
     { id: "producer", amountUsd: 50, name: t.plans.producer.name, description: t.plans.producer.description, icon: <Crown className="w-6 h-6 text-amber-400" />, features: t.plans.producer.features, highlight: true, label: t.mostPopular },
     { id: "creator", amountUsd: 330, name: t.plans.creator.name, description: t.plans.creator.description, icon: <Shield className="w-6 h-6 text-purple-400" />, features: t.plans.creator.features, highlight: false },
-  ].map(p => ({...p, tokens: amountToTokens(p.amountUsd)}));
+  ].map(p => ({ ...p, tokens: amountToTokens(p.amountUsd) }));
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center py-20 px-4">
