@@ -397,8 +397,8 @@ const en = {
   adminDashboard: {
     title: "Super Admin Console",
     cards: {
-      providersTitle: "Plans",
-      providersDesc: "Manage subscription plans",
+      providersTitle: "AI Providers",
+      providersDesc: "Manage AI models & keys",
       usersTitle: "User Management",
       usersDesc: "Control access & tokens",
       apiStatusTitle: "API Status",
@@ -407,8 +407,8 @@ const en = {
       financialsDesc: "Revenue & subscriptions",
       healthTitle: "System Health",
       healthDesc: "Server status & logs",
-      settingsTitle: "Site Settings",
-      settingsDesc: "Privacy, Terms & Branding"
+      settingsTitle: "Settings & Plans",
+      settingsDesc: "Privacy, Terms & Plans"
     }
   },
 

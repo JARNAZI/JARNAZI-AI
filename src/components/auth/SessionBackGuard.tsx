@@ -17,46 +17,32 @@ export default function SessionBackGuard({
   useEffect(() => {
     const supabase = createClient({ supabaseUrl, supabaseAnonKey });
 
-    const redirect = () => {
-      // Force a full navigation so the browser can't show a cached protected page.
+    const handleRedirect = () => {
       window.location.replace(`/${lang}/${redirectPath}`);
     };
 
-    const checkSession = async () => {
-      try {
+    // Check session on mount and listen for changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        handleRedirect();
+      }
+    });
+
+    // Handle bfcache restore (Back button)
+    const onPageShow = async (e: PageTransitionEvent) => {
+      if (e.persisted) {
         const { data } = await supabase.auth.getSession();
-        if (!data?.session) redirect();
-      } catch {
-        redirect();
+        if (!data.session) handleRedirect();
       }
     };
 
-    // Initial check
-    checkSession();
-
-    // If the page is restored from the back/forward cache, re-check auth.
-    const onPageShow = (e: PageTransitionEvent) => {
-      if ((e as any).persisted) checkSession();
-    };
-
-    const onVisibility = () => {
-      if (document.visibilityState === "visible") checkSession();
-    };
-
-    const onPopState = () => {
-      checkSession();
-    };
-
     window.addEventListener("pageshow", onPageShow);
-    document.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("popstate", onPopState);
 
     return () => {
+      subscription.unsubscribe();
       window.removeEventListener("pageshow", onPageShow);
-      document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("popstate", onPopState);
     };
-  }, [lang, redirectPath]);
+  }, [lang, redirectPath, supabaseUrl, supabaseAnonKey]);
 
   return null;
 }

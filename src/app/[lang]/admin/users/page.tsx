@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/server-admin';
 import CreateStaffModal from './CreateStaffModal';
 import UserListActions from './UserListActions';
 import { getDictionary } from '@/i18n/get-dictionary';
@@ -13,7 +13,7 @@ export default async function AdminUsersPage(props: {
   const dict = await getDictionary(lang);
 
   const searchParams = await props.searchParams;
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const query = searchParams.q || '';
 
   let userQuery = supabase.from('profiles').select('*').order('created_at', { ascending: false });
@@ -71,8 +71,8 @@ export default async function AdminUsersPage(props: {
                 <td className="p-4 text-muted-foreground">
                   <span
                     className={`px-2 py-0.5 rounded text-xs border ${user.role === 'admin' || user.role === 'super_admin'
-                        ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
-                        : 'bg-muted/40 text-muted-foreground border-border'
+                      ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                      : 'bg-muted/40 text-muted-foreground border-border'
                       }`}
                   >
                     {user.role}
