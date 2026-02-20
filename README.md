@@ -20,14 +20,14 @@ supabase db push
 ```
 
 ### 3. Deploy Edge Functions
-Deploy the AI Orchestrator, Email, Payment, and Vertex connectors:
+Deploy the remaining backend services (Email, Payment, and Vertex connectors):
 ```bash
-supabase functions deploy ai-orchestrator --no-verify-jwt
+# Note: AI Orchestration is now handled centrally by the Next.js API Layer (src/lib/orchestrator.ts)
 supabase functions deploy send-email --no-verify-jwt
 supabase functions deploy handle-payment --no-verify-jwt
 supabase functions deploy vertex-connector --no-verify-jwt
 ```
-*Note: `--no-verify-jwt` is used if you want to allow server-side calls without user tokens, but for strict security, use JWT verification + policies.*
+*Note: `--no-verify-jwt` is used for internal service-to-service calls. For debate orchestration, the system now uses a high-performance Maestro class in the Next.js environment.*
 
 ### 4. Deploy Frontend (Vercel)
 1. Push this repo to GitHub.

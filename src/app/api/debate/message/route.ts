@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { DebateOrchestrator } from '@/lib/orchestrator';
 
 export const runtime = 'nodejs';
 
@@ -10,44 +11,6 @@ function getSupabaseAdmin() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("Missing Supabase Admin credentials in debate/message");
   return createClient(url, key, { auth: { persistSession: false } });
-}
-
-async function callEdgeOrchestrator(body: any, userAuthHeader?: string | null) {
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !serviceKey) throw new Error("Missing credentials for Edge Orchestrator in debate/message");
-  const fnUrl = `${supabaseUrl}/functions/v1/ai-orchestrator`;
-  const res = await fetch(fnUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(userAuthHeader
-        ? {
-          'Authorization': userAuthHeader,
-          'apikey': (process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)!,
-        }
-        : {
-          'Authorization': `Bearer ${serviceKey}`,
-          'apikey': serviceKey,
-        }),
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const t = await res.text().catch(() => '');
-    throw new Error(`Edge orchestrator failed: ${res.status} ${t}`);
-  }
-  return res.json().catch(() => ({}));
-}
-
-async function countActiveTextProviders(supabaseAdmin: any) {
-  const { count, error } = await supabaseAdmin
-    .from('ai_providers')
-    .select('id', { count: 'exact', head: true })
-    .eq('enabled', true)
-    .eq('kind', 'text');
-  if (error) throw error;
-  return Number(count || 0);
 }
 
 async function getNumericSetting(supabaseAdmin: any, key: string, fallback: number) {
@@ -66,10 +29,9 @@ async function getNumericSetting(supabaseAdmin: any, key: string, fallback: numb
   return fallback;
 }
 
-function computeTokenCost(providerCount: number, rounds: number, requestType: RequestType, base: number, perTurn: number, mediaOverhead: number) {
-  const media = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? mediaOverhead : 0;
-  const total = base + (Math.max(providerCount, 0) * Math.max(rounds, 1) * perTurn) + media;
-  return Math.max(1, total);
+function computeTokenCost(requestType: RequestType, base: number, perTurn: number) {
+  const media = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? 5 : 0;
+  return base + perTurn + media;
 }
 
 async function reserveTokens(supabaseAdmin: any, userId: string, tokens: number) {
@@ -84,6 +46,7 @@ async function refundTokens(supabaseAdmin: any, userId: string, tokens: number) 
 
 export async function POST(req: Request) {
   const supabaseAdmin = getSupabaseAdmin();
+  const orchestrator = new DebateOrchestrator();
 
   try {
     const body = await req.json().catch(() => ({}));
@@ -105,51 +68,73 @@ export async function POST(req: Request) {
 
     const { data: debRow, error: debErr } = await supabaseAdmin
       .from('debates')
-      .select('id,user_id')
+      .select('id,user_id,topic')
       .eq('id', debateId)
       .single();
 
     if (debErr || !debRow) return NextResponse.json({ error: 'Debate not found' }, { status: 404 });
     if (debRow.user_id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-    const rounds = await getNumericSetting(supabaseAdmin, 'debate_rounds', 3);
+    // AI Orchestration Settings
     const baseCost = await getNumericSetting(supabaseAdmin, 'debate_base_cost', 1);
     const perTurn = await getNumericSetting(supabaseAdmin, 'debate_cost_per_turn', 1);
-    const mediaOverhead = await getNumericSetting(supabaseAdmin, 'debate_media_overhead', 2);
-
-    const providerCount = await countActiveTextProviders(supabaseAdmin);
-    const tokenCost = computeTokenCost(providerCount, rounds, requestType, baseCost, perTurn, mediaOverhead);
+    const tokenCost = computeTokenCost(requestType, baseCost, perTurn);
 
     try {
       await reserveTokens(supabaseAdmin, user.id, tokenCost);
     } catch (e: any) {
-      const msg = String(e?.message || '');
-      if (msg.includes('INSUFFICIENT_TOKENS')) {
-        const { data: prof } = await supabaseAdmin
-          .from('profiles')
-          .select('token_balance')
-          .eq('id', user.id)
-          .maybeSingle();
-        const current = Number(prof?.token_balance ?? 0);
-        const missing = Math.max(0, tokenCost - current);
-        return NextResponse.json(
-          { error: 'INSUFFICIENT_TOKENS', requiredTokens: tokenCost, currentTokens: current, missingTokens: missing },
-          { status: 402 }
-        );
+      if (e.message?.includes('INSUFFICIENT_TOKENS')) {
+        return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', requiredTokens: tokenCost }, { status: 402 });
       }
       throw e;
     }
 
     try {
-      await callEdgeOrchestrator({
-        debateId,
-        prompt: rawPrompt,
-        requestType,
-        rounds,
-        tokens: tokenCost,
-        alreadyReserved: true,
-        systemMessage: "Multi-AI debate context continued.",
-      }, authHeader);
+      // 1. Fetch History for Context
+      const { data: turns } = await supabaseAdmin
+        .from('debate_turns')
+        .select('ai_name_snapshot, content')
+        .eq('debate_id', debateId)
+        .order('created_at', { ascending: true });
+
+      const context = {
+        topic: debRow.topic,
+        debateId: debateId,
+        previousTurns: (turns || []).map((t: any) => ({ ai_name: t.ai_name_snapshot, content: t.content }))
+      };
+
+      // 2. Execute a reply using the Maestro's best candidate selection
+      const replyStep = {
+        role: "Interlocutor / Rebuttal",
+        provider_preference: [], // Use dynamic selection
+        task_type: requestType === 'image' || requestType === 'video' ? 'image' : 'text' as any,
+        instructions: `Participate in the debate based on the user's input: "${rawPrompt}"`
+      };
+
+      const result = await orchestrator.executeStep(replyStep, context);
+
+      if (result.status === 'success') {
+        await orchestrator.saveTurn(
+          debateId,
+          user.id,
+          'assistant',
+          result.agentName || 'AI',
+          result.agentId || null,
+          result.content,
+          { user_prompt: rawPrompt }
+        );
+
+        // Ledger write
+        await supabaseAdmin.from('token_ledger').insert({
+          user_id: user.id,
+          amount: -tokenCost,
+          description: `Debate turn cost for session: ${debateId}`
+        });
+
+      } else {
+        throw new Error(result.content);
+      }
+
     } catch (e) {
       await refundTokens(supabaseAdmin, user.id, tokenCost);
       throw e;

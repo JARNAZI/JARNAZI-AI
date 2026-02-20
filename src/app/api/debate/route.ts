@@ -8,8 +8,10 @@ import {
   checkRateLimit,
   validateContentSafety
 } from '@/lib/security';
+import { DebateOrchestrator } from '@/lib/orchestrator';
 
 export const runtime = 'nodejs';
+export const maxDuration = 60; // Extend duration for multi-step AI orchestration
 
 type RequestType = 'text' | 'latex' | 'image' | 'video' | 'file';
 
@@ -18,27 +20,6 @@ function getSupabaseAdmin() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error(`Missing Supabase Admin credentials: ${!url ? 'URL ' : ''}${!key ? 'KEY' : ''}`);
   return createClient(url, key, { auth: { persistSession: false } });
-}
-
-async function callEdgeOrchestrator(body: any) {
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !serviceKey) throw new Error("Missing credentials for Edge Orchestrator");
-  const fnUrl = `${supabaseUrl}/functions/v1/ai-orchestrator`;
-  const res = await fetch(fnUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${serviceKey}`,
-      'apikey': serviceKey,
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const t = await res.text().catch(() => '');
-    throw new Error(`Edge orchestrator failed: ${res.status} ${t}`);
-  }
-  return res.json().catch(() => ({}));
 }
 
 async function countActiveTextProviders(supabaseAdmin: any) {
@@ -51,12 +32,16 @@ async function countActiveTextProviders(supabaseAdmin: any) {
   return Number(count || 0);
 }
 
-function computeTokenCost(providerCount: number, rounds: number, requestType: RequestType) {
-  const base = 1;
-  const perTurn = 1;
-  const mediaOverhead = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? 2 : 0;
-  const total = base + (Math.max(providerCount, 0) * Math.max(rounds, 1) * perTurn) + mediaOverhead;
-  return Math.max(1, total);
+/**
+ * Calculates a conservative token budget for the Maestro.
+ * Maestro usually plans 3-5 steps. We budget for 5 steps per round.
+ */
+function computeTokenCost(providerCount: number, requestType: RequestType) {
+  const base = 2; // Planning overhead
+  const perStep = 1;
+  const maxSteps = 5;
+  const mediaOverhead = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? 5 : 0;
+  return base + (maxSteps * perStep) + mediaOverhead;
 }
 
 async function reserveTokens(supabaseAdmin: any, userId: string, tokens: number) {
@@ -73,6 +58,7 @@ async function refundTokens(supabaseAdmin: any, userId: string, tokens: number) 
 
 export async function POST(req: Request) {
   const supabaseAdmin = getSupabaseAdmin();
+  const orchestrator = new DebateOrchestrator();
 
   try {
     const body = await req.json().catch(() => ({}));
@@ -104,12 +90,13 @@ export async function POST(req: Request) {
 
     const user = userData.user;
 
+    // 1. Create Debate Record
     const { data: debate, error: debErr } = await supabaseAdmin
       .from('debates')
       .insert({
         user_id: user.id,
         topic,
-        status: 'active', // Changed from processing to active to match common states or pending
+        status: 'active',
         mode: requestType,
       })
       .select('*')
@@ -117,22 +104,36 @@ export async function POST(req: Request) {
 
     if (debErr || !debate) throw debErr || new Error('Failed to create debate');
 
-    const rounds = 2;
+    // 2. Token Accounting
     const providerCount = await countActiveTextProviders(supabaseAdmin);
-    const tokenCost = computeTokenCost(providerCount, rounds, requestType);
-
-    await reserveTokens(supabaseAdmin, user.id, tokenCost);
+    const tokenCost = computeTokenCost(providerCount, requestType);
 
     try {
-      await callEdgeOrchestrator({
-        debateId: debate.id,
-        prompt: topic,
-        requestType,
-        rounds,
-        systemMessage:
-          "Multi-AI debate. Each participant must respond to another AI by name. Use LaTeX for math: inline $...$ and block $$...$$. For image/video/file requests, debate to produce a single final generation prompt, then output the final agreement under the heading 'الاتفاق'.",
+      await reserveTokens(supabaseAdmin, user.id, tokenCost);
+    } catch (e: any) {
+      if (e.message?.includes('INSUFFICIENT_TOKENS')) {
+        return NextResponse.json({ error: 'Insufficient tokens' }, { status: 402 });
+      }
+      throw e;
+    }
+
+    // 3. Trigger Maestro (Non-blocking or await depending on requirements)
+    // We await here to ensure we can handle errors and refund, local Next.js supports longer timeouts.
+    try {
+      await orchestrator.runFullDebate(debate.id, user.id, topic);
+
+      // Update final cost if applicable
+      await supabaseAdmin.from('debates').update({ total_cost_cents: tokenCost }).eq('id', debate.id);
+
+      // Log to Ledger
+      await supabaseAdmin.from('token_ledger').insert({
+        user_id: user.id,
+        amount: -tokenCost,
+        description: `Debate cost for session: ${debate.id}`
       });
+
     } catch (e) {
+      console.error("[API/Debate] Maestro Execution Failed:", e);
       await refundTokens(supabaseAdmin, user.id, tokenCost);
       await supabaseAdmin.from('debates').update({ status: 'failed' }).eq('id', debate.id);
       throw e;
