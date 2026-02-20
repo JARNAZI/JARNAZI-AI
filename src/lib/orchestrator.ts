@@ -31,6 +31,14 @@ export type TaskPlan = {
     }[];
 };
 
+export type StepResult = {
+    content: string;
+    status: 'success' | 'failed';
+    format?: string;
+    agentName?: string;
+    agentId?: string;
+};
+
 // Orchestrator Class
 export class DebateOrchestrator {
     private supabase;
@@ -77,7 +85,7 @@ export class DebateOrchestrator {
             previousTurns: []
         };
 
-        const results = [];
+        const results: StepResult[] = [];
 
         for (const step of plan) {
             console.log(`[Maestro] Executing step: ${step.role}`);
@@ -195,7 +203,7 @@ export class DebateOrchestrator {
     async executeStep(
         step: TaskPlan['sequence'][0],
         context: DebateContext
-    ): Promise<{ content: string; status: 'success' | 'failed'; format?: string; agentName?: string; agentId?: string }> {
+    ): Promise<StepResult> {
 
         const candidates = [...step.provider_preference];
 
