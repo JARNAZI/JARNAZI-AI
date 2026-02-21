@@ -118,7 +118,7 @@ export function DebateMenu() {
             {isAdmin && (
                 <>
                     <DropdownItem onClick={() => router.push(`/${lang}/admin`)} icon={Shield} className="text-red-500 font-bold bg-red-500/10 hover:bg-red-500/20">
-                        Admin Dashboard
+                        {dict?.adminDashboard?.title || "Admin Dashboard"}
                     </DropdownItem>
                     <DropdownSeparator />
                 </>

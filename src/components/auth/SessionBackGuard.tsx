@@ -22,15 +22,23 @@ export default function SessionBackGuard({
     };
 
     // Check session on mount and listen for changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
         handleRedirect();
+      } else if (!session && event === 'INITIAL_SESSION') {
+        // Double check after a small delay to avoid race conditions during redirects
+        setTimeout(async () => {
+          const { data } = await supabase.auth.getSession();
+          if (!data.session) handleRedirect();
+        }, 1500);
       }
     });
 
     // Handle bfcache restore (Back button)
     const onPageShow = async (e: PageTransitionEvent) => {
       if (e.persisted) {
+        // Wait for potential session re-hydration
+        await new Promise(r => setTimeout(r, 500));
         const { data } = await supabase.auth.getSession();
         if (!data.session) handleRedirect();
       }

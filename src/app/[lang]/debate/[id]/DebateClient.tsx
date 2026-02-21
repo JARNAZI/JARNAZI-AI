@@ -1494,7 +1494,7 @@ Suggested amount: $${amount}`
                                                 <div key={msg.id} className="flex w-full justify-start">
                                                     <div className={`flex flex-col w-full ${indent}`}>
                                                         <span className="text-[10px] uppercase font-black tracking-wider opacity-60 mb-1 px-1">
-                                                            {dict?.debate?.agreementTitle || 'الاتفاق'}
+                                                            {dict?.debate?.agreementTitle || 'Agreement'}
                                                         </span>
                                                         <div className={`p-5 rounded-2xl text-sm leading-relaxed bg-card text-foreground border border-border shadow-sm`}>
                                                             <div className="whitespace-pre-wrap">{msg.content}</div>

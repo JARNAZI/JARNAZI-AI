@@ -450,14 +450,14 @@ export default function DebateDashboard({
                         <nav className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar text-left font-black">
                             {role === 'admin' && (
                                 <>
-                                    <p className="text-[10px] font-black text-red-500 uppercase tracking-[0.3em] mb-4 mt-2 ml-4">System Access</p>
+                                    <p className="text-[10px] font-black text-red-500 uppercase tracking-[0.3em] mb-4 mt-2 ml-4">{d.systemAccess || "System Access"}</p>
                                     <Link href={`/${lang}/admin`} className="flex items-center gap-5 p-5 rounded-[1.5rem] bg-red-500/5 hover:bg-red-500/10 active:bg-red-500/15 border border-red-500/10 group transition-all" onClick={() => setIsMenuOpen(false)}>
                                         <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
                                             <Shield className="w-5 h-5" />
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="font-black uppercase tracking-widest text-[12px] text-red-500 group-hover:text-red-600">Admin Dashboard</span>
-                                            <span className="text-[9px] font-bold text-red-500/50 uppercase tracking-tight">Privileged Access Only</span>
+                                            <span className="font-black uppercase tracking-widest text-[12px] text-red-500 group-hover:text-red-600">{dict?.adminDashboard?.title || "Admin Dashboard"}</span>
+                                            <span className="text-[9px] font-bold text-red-500/50 uppercase tracking-tight">{d.privilegedAccess || "Privileged Access Only"}</span>
                                         </div>
                                     </Link>
                                     <div className="my-6 h-px bg-border" />

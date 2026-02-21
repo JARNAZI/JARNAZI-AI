@@ -106,16 +106,16 @@ export default function UsageClient({ dict, lang, supabaseUrl, supabaseAnonKey }
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-4">
                 <ShieldCheck className="w-4 h-4 text-primary" />
                 <span className="text-primary font-black tracking-widest text-xs">
-                  {tier === 'FREE' ? 'TRIAL' : tier}
+                  {tier === 'FREE' ? (d.trialPlan || 'TRIAL') : tier}
                 </span>
               </div>
               <p className="text-foreground font-bold text-lg leading-tight uppercase tracking-tight">
-                {tier === 'FREE' ? 'Initiate Tier' : 'Pro Council Member'}
+                {tier === 'FREE' ? (d.trialPlan || 'Initiate Tier') : (d.proPlan || 'Pro Council Member')}
               </p>
             </div>
             <div className="mt-8 pt-6 border-t border-border">
               <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-relaxed">
-                {tier === 'FREE' ? 'Trial Mode: 1 Question' : 'Full Council Access'}
+                {tier === 'FREE' ? (d.trialModeDesc || 'Trial Mode: 1 Question') : (d.fullAccessDesc || 'Full Council Access')}
               </p>
             </div>
           </div>
@@ -162,7 +162,7 @@ export default function UsageClient({ dict, lang, supabaseUrl, supabaseAnonKey }
             <div className="space-y-4">
               <div className="flex justify-between items-end pb-2 border-b border-border">
                 <span className="text-[10px] font-black uppercase tracking-widest">{d.dataRetention || "Data Retention"}</span>
-                <span className="text-foreground font-bold text-xs">{tier === 'FREE' ? '3 DAYS' : (d.unlimited || 'PERPETUAL')}</span>
+                <span className="text-foreground font-bold text-xs">{tier === 'FREE' ? `3 ${d.days || 'DAYS'}` : (d.perpetual || 'PERPETUAL')}</span>
               </div>
               <p className="text-[9px] font-bold uppercase tracking-tighter text-muted-foreground/70">
                 {d.retentionDesc || "Duration for which your deliberative insights are archived on the ledger."}
