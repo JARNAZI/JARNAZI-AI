@@ -220,8 +220,6 @@ const ar = {
     nodeConsole: "وحدة العقدة",
     systemAccess: "وصول النظام",
     privilegedAccess: "وصول مميز فقط",
-    trialPlan: "خطة تجريبية",
-    proPlan: "عضو في مجلس برو",
     unlimited: "غير محدود",
     perpetual: "دائم",
     days: "أيام",

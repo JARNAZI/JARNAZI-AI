@@ -220,8 +220,6 @@ const en = {
     nodeConsole: "Node Console",
     systemAccess: "System Access",
     privilegedAccess: "Privileged Access Only",
-    trialPlan: "Trial Plan",
-    proPlan: "Pro Council Member",
     unlimited: "Unlimited",
     perpetual: "Perpetual",
     days: "Days",
