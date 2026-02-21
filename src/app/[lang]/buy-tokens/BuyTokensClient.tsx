@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { MIN_PURCHASE_AMOUNT_USD, TOKENS_PER_USD, amountToTokens, isValidPurchaseAmount, normalizeAmount } from '@/lib/tokens';
 import { toast } from 'sonner';
@@ -12,6 +12,7 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
   const common = dict?.common || {};
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
 
   const [amount, setAmount] = useState<string>(String(MIN_PURCHASE_AMOUNT_USD));
@@ -27,8 +28,25 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
     const neededUsd = Math.ceil((missingTokens / TOKENS_PER_USD) * 100) / 100;
     const target = Math.max(MIN_PURCHASE_AMOUNT_USD, neededUsd);
     setAmount(String(target));
-    toast.info((d?.insufficientTokensPrefill || 'We prefilled the amount to cover your missing tokens.') + ` (${missingTokens})`);
-  }, [missingTokens]);
+    toast.info((dict.notifications?.insufficientTokens || d?.insufficientTokensPrefill || 'We prefilled the amount to cover your missing tokens.') + ` (${missingTokens})`);
+  }, [missingTokens, dict.notifications?.insufficientTokens, d?.insufficientTokensPrefill]);
+
+  useEffect(() => {
+    const purchase = searchParams.get('purchase');
+    if (purchase) {
+      if (purchase === 'success') {
+        toast.success(dict.notifications?.paymentSuccess || 'Payment successful. Tokens added to your balance.');
+      } else if (purchase === 'cancel') {
+        toast.error(dict.notifications?.paymentCancel || 'Payment canceled.');
+      } else if (purchase === 'failed') {
+        toast.error(dict.notifications?.paymentFailed || 'Payment failed.');
+      }
+
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.delete('purchase');
+      router.replace(`${pathname}?${newParams.toString()}`);
+    }
+  }, [searchParams, dict.notifications, router, pathname]);
   const [loading, setLoading] = useState(false);
   const [stripeEnabled, setStripeEnabled] = useState(true);
   const [nowpaymentsEnabled, setNowpaymentsEnabled] = useState(false);
@@ -42,59 +60,28 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
 
   useEffect(() => {
     // Read payment gateway toggles from `site_settings`.
-    // Supports either:
-    // - single-row schema: site_settings.features JSONB
-    // - KV schema: rows with (key,value)
     (async () => {
       try {
-        // Try KV schema
-        const kv = await supabase
+        const { data, error } = await supabase
           .from('site_settings')
           .select('key,value')
-          .in('key', ['gateway_stripe_enabled', 'gateway_nowpayments_enabled'])
-          .maybeSingle();
+          .in('key', ['gateway_stripe_enabled', 'gateway_nowpayments_enabled']);
 
-        // If KV schema isn't available, this will error; we fallback.
-        if (!kv.error && kv.data && (kv.data as any).key) {
-          // If maybeSingle returns a single row, we still need the full set:
-          const { data } = await supabase
-            .from('site_settings')
-            .select('key,value')
-            .in('key', ['gateway_stripe_enabled', 'gateway_nowpayments_enabled']);
+        if (!error && data) {
+          const map: Record<string, string> = {};
+          data.forEach(row => {
+            map[row.key] = String(row.value);
+          });
 
-          const rows = (data ?? []) as Array<{ key: string; value: any }>;
-          const map: Record<string, any> = {};
-          for (const r of rows) map[r.key] = r.value;
-
-          if (map.gateway_stripe_enabled != null) setStripeEnabled(String(map.gateway_stripe_enabled) === 'true');
-          if (map.gateway_nowpayments_enabled != null) setNowpaymentsEnabled(String(map.gateway_nowpayments_enabled) === 'true');
-          return;
+          if (map.gateway_stripe_enabled !== undefined) {
+            setStripeEnabled(map.gateway_stripe_enabled === 'true');
+          }
+          if (map.gateway_nowpayments_enabled !== undefined) {
+            setNowpaymentsEnabled(map.gateway_nowpayments_enabled === 'true');
+          }
         }
-      } catch {
-        // ignore
-      }
-
-      try {
-        // Fallback: single-row features JSONB
-        const { data, error } = await supabase.from('site_settings').select('features').limit(1).maybeSingle();
-        if (error) return;
-
-        const features: any = (data as any)?.features || {};
-        // support both naming styles (legacy/new)
-        const stripe =
-          features.gateway_stripe_enabled ??
-          features.payments_stripe_enabled ??
-          true;
-
-        const nowp =
-          features.gateway_nowpayments_enabled ??
-          features.payments_nowpayments_enabled ??
-          false;
-
-        setStripeEnabled(Boolean(stripe));
-        setNowpaymentsEnabled(Boolean(nowp));
-      } catch {
-        // If settings can't be read (RLS), keep defaults.
+      } catch (err) {
+        console.error("Failed to load payment settings:", err);
       }
     })();
   }, [supabase]);

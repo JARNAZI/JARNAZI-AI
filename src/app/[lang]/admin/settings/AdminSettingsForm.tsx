@@ -2,6 +2,8 @@
 'use client';
 
 import { useMemo, useRef, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useDictionary } from '@/i18n/use-dictionary';
 import { updateSetting, uploadLogo } from './actions';
 import { toast } from 'sonner';
 import { Loader2, Upload } from 'lucide-react';
@@ -30,6 +32,11 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
     const [settings, setSettings] = useState<SettingsMap>(normalizedInitialSettings);
     const [saving, setSaving] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const params = useParams();
+    const lang = (params as any)?.lang || 'en';
+    const dict = useDictionary(String(lang));
+    const d = dict.admin?.settings || {};
 
     const handleUpdate = async (key: string, value: string) => {
         setSaving(key);
@@ -82,15 +89,15 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
             <section className="bg-white/5 border border-white/10 p-6 rounded-xl">
                 <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
                     <span className="w-1 h-6 bg-indigo-500 rounded-full" />
-                    General Configuration
+                    {d.title || 'General Configuration'}
                 </h2>
 
                 <div className="space-y-6">
                     {/* Free Trial Toggle */}
                     <div className="flex items-center justify-between p-4 bg-black/20 rounded-lg">
                         <div>
-                            <div className="text-white font-medium">Enable Free Trial</div>
-                            <div className="text-sm text-gray-400">Allow new users to debate without purchasing tokens initially.</div>
+                            <div className="text-white font-medium">{d.enableFreeTrial || 'Enable Free Trial'}</div>
+                            <div className="text-sm text-gray-400">{d.freeTrialDesc || 'Allow new users to debate without purchasing tokens initially.'}</div>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
@@ -106,7 +113,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
 
                     {/* Site Title */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Site Title</label>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">{d.siteTitle || 'Site Title'}</label>
                         <div className="flex gap-2">
                             <input
                                 type="text"
@@ -124,7 +131,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
 
                     {/* Logo Upload */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Site Logo</label>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">{d.siteLogo || 'Site Logo'}</label>
                         <div className="flex items-start gap-6">
                             <div className="w-20 h-20 bg-black/50 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden relative group">
                                 {settings['logo_url']?.value ? (
@@ -135,7 +142,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
                                         className="object-contain p-2"
                                     />
                                 ) : (
-                                    <span className="text-xs text-gray-500">No Logo</span>
+                                    <span className="text-xs text-gray-500">{d.noLogo || 'No Logo'}</span>
                                 )}
                             </div>
                             <div className="flex-1">
@@ -146,7 +153,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
                                     className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg cursor-pointer transition-colors text-sm font-medium text-white mb-2 disabled:opacity-50"
                                 >
                                     {saving === 'logo' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                                    Upload New Logo
+                                    {d.uploadLogo || 'Upload New Logo'}
                                 </button>
                                 <input
                                     ref={fileInputRef}
@@ -155,112 +162,112 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
                                     className="hidden"
                                     onChange={handleLogoUpload}
                                 />
-                                <p className="text-xs text-gray-500">Recommended size: 512x512px. PNG or JPG.</p>
+                                <p className="text-xs text-gray-500">{d.logoDesc || 'Recommended size: 512x512px. PNG or JPG.'}</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            
-                    {/* Debate Cost & Rounds */}
-                    <div className="p-4 bg-black/20 rounded-lg space-y-3">
-                        <div>
-                            <div className="text-white font-medium">Debate Rounds</div>
-                            <div className="text-sm text-gray-400">Limits how many back-and-forth rounds AIs will run (prevents infinite debates).</div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <input
-                                type="number"
-                                min={1}
-                                max={10}
-                                className="w-28 px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white"
-                                value={settings['debate_rounds']?.value ?? '2'}
-                                onChange={(e) => setSettings((p) => ({ ...p, debate_rounds: { ...(p.debate_rounds ?? { value: '' }), value: e.target.value } }))}
-                            />
-                            <button
-                                className="px-3 py-2 rounded-md bg-indigo-600 text-white disabled:opacity-60"
-                                disabled={saving === 'debate_rounds'}
-                                onClick={() => handleUpdate('debate_rounds', settings['debate_rounds']?.value ?? '2')}
-                            >
-                                {saving === 'debate_rounds' ? 'Saving...' : 'Save'}
-                            </button>
-                        </div>
 
-                        <div className="pt-3 border-t border-white/10" />
+            {/* Debate Cost & Rounds */}
+            <div className="p-4 bg-black/20 rounded-lg space-y-3">
+                <div>
+                    <div className="text-white font-medium">{d.debateRounds || 'Debate Rounds'}</div>
+                    <div className="text-sm text-gray-400">{d.debateRoundsDesc || 'Limits how many back-and-forth rounds AIs will run (prevents infinite debates).'}</div>
+                </div>
+                <div className="flex items-center gap-3">
+                    <input
+                        type="number"
+                        min={1}
+                        max={10}
+                        className="w-28 px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white"
+                        value={settings['debate_rounds']?.value ?? '2'}
+                        onChange={(e) => setSettings((p) => ({ ...p, debate_rounds: { ...(p.debate_rounds ?? { value: '' }), value: e.target.value } }))}
+                    />
+                    <button
+                        className="px-3 py-2 rounded-md bg-indigo-600 text-white disabled:opacity-60"
+                        disabled={saving === 'debate_rounds'}
+                        onClick={() => handleUpdate('debate_rounds', settings['debate_rounds']?.value ?? '2')}
+                    >
+                        {saving === 'debate_rounds' ? (d.saving || 'Saving...') : (d.save || 'Save')}
+                    </button>
+                </div>
 
-                        <div>
-                            <div className="text-white font-medium">Token Cost Per Turn</div>
-                            <div className="text-sm text-gray-400">How many tokens to charge per AI response per round.</div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <input
-                                type="number"
-                                min={1}
-                                max={50}
-                                className="w-28 px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white"
-                                value={settings['debate_cost_per_turn']?.value ?? '1'}
-                                onChange={(e) => setSettings((p) => ({ ...p, debate_cost_per_turn: { ...(p.debate_cost_per_turn ?? { value: '' }), value: e.target.value } }))}
-                            />
-                            <button
-                                className="px-3 py-2 rounded-md bg-indigo-600 text-white disabled:opacity-60"
-                                disabled={saving === 'debate_cost_per_turn'}
-                                onClick={() => handleUpdate('debate_cost_per_turn', settings['debate_cost_per_turn']?.value ?? '1')}
-                            >
-                                {saving === 'debate_cost_per_turn' ? 'Saving...' : 'Save'}
-                            </button>
-                        </div>
+                <div className="pt-3 border-t border-white/10" />
 
-                        <div className="pt-3 border-t border-white/10" />
+                <div>
+                    <div className="text-white font-medium">{d.tokenCostPerTurn || 'Token Cost Per Turn'}</div>
+                    <div className="text-sm text-gray-400">{d.tokenCostDesc || 'How many tokens to charge per AI response per round.'}</div>
+                </div>
+                <div className="flex items-center gap-3">
+                    <input
+                        type="number"
+                        min={1}
+                        max={50}
+                        className="w-28 px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white"
+                        value={settings['debate_cost_per_turn']?.value ?? '1'}
+                        onChange={(e) => setSettings((p) => ({ ...p, debate_cost_per_turn: { ...(p.debate_cost_per_turn ?? { value: '' }), value: e.target.value } }))}
+                    />
+                    <button
+                        className="px-3 py-2 rounded-md bg-indigo-600 text-white disabled:opacity-60"
+                        disabled={saving === 'debate_cost_per_turn'}
+                        onClick={() => handleUpdate('debate_cost_per_turn', settings['debate_cost_per_turn']?.value ?? '1')}
+                    >
+                        {saving === 'debate_cost_per_turn' ? (d.saving || 'Saving...') : (d.save || 'Save')}
+                    </button>
+                </div>
 
-                        <div>
-                            <div className="text-white font-medium">Media Overhead</div>
-                            <div className="text-sm text-gray-400">Extra tokens added when the request involves image/video/file planning.</div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <input
-                                type="number"
-                                min={0}
-                                max={50}
-                                className="w-28 px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white"
-                                value={settings['debate_media_overhead']?.value ?? '2'}
-                                onChange={(e) => setSettings((p) => ({ ...p, debate_media_overhead: { ...(p.debate_media_overhead ?? { value: '' }), value: e.target.value } }))}
-                            />
-                            <button
-                                className="px-3 py-2 rounded-md bg-indigo-600 text-white disabled:opacity-60"
-                                disabled={saving === 'debate_media_overhead'}
-                                onClick={() => handleUpdate('debate_media_overhead', settings['debate_media_overhead']?.value ?? '2')}
-                            >
-                                {saving === 'debate_media_overhead' ? 'Saving...' : 'Save'}
-                            </button>
-                        </div>
+                <div className="pt-3 border-t border-white/10" />
 
-                        <div className="pt-3 border-t border-white/10" />
+                <div>
+                    <div className="text-white font-medium">{d.mediaOverhead || 'Media Overhead'}</div>
+                    <div className="text-sm text-gray-400">{d.mediaOverheadDesc || 'Extra tokens added when the request involves image/video/file planning.'}</div>
+                </div>
+                <div className="flex items-center gap-3">
+                    <input
+                        type="number"
+                        min={0}
+                        max={50}
+                        className="w-28 px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white"
+                        value={settings['debate_media_overhead']?.value ?? '2'}
+                        onChange={(e) => setSettings((p) => ({ ...p, debate_media_overhead: { ...(p.debate_media_overhead ?? { value: '' }), value: e.target.value } }))}
+                    />
+                    <button
+                        className="px-3 py-2 rounded-md bg-indigo-600 text-white disabled:opacity-60"
+                        disabled={saving === 'debate_media_overhead'}
+                        onClick={() => handleUpdate('debate_media_overhead', settings['debate_media_overhead']?.value ?? '2')}
+                    >
+                        {saving === 'debate_media_overhead' ? (d.saving || 'Saving...') : (d.save || 'Save')}
+                    </button>
+                </div>
 
-                        <div>
-                            <div className="text-white font-medium">Base Cost</div>
-                            <div className="text-sm text-gray-400">Flat token cost added to every debate message.</div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <input
-                                type="number"
-                                min={0}
-                                max={50}
-                                className="w-28 px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white"
-                                value={settings['debate_base_cost']?.value ?? '1'}
-                                onChange={(e) => setSettings((p) => ({ ...p, debate_base_cost: { ...(p.debate_base_cost ?? { value: '' }), value: e.target.value } }))}
-                            />
-                            <button
-                                className="px-3 py-2 rounded-md bg-indigo-600 text-white disabled:opacity-60"
-                                disabled={saving === 'debate_base_cost'}
-                                onClick={() => handleUpdate('debate_base_cost', settings['debate_base_cost']?.value ?? '1')}
-                            >
-                                {saving === 'debate_base_cost' ? 'Saving...' : 'Save'}
-                            </button>
-                        </div>
-                    </div>
+                <div className="pt-3 border-t border-white/10" />
 
-{/* Payment Gateways */}
+                <div>
+                    <div className="text-white font-medium">{d.baseCost || 'Base Cost'}</div>
+                    <div className="text-sm text-gray-400">{d.baseCostDesc || 'Flat token cost added to every debate message.'}</div>
+                </div>
+                <div className="flex items-center gap-3">
+                    <input
+                        type="number"
+                        min={0}
+                        max={50}
+                        className="w-28 px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white"
+                        value={settings['debate_base_cost']?.value ?? '1'}
+                        onChange={(e) => setSettings((p) => ({ ...p, debate_base_cost: { ...(p.debate_base_cost ?? { value: '' }), value: e.target.value } }))}
+                    />
+                    <button
+                        className="px-3 py-2 rounded-md bg-indigo-600 text-white disabled:opacity-60"
+                        disabled={saving === 'debate_base_cost'}
+                        onClick={() => handleUpdate('debate_base_cost', settings['debate_base_cost']?.value ?? '1')}
+                    >
+                        {saving === 'debate_base_cost' ? (d.saving || 'Saving...') : (d.save || 'Save')}
+                    </button>
+                </div>
+            </div>
+
+            {/* Payment Gateways */}
             <PaymentGateways settings={settings} />
 
             {/* Token Plans Editor */}
@@ -275,7 +282,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
             {/* Legal Pages */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
-                    <h3 className="font-semibold text-white mb-4">Privacy Policy (Markdown)</h3>
+                    <h3 className="font-semibold text-white mb-4">{d.privacyPolicy || 'Privacy Policy (Markdown)'}</h3>
                     <textarea
                         rows={10}
                         defaultValue={settings['privacy_policy']?.value || ''}
@@ -284,7 +291,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
                     />
                 </div>
                 <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
-                    <h3 className="font-semibold text-white mb-4">Terms of Service (Markdown)</h3>
+                    <h3 className="font-semibold text-white mb-4">{d.termsOfService || 'Terms of Service (Markdown)'}</h3>
                     <textarea
                         rows={10}
                         defaultValue={settings['terms_of_service']?.value || ''}

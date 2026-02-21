@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import Link from 'next/link'
+import { useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client'
 import { Lock, Mail, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner'
 import TurnstileWidget from '@/components/turnstile-widget'
+import { mapAuthError } from '@/lib/auth-errors';
 
 export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabaseAnonKey }: {
     dict: any;
@@ -17,11 +19,23 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
 }) {
     const d = dict.auth || {};
     const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [turnstileToken, setTurnstileToken] = useState("")
+
+    useEffect(() => {
+        if (searchParams.get('verified') === '1') {
+            toast.success(d.emailVerified || 'Email verified successfully. You can now log in.');
+            // Clear the param
+            const newParams = new URLSearchParams(searchParams.toString());
+            newParams.delete('verified');
+            router.replace(`${pathname}?${newParams.toString()}`);
+        }
+    }, [searchParams, d.emailVerified, router, pathname]);
 
     // Use injected credentials if available (runtime config), else fallback to env vars (build-time config)
     const supabase = createClient({ supabaseUrl, supabaseAnonKey })
@@ -29,7 +43,9 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!turnstileToken) {
-            setError(d.securityCheck || "Please complete the security check.")
+            const msg = d.error?.turnstileFailed || d.securityCheck || "Please complete the security check."
+            setError(msg)
+            toast.error(msg)
             return
         }
 
@@ -49,8 +65,9 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
             router.push(`/${lang}/debate`)
             router.refresh()
         } catch (err: unknown) {
-            setError((err instanceof Error ? err.message : String(err)))
-            toast.error((err instanceof Error ? err.message : String(err)))
+            const mappedError = mapAuthError(err, dict);
+            setError(mappedError)
+            toast.error(mappedError)
             setTurnstileToken("")
         } finally {
             setLoading(false)

@@ -37,7 +37,7 @@ export default function UserListActions({ userId, userEmail }: { userId: string,
                 href={`/${lang}/admin/users/${userId}`}
                 className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded text-sm transition-colors text-foreground flex items-center gap-2"
             >
-                <Settings className="w-3 h-3" /> Manage
+                <Settings className="w-3 h-3" /> {dict.adminUsers?.manage || 'Manage'}
             </Link>
             <button
                 onClick={handleDelete}

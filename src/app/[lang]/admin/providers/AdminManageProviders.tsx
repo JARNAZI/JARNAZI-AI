@@ -207,7 +207,7 @@ export default function AdminManageProviders({ initialProviders }: { initialProv
 
             <div className="flex gap-3 justify-end pt-4 border-t border-border/50">
               <button type="button" onClick={() => setEditing(null)} className="bg-muted/40 hover:bg-muted/60 text-foreground px-4 py-2 rounded-xl font-bold transition-all">
-                Cancel
+                {dict.adminProviders?.cancel || 'Cancel'}
               </button>
               <button disabled={loading} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-xl font-bold disabled:opacity-60 shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}

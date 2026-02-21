@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { createClient } from "@/lib/supabase/server";
@@ -18,18 +19,26 @@ export default async function AdminLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Resolve role from profiles table with fallback to app_metadata (JWT)
-  let profileRole: string | null = null;
-  if (user) {
-    const { data } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    profileRole = (data?.role as string | null) || (user.app_metadata?.role as string | null) || null;
+  if (!user) {
+    redirect(`/${lang}/login`);
   }
 
+  // Resolve role from profiles table with fallback to app_metadata (JWT)
+  let profileRole: string | null = null;
+  const { data } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  profileRole = (data?.role as string | null) || (user.app_metadata?.role as string | null) || null;
+
   const role = profileRole ?? "user";
+  const isAdmin = role === "admin" || role === "super_admin";
   const isSupport = role === "support";
 
+  if (!isAdmin && !isSupport) {
+    // Normal users cannot access admin pages
+    redirect(`/${lang}/debate`);
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex">

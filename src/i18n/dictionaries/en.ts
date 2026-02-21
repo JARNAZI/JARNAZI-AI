@@ -14,7 +14,9 @@ const en = {
     cancel: "Cancel",
     delete: "Delete",
     back: "Back",
-    tokens: "Tokens"
+    tokens: "Tokens",
+    saveSuccess: "Saved successfully",
+    primary: "Primary"
   },
   home: {
     heroTitle: "AI Consensus — Clarity from Collective Intelligence.",
@@ -95,7 +97,17 @@ const en = {
     langSwitched: "Language switched to {lang}",
     notifications: "Notifications",
     noNotifications: "No notifications",
-    markAllAsRead: "Mark all as read"
+    markAllAsRead: "Mark all as read",
+    paymentSuccess: "Payment successful. Tokens added to your balance.",
+    paymentCancel: "Payment canceled.",
+    paymentFailed: "Payment failed. Please try again or contact support.",
+    insufficientTokens: "Insufficient tokens to start this session.",
+    notEnoughTokens: "Not enough tokens.",
+    tokenReservationFailed: "Token reservation failed. Please try again.",
+    messageSendSuccess: "Message sent successfully.",
+    messageSendFailed: "Failed to send message.",
+    debateFinished: "Debate finished and consensus reached.",
+    outputReady: "Final consensus is ready."
   },
   nav: {
     features: "Features",
@@ -153,7 +165,19 @@ const en = {
     sendResetLink: "Send Reset Link",
     checkInbox: "Check your inbox",
     resetLinkSent: "We have sent a password reset link to",
-    forgotPasswordSuccess: "Password reset link sent to your email."
+    forgotPasswordSuccess: "Password reset link sent to your email.",
+    createUserSuccess: "Profile created. Please check your email for a verification link.",
+    emailVerified: "Email verified successfully. You can now log in.",
+    error: {
+      invalidCredentials: "Invalid email or password. Please try again.",
+      userNotFound: "No account found with this email.",
+      userAlreadyExists: "An account with this email already exists.",
+      weakPassword: "Password is too weak. Minimum 6 characters required.",
+      rateLimit: "Too many attempts. Please try again later.",
+      networkError: "Connection failed. Please check your internet.",
+      verificationFailed: "Email verification failed or link expired.",
+      turnstileFailed: "Security check failed. Please try again."
+    }
   },
   howItWorks: {
     title: "How It Works",
@@ -211,6 +235,7 @@ const en = {
     neuralLinkSecure: "Neural Link Secure",
     encryptedStream: "End-to-end encrypted deliberation stream.",
     heroTitlePrefix: "Architecting",
+    heroTitleContent: "Consensus",
     openMenu: "Open Menu",
     mathInput: "Math Input",
     insertMatrix: "Insert Matrix",
@@ -407,8 +432,30 @@ const en = {
       financialsDesc: "Revenue & subscriptions",
       healthTitle: "System Health",
       healthDesc: "Server status & logs",
-      settingsTitle: "Settings & Plans",
-      settingsDesc: "Privacy, Terms & Plans"
+      settingsTitle: "Site Settings",
+      settingsDesc: "Privacy, Terms, Identity & Config"
+    },
+    settings: {
+      title: "General Configuration",
+      enableFreeTrial: "Enable Free Trial",
+      freeTrialDesc: "Allow new users to debate without purchasing tokens initially.",
+      siteTitle: "Site Title",
+      siteLogo: "Site Logo",
+      noLogo: "No Logo",
+      uploadLogo: "Upload New Logo",
+      logoDesc: "Recommended size: 512x512px. PNG or JPG.",
+      debateRounds: "Debate Rounds",
+      debateRoundsDesc: "Limits how many back-and-forth rounds AIs will run.",
+      tokenCostPerTurn: "Token Cost Per Turn",
+      tokenCostDesc: "How many tokens to charge per AI response per round.",
+      mediaOverhead: "Media Overhead",
+      mediaOverheadDesc: "Extra tokens added for image/video/file planning.",
+      baseCost: "Base Cost",
+      baseCostDesc: "Flat token cost added to every debate message.",
+      privacyPolicy: "Privacy Policy (Markdown)",
+      termsOfService: "Terms of Service (Markdown)",
+      saving: "Saving...",
+      save: "Save"
     }
   },
 

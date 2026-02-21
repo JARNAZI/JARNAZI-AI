@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Lock, Mail, User, Loader2, AlertCircle, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import TurnstileWidget from '@/components/turnstile-widget'
+import { mapAuthError } from '@/lib/auth-errors';
 
 export default function RegisterClient({ dict, lang, siteKey, supabaseUrl, supabaseAnonKey }: {
     dict: any;
@@ -25,7 +26,9 @@ export default function RegisterClient({ dict, lang, siteKey, supabaseUrl, supab
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!turnstileToken) {
-            setError(d.securityCheck || "Please complete the security check.")
+            const msg = d.error?.turnstileFailed || d.securityCheck || "Please complete the security check."
+            setError(msg)
+            toast.error(msg)
             return
         }
 
@@ -52,9 +55,9 @@ export default function RegisterClient({ dict, lang, siteKey, supabaseUrl, supab
 
             setSuccess(true)
         } catch (err: unknown) {
-            const msg = err instanceof Error ? err.message : String(err)
-            setError(msg)
-            toast.error(msg)
+            const mappedError = mapAuthError(err, dict);
+            setError(mappedError)
+            toast.error(mappedError)
             setTurnstileToken("")
         } finally {
             setLoading(false)

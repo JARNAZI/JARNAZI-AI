@@ -7,7 +7,7 @@ const use = (React as any).use || ((p: any) => p);
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import {
     LayoutTemplate, Menu, History, Zap, ChevronRight,
@@ -69,6 +69,7 @@ export default function DebateDashboard({
 
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { setTheme, resolvedTheme } = useTheme();
 
     const handleThemeToggle = () => {
@@ -84,6 +85,23 @@ export default function DebateDashboard({
         router.push(newPathname);
         toast.info(dict.notifications?.langSwitched?.replace('{lang}', targetLang === 'en' ? 'English' : 'Arabic') || `Language switched to ${targetLang === 'en' ? 'English' : 'Arabic'}`);
     };
+
+    useEffect(() => {
+        const purchase = searchParams.get('purchase');
+        if (purchase) {
+            if (purchase === 'success') {
+                toast.success(dict.notifications?.paymentSuccess || 'Payment successful. Tokens added to your balance.');
+            } else if (purchase === 'cancel') {
+                toast.error(dict.notifications?.paymentCancel || 'Payment canceled.');
+            } else if (purchase === 'failed') {
+                toast.error(dict.notifications?.paymentFailed || 'Payment failed.');
+            }
+            // Clear the param
+            const newParams = new URLSearchParams(searchParams.toString());
+            newParams.delete('purchase');
+            router.replace(`${pathname}?${newParams.toString()}`);
+        }
+    }, [searchParams, dict.notifications, router, pathname]);
 
     useEffect(() => {
         const fetchDebates = async () => {
@@ -159,6 +177,12 @@ export default function DebateDashboard({
 
             const data = await response.json();
 
+            if (response.status === 402) {
+                toast.error(dict.notifications?.insufficientTokens || "Insufficient tokens. Please top up to start a new debate.");
+                router.push(`/${lang}/buy-tokens?returnUrl=${encodeURIComponent(`/${lang}/debate`)}`);
+                return;
+            }
+
             if (!response.ok) {
                 console.error("Server Error:", data);
                 const errorMsg = data.error || 'The AI Council is currently busy. Please try again in a moment.';
@@ -223,7 +247,7 @@ export default function DebateDashboard({
                     <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 to-transparent rounded-[4rem] blur-3xl -z-10 pointer-events-none" />
 
                     <h2 className="text-4xl md:text-6xl font-black text-center mb-6 tracking-tight leading-[1.1]">
-                        Architecting <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">{d.heroTitle || "Consensus"}</span>
+                        {d.heroTitlePrefix || "Architecting"} <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">{d.heroTitleContent || "Consensus"}</span>
                     </h2>
                     <p className="text-zinc-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] mb-12 text-center max-w-xl">
                         {d.heroSubtitle || "Deploy your query. Orchestrate the global intellect."}
@@ -458,7 +482,14 @@ export default function DebateDashboard({
                             <div className="my-10 h-px bg-border" />
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mb-4 ml-4">{d.resourceManagement || "Resource Management"}</p>
 
-                            <Link href={`/${lang}/debate/usage`} className="flex items-center gap-5 p-5 rounded-[1.5rem] border border-primary/30 bg-primary/5 hover:bg-primary/10 active:bg-primary/20 group transition-all shadow-xl shadow-primary/5" onClick={() => setIsMenuOpen(false)}>
+                            <button
+                                onClick={() => {
+                                    console.log("[Dev] Navigating to Usage");
+                                    setIsMenuOpen(false);
+                                    router.push(`/${lang}/debate/usage`);
+                                }}
+                                className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] border border-primary/30 bg-primary/5 hover:bg-primary/10 active:bg-primary/20 group transition-all shadow-xl shadow-primary/5 text-left"
+                            >
                                 <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                                     <Zap className="w-5 h-5 fill-current" />
                                 </div>
@@ -466,21 +497,35 @@ export default function DebateDashboard({
                                     <span className="font-black uppercase tracking-widest text-[12px] text-foreground">{d.liquidityStatus || "Liquidity Status"}</span>
                                     <span className="text-[9px] font-black text-primary uppercase tracking-tighter mt-0.5">{d.tokenBalance || "Token Balance"}</span>
                                 </div>
-                            </Link>
+                            </button>
 
-                            <Link href={`/${lang}/buy-tokens`} className="flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all" onClick={() => setIsMenuOpen(false)}>
+                            <button
+                                onClick={() => {
+                                    console.log("[Dev] Navigating to Buy Tokens");
+                                    setIsMenuOpen(false);
+                                    router.push(`/${lang}/buy-tokens`);
+                                }}
+                                className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all text-left"
+                            >
                                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
                                     <CreditCard className="w-5 h-5" />
                                 </div>
                                 <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground">{d.allocateBudget || "Allocate Budget"}</span>
-                            </Link>
+                            </button>
 
-                            <Link href={`/${lang}/profile/settings`} className="flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all" onClick={() => setIsMenuOpen(false)}>
+                            <button
+                                onClick={() => {
+                                    console.log("[Dev] Navigating to Profile Settings");
+                                    setIsMenuOpen(false);
+                                    router.push(`/${lang}/profile/settings`);
+                                }}
+                                className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all text-left"
+                            >
                                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
                                     <User className="w-5 h-5" />
                                 </div>
                                 <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground">{d.userMatrix || "User Matrix"}</span>
-                            </Link>
+                            </button>
 
                             <div className="my-10 h-px bg-border" />
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mb-4 ml-4">{d.globalSettings || "Global Matrix Settings"}</p>

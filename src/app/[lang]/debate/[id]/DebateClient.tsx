@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { createClient } from '@/lib/supabase/client';
+import { toast } from 'sonner';
 
 // ICONS
 import { LANGUAGES } from '@/i18n/config';
@@ -78,7 +79,7 @@ export default function DebateClient({
             await supabase.auth.signOut();
             window.location.replace(`/${lang}/login`);
         } catch (e: unknown) {
-            alert((e instanceof Error ? e.message : String(e)));
+            toast.error((e instanceof Error ? e.message : String(e)) || 'Failed to delete account');
         }
     };
 
@@ -571,7 +572,7 @@ export default function DebateClient({
             URL.revokeObjectURL(url);
         } catch (e) {
             console.error(e);
-            alert(dict?.debate?.downloadFailed || 'Download failed');
+            toast.error(dict?.debate?.downloadFailed || 'Download failed');
         }
     };
 
@@ -730,7 +731,7 @@ export default function DebateClient({
                 if (res.status === 402) {
                     const j = await res.json().catch(() => ({} as any));
                     const missing = Number(j?.missingTokens ?? 0) || 0;
-                    alert((dict?.tokens?.insufficient || 'Insufficient tokens.') + (missing ? ` (Missing: ${missing})` : ''));
+                    toast.error((dict?.notifications?.insufficientTokens || dict?.tokens?.insufficient || 'Insufficient tokens.') + (missing ? ` (Missing: ${missing})` : ''));
                     // Redirect to buy-tokens with a return URL so user can come back.
                     const ret = encodeURIComponent(`/${lang}/debate/${debateId}`);
                     window.location.href = `/${lang}/buy-tokens?missing=${missing}&return=${ret}`;
@@ -742,14 +743,14 @@ export default function DebateClient({
 
         } catch (err) {
             console.error(err);
-            // alert("Failed to send message: Check console");
+            toast.error(dict?.notifications?.messageSendFailed || "Failed to send message: Check console");
         }
     };
 
     const openImageGeneration = () => {
         const fc = [...messages].reverse().find((m: any) => m.role === 'agreement' || m.phase === 'consensus');
         if (!fc) {
-            alert(dict?.debate?.needConsensus || 'Generate an answer first, then you can generate media from the final consensus.');
+            toast.error(dict?.debate?.needConsensus || 'Generate an answer first, then you can generate media from the final consensus.');
             return;
         }
         setPendingImagePrompt(fc.content);
@@ -761,7 +762,7 @@ export default function DebateClient({
     const openVideoGeneration = () => {
         const fc = [...messages].reverse().find((m: any) => m.role === 'agreement' || m.phase === 'consensus');
         if (!fc) {
-            alert(dict?.debate?.needConsensus || 'Generate an answer first, then you can generate media from the final consensus.');
+            toast.error(dict?.debate?.needConsensus || 'Generate an answer first, then you can generate media from the final consensus.');
             return;
         }
         setPendingVideoPrompt(fc.content);
@@ -804,7 +805,7 @@ export default function DebateClient({
 
             setIsImageModalOpen(false);
         } catch (e: unknown) {
-            alert((e instanceof Error ? e.message : String(e)) || 'Image generation failed');
+            toast.error((e instanceof Error ? e.message : String(e)) || 'Image generation failed');
         } finally {
             setImageGenerating(false);
         }
@@ -961,7 +962,7 @@ export default function DebateClient({
             setRecordedAudio(null);
             setIsVideoModalOpen(false);
         } catch (e: unknown) {
-            alert((e instanceof Error ? e.message : String(e)) || 'Video generation failed');
+            toast.error((e instanceof Error ? e.message : String(e)) || 'Video generation failed');
         } finally {
             setVideoGenerating(false);
         }
@@ -1257,7 +1258,7 @@ export default function DebateClient({
                                                 disabled={videoComposing}
                                                 onClick={async () => {
                                                     if (!lastVideoAssetIds.length) {
-                                                        alert('Missing asset ids for composition.');
+                                                        toast.error('Missing asset ids for composition.');
                                                         return;
                                                     }
                                                     try {
@@ -1331,7 +1332,7 @@ Suggested amount: $${amount}`
                                                             }
                                                         }
                                                     } catch (e: any) {
-                                                        alert(e?.message || 'Composition failed');
+                                                        toast.error(e?.message || 'Composition failed');
                                                     } finally {
                                                         setVideoComposing(false);
                                                     }

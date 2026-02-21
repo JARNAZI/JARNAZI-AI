@@ -186,7 +186,9 @@ export default function AdminManageModels({ initialModels }: { initialModels: un
       {editing && (
         <form onSubmit={handleSave} className="bg-card/60 border border-border rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <div className="text-foreground font-semibold">{editing.id ? 'Edit Model' : 'New Model'}</div>
+            <div className="text-foreground font-semibold">
+              {editing.id ? (dict.adminModels?.editModel ?? 'Edit Model') : (dict.adminModels?.addModel ?? 'New Model')}
+            </div>
             <button type="button" onClick={() => setEditing(null)} className="p-2 rounded-lg bg-muted/40 hover:bg-muted/60 text-foreground">
               <X className="w-4 h-4" />
             </button>
@@ -263,7 +265,7 @@ export default function AdminManageModels({ initialModels }: { initialModels: un
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-foreground disabled:opacity-50"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            Save
+            {dict.adminModels?.save ?? 'Save'}
           </button>
         </form>
       )}

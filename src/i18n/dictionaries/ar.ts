@@ -14,7 +14,9 @@ const ar = {
     cancel: "إلغاء",
     delete: "حذف",
     back: "رجوع",
-    tokens: "نقاط"
+    tokens: "نقاط",
+    saveSuccess: "تم الحفظ بنجاح",
+    primary: "أساسي"
   },
   home: {
     heroTitle: "إجماع الذكاء الاصطناعي — الوضوح من الذكاء الجماعي.",
@@ -95,7 +97,17 @@ const ar = {
     langSwitched: "تم تغيير اللغة إلى {lang}",
     notifications: "التنبيهات",
     noNotifications: "لا توجد تنبيهات",
-    markAllAsRead: "تحديد الكل كمقروء"
+    markAllAsRead: "تحديد الكل كمقروء",
+    paymentSuccess: "تمت عملية الدفع بنجاح. تمت إضافة النقاط إلى رصيدك.",
+    paymentCancel: "تم إلغاء عملية الدفع.",
+    paymentFailed: "فشلت عملية الدفع. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
+    insufficientTokens: "رصيد نقاط غير كافٍ لبدء هذه الجلسة.",
+    notEnoughTokens: "لا توجد نقاط كافية.",
+    tokenReservationFailed: "فشل حجز النقاط. يرجى المحاولة مرة أخرى.",
+    messageSendSuccess: "تم إرسال الرسالة بنجاح.",
+    messageSendFailed: "فشل إرسال الرسالة.",
+    debateFinished: "انتهت المناظرة وتم التوصل إلى إجماع.",
+    outputReady: "الإجماع النهائي جاهز."
   },
   nav: {
     features: "المميزات",
@@ -153,7 +165,19 @@ const ar = {
     sendResetLink: "إرسال رابط إعادة التعيين",
     checkInbox: "تحقق من بريدك الوارد",
     resetLinkSent: "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى",
-    forgotPasswordSuccess: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني."
+    forgotPasswordSuccess: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.",
+    createUserSuccess: "تم إنشاء الحساب بنجاح. يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب.",
+    emailVerified: "تم تفعيل البريد الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول.",
+    error: {
+      invalidCredentials: "البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.",
+      userNotFound: "لا يوجد حساب مرتبط بهذا البريد الإلكتروني.",
+      userAlreadyExists: "يوجد حساب مسجل بهذا البريد الإلكتروني بالفعل.",
+      weakPassword: "كلمة المرور ضعيفة جداً. يجب ألا تقل عن 6 أحرف.",
+      rateLimit: "محاولات كثيرة جداً. يرجى المحاولة مرة أخرى لاحقاً.",
+      networkError: "فشل الاتصال. يرجى التحقق من اتصالك بالإنترنت.",
+      verificationFailed: "فشل التحقق من البريد الإلكتروني أو انتهت صلاحية الرابط.",
+      turnstileFailed: "فشل التحقق الأمني. يرجى المحاولة مرة أخرى."
+    }
   },
   howItWorks: {
     title: "كيف يعمل",
@@ -211,6 +235,7 @@ const ar = {
     neuralLinkSecure: "الرابط العصبي آمن",
     encryptedStream: "دفق مداولة مشفر من البداية للنهاية.",
     heroTitlePrefix: "هندسة",
+    heroTitleContent: "الإجماع",
     openMenu: "فتح القائمة",
     mathInput: "إدخال الرياضيات",
     insertMatrix: "إدراج مصفوفة",
@@ -397,8 +422,8 @@ const ar = {
   adminDashboard: {
     title: "لوحة تحكم الأدمن",
     cards: {
-      providersTitle: "الخطط",
-      providersDesc: "إدارة الخطط والموفّرين",
+      providersTitle: "مزودو الذكاء الاصطناعي",
+      providersDesc: "إدارة نماذج ومفاتيح الذكاء الاصطناعي",
       usersTitle: "إدارة المستخدمين",
       usersDesc: "التحكم في الوصول والتوكنات",
       apiStatusTitle: "حالة الـ API",
@@ -409,6 +434,28 @@ const ar = {
       healthDesc: "حالة الخادم والسجلات",
       settingsTitle: "إعدادات الموقع",
       settingsDesc: "الخصوصية والشروط والهوية"
+    },
+    settings: {
+      title: "التكوين العام",
+      enableFreeTrial: "تفعيل الفترة التجريبية",
+      freeTrialDesc: "السماح للمستخدمين الجدد بالمناظرة دون شراء نقاط في البداية.",
+      siteTitle: "عنوان الموقع",
+      siteLogo: "شعار الموقع",
+      noLogo: "لا يوجد شعار",
+      uploadLogo: "رفع شعار جديد",
+      logoDesc: "الحجم الموصى به: 512x512 بكسل. PNG أو JPG.",
+      debateRounds: "جولات المناظرة",
+      debateRoundsDesc: "يحد من عدد جولات الرد والتعقيب التي سيقوم بها الذكاء الاصطناعي.",
+      tokenCostPerTurn: "تكلفة النقاط لكل دور",
+      tokenCostDesc: "عدد النقاط التي سيتم خصمها لكل رد ذكاء اصطناعي في الجولة.",
+      mediaOverhead: "تكاليف الوسائط الإضافية",
+      mediaOverheadDesc: "نقاط إضافية تضاف عند طلب تخطيط للصور/الفيديو/الملفات.",
+      baseCost: "التكلفة الأساسية",
+      baseCostDesc: "تكلفة ثابتة تضاف لكل رسالة مناظرة.",
+      privacyPolicy: "سياسة الخصوصية (Markdown)",
+      termsOfService: "شروط الخدمة (Markdown)",
+      saving: "جاري الحفظ...",
+      save: "حفظ"
     }
   },
 

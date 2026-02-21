@@ -158,6 +158,7 @@ const ja = {
     neuralLinkSecure: "ニューラルリンク・セキュア",
     encryptedStream: "エンドツーエンド暗号化された審議ストリーム。",
     heroTitlePrefix: "構築中",
+    heroTitleContent: "コンセンサス",
     openMenu: "メニューを開く",
     enterAmount: "金額を入力 (最小 ${min})",
     tokensReceive: "受け取るトークン",

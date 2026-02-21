@@ -48,7 +48,7 @@ export default function NotificationBell({
       .limit(20);
 
     if (error) {
-      toast.error(error.message);
+      console.error('Error fetching notifications:', error);
       return;
     }
 
@@ -73,7 +73,8 @@ export default function NotificationBell({
       .in('id', unreadIds);
 
     if (error) {
-      toast.error(error.message);
+      console.error('Error marking notifications as read:', error);
+      toast.error(dict?.common?.error || 'An error occurred');
       return;
     }
 
