@@ -126,7 +126,7 @@ export default function PricingPage(props: { params: Promise<{ lang: string }> }
                 {plan.tokens} {t.tokensLabel}
               </div>
               <div className="mt-2 text-xs text-muted-foreground">
-                {t.minimumPurchase ?? `Minimum purchase is $${MIN_PURCHASE_AMOUNT_USD}.`}
+                {(t.minimumPurchase ?? `Minimum purchase is $${MIN_PURCHASE_AMOUNT_USD}.`).replace('${min}', String(MIN_PURCHASE_AMOUNT_USD))}
               </div>
             </div>
 

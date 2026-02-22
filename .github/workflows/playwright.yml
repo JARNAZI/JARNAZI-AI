@@ -8,6 +8,17 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      # Dummy env vars so Next.js dev server starts without crashing
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+      SUPABASE_URL: https://placeholder.supabase.co
+      SUPABASE_ANON_KEY: placeholder-anon-key
+      SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
+      NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+      NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_API_SITE_KEY: 1x00000000000000000000AA
+      CLOUDFLARE_TURNSTILE_SECRET_KEY: 1x0000000000000000000000000000000AA
+      BASE_URL: http://localhost:3000
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4

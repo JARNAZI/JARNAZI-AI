@@ -480,7 +480,8 @@ export default function DebateClient({
                     role: (t.role as any) || (() => {
                         const name = t.ai_name_snapshot || '';
                         if (name === 'User') return 'user';
-                        if (name.toLowerCase().includes('leader')) return 'agreement';
+                        const n = name.toLowerCase();
+                        if (n.includes('leader') || n.includes('agreement') || n.includes('الاتفاق')) return 'agreement';
                         return 'assistant';
                     })(),
                     name: t.ai_name_snapshot || (t.role === 'user' ? 'User' : 'Council'),
@@ -507,7 +508,8 @@ export default function DebateClient({
                             role: (newTurn.role as any) || (() => {
                                 const name = newTurn.ai_name_snapshot || '';
                                 if (name === 'User') return 'user';
-                                if (name.toLowerCase().includes('leader')) return 'agreement';
+                                const n = name.toLowerCase();
+                                if (n.includes('leader') || n.includes('agreement') || n.includes('الاتفاق')) return 'agreement';
                                 return 'assistant';
                             })(),
                             name: newTurn.ai_name_snapshot || (newTurn.role === 'user' ? 'User' : 'Council'),

@@ -30,6 +30,7 @@ const ar = {
     topicLabel: "أدخل موضوعاً...",
     startBtn: "بدء المناظرة",
     analyzing: "جار تحليل الموضوع...",
+    agreementTitle: "الاتفاق",
     consensusTitle: "الإجماع النهائي",
     // Console UI
     consoleTitle: "وحدة تحكم Jarnazi",

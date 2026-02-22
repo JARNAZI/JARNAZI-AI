@@ -30,6 +30,7 @@ const en = {
     topicLabel: "Enter a topic...",
     startBtn: "Initiate Debate",
     analyzing: "Analyzing Topic...",
+    agreementTitle: "Agreement",
     consensusTitle: "Final Consensus",
     // Console UI
     consoleTitle: "Jarnazi Console",
@@ -363,6 +364,8 @@ const en = {
     "tokenAmount": "Token Amount",
     "totalPrice": "Total Price",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
+    "buyNow": "Buy Now",
+    "minimumPurchase": "Minimum purchase is ${min}.",
     "plans": {
       "starter": {
         "name": "Starter Pack",

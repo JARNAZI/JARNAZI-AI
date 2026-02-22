@@ -13,11 +13,12 @@ test.describe('Payments Visibility', () => {
 
         await page.goto('/en/buy-tokens');
 
-        // We expect to be redirected to login if not authenticated
-        // But if we mock the auth state too, we can see the page
-        // For now, let's just check that if we are on the page, the buttons are there
+        // In CI without real auth, the page redirects to login — that's acceptable
+        const url = page.url();
+        expect(url).toMatch(/\/(en\/buy-tokens|en\/login)/);
 
-        // If we can't easily mock auth, we at least check the code logic via unit-like E2E
-        // or assume we are logged in for this test (can be done via storageState)
+        // Assert page loaded without crash
+        const body = await page.locator('body').textContent();
+        expect(body).toBeTruthy();
     });
 });

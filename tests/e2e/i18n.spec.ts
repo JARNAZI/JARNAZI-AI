@@ -7,18 +7,21 @@ test.describe('i18n Regressions', () => {
         test(`should not have leaked English text on /${lang}/debate`, async ({ page }) => {
             await page.goto(`/${lang}/debate`);
 
-            // We expect the user to be redirected to login if not logged in
-            // So we should check the login page for that lang
+            // In CI (no real auth), the user is redirected to the login page for that lang
             if (page.url().includes('/login')) {
+                // Check the login page does NOT show raw English-only strings
+                // (these would only appear if i18n is completely broken — dict has no translation)
                 const forbiddenWords = ['Welcome Back', 'Sign in to orchestrate'];
+                const body = await page.locator('body').textContent() ?? '';
                 for (const word of forbiddenWords) {
-                    await expect(page.locator('body')).not.toContainText(word);
+                    expect(body, `Found English word "${word}" on /${lang}/login`).not.toContain(word);
                 }
             } else {
-                // Known problematic words on /debate
+                // If somehow the user is on /debate, check for leaked English UI strings
                 const forbiddenWords = ['Admin Dashboard', 'Privileged Access Only', 'System Access', 'Command Console'];
+                const body = await page.locator('body').textContent() ?? '';
                 for (const word of forbiddenWords) {
-                    await expect(page.locator('body')).not.toContainText(word);
+                    expect(body, `Found English word "${word}" on /${lang}/debate`).not.toContain(word);
                 }
             }
         });
@@ -26,11 +29,12 @@ test.describe('i18n Regressions', () => {
 
     test('switching language from EN to AR should update headline', async ({ page }) => {
         await page.goto('/en');
+        // Wait for h1 to be present
+        await page.waitForSelector('h1', { timeout: 10000 });
         const enTitle = await page.innerText('h1');
 
-        // Find language switcher - in this app it seems to be in a menu or footer
-        // Let's try navigating directly for now to verify the dictionary works
         await page.goto('/ar');
+        await page.waitForSelector('h1', { timeout: 10000 });
         const arTitle = await page.innerText('h1');
 
         expect(enTitle).not.toBe(arTitle);
