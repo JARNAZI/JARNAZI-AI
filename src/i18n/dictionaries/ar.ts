@@ -220,7 +220,6 @@ const ar = {
     nodeConsole: "وحدة العقدة",
     systemAccess: "وصول النظام",
     privilegedAccess: "وصول مميز فقط",
-    unlimited: "غير محدود",
     perpetual: "دائم",
     days: "أيام",
     trialPlan: "المستوى الابتدائي",
