@@ -48,8 +48,9 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
     }
   }, [searchParams, dict.notifications, router, pathname]);
   const [loading, setLoading] = useState(false);
-  const [stripeEnabled, setStripeEnabled] = useState(true);
+  const [stripeEnabled, setStripeEnabled] = useState(false);
   const [nowpaymentsEnabled, setNowpaymentsEnabled] = useState(false);
+  const [dbError, setDbError] = useState(false);
 
   const amountNum = useMemo(() => normalizeAmount(amount) ?? 0, [amount]);
 
@@ -67,7 +68,12 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
           .select('key,value')
           .in('key', ['gateway_stripe_enabled', 'gateway_nowpayments_enabled']);
 
-        if (!error && data) {
+        if (error) {
+          setDbError(true);
+          return;
+        }
+
+        if (data) {
           const map: Record<string, string> = {};
           data.forEach(row => {
             map[row.key] = String(row.value);
@@ -82,6 +88,7 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
         }
       } catch (err) {
         console.error("Failed to load payment settings:", err);
+        setDbError(true);
       }
     })();
   }, [supabase]);
@@ -194,28 +201,36 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
           </div>
 
           <div className="mt-6 space-y-3">
-            {stripeEnabled ? (
-              <button
-                disabled={loading}
-                onClick={payWithStripe}
-                className="w-full rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest py-3 disabled:opacity-50 hover:opacity-90 transition-all shadow-lg"
-              >
-                {d.payAddTokens || d.payWithStripe || 'Pay & Add Tokens'}
-              </button>
+            {dbError ? (
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm font-medium">
+                Warning: Failed to load payment settings from the database. Purchases are temporarily disabled.
+              </div>
             ) : (
-              <div className="text-sm text-muted-foreground italic">{d.stripeDisabled || 'Stripe payments are currently disabled.'}</div>
-            )}
+              <>
+                {stripeEnabled ? (
+                  <button
+                    disabled={loading}
+                    onClick={payWithStripe}
+                    className="w-full rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest py-3 disabled:opacity-50 hover:opacity-90 transition-all shadow-lg"
+                  >
+                    {d.payAddTokens || d.payWithStripe || 'Pay & Add Tokens'}
+                  </button>
+                ) : (
+                  <div className="text-sm text-muted-foreground italic">{d.stripeDisabled || 'Stripe payments are currently disabled.'}</div>
+                )}
 
-            {nowpaymentsEnabled ? (
-              <button
-                disabled={loading}
-                onClick={payWithNowpayments}
-                className="w-full rounded-xl bg-muted text-foreground font-black uppercase tracking-widest py-3 disabled:opacity-50 hover:opacity-90 transition-all border border-border"
-              >
-                {d.payWithCrypto || 'Pay with Crypto (NOWPayments)'}
-              </button>
-            ) : (
-              <div className="text-sm text-muted-foreground italic">{d.nowpaymentsDisabled || 'Crypto payments are currently disabled.'}</div>
+                {nowpaymentsEnabled ? (
+                  <button
+                    disabled={loading}
+                    onClick={payWithNowpayments}
+                    className="w-full rounded-xl bg-muted text-foreground font-black uppercase tracking-widest py-3 disabled:opacity-50 hover:opacity-90 transition-all border border-border"
+                  >
+                    {d.payWithCrypto || 'Pay with Crypto (NOWPayments)'}
+                  </button>
+                ) : (
+                  <div className="text-sm text-muted-foreground italic">{d.nowpaymentsDisabled || 'Crypto payments are currently disabled.'}</div>
+                )}
+              </>
             )}
           </div>
         </div>
