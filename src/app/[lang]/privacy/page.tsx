@@ -21,7 +21,11 @@ export default async function PrivacyPage({
         <Link href={`/${lang}`} className="text-sm text-zinc-400 hover:text-white flex items-center gap-1">
           ← {dict.common.back}
         </Link>
-        <div className="prose dark:prose-invert max-w-none mt-6" dangerouslySetInnerHTML={{ __html: html }} />
+        {rawMarkdown ? (
+          <div className="prose dark:prose-invert max-w-none mt-6" dangerouslySetInnerHTML={{ __html: html }} />
+        ) : (
+          <div className="mt-6 text-zinc-400">Content not available.</div>
+        )}
       </div>
     </main>
   );

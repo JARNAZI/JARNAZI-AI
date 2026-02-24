@@ -19,7 +19,11 @@ export default async function TermsPage({
         <Link href={`/${lang}`} className="text-sm text-muted-foreground hover:text-foreground">
           ← Home
         </Link>
-        <div className="prose dark:prose-invert max-w-none mt-6" dangerouslySetInnerHTML={{ __html: html }} />
+        {rawMarkdown ? (
+          <div className="prose dark:prose-invert max-w-none mt-6" dangerouslySetInnerHTML={{ __html: html }} />
+        ) : (
+          <div className="mt-6 text-zinc-400">Content not available.</div>
+        )}
       </div>
     </main>
   );
