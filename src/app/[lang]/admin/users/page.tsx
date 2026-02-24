@@ -16,17 +16,43 @@ export default async function AdminUsersPage(props: {
   const supabase = await createAdminClient();
   const query = searchParams.q || '';
 
-  let userQuery = supabase.from('profiles').select('*').order('created_at', { ascending: false });
+  const authRes = await supabase.auth.admin.listUsers({ perPage: 1000 });
+  if (authRes.error) {
+    return <div className="p-8 text-destructive">Error: {authRes.error.message}</div>;
+  }
+
+  const { data: profiles, error: profileErr } = await supabase.from('profiles').select('*');
+  if (profileErr) {
+    return <div className="p-8 text-destructive">Error loading profiles: {profileErr.message}</div>;
+  }
+
+  const profilesMap = new Map(profiles?.map((p: any) => [p.id, p]) || []);
+
+  let mergedUsers = authRes.data.users.map(u => {
+    const p = profilesMap.get(u.id);
+    return {
+      id: u.id,
+      email: u.email,
+      full_name: p?.full_name || u.user_metadata?.full_name || '',
+      role: p?.role || 'user',
+      token_balance: p?.token_balance ?? 0,
+      is_banned: p?.is_banned ?? false,
+      created_at: u.created_at,
+    };
+  });
 
   if (query) {
-    userQuery = userQuery.or(`email.ilike.%${query}%,full_name.ilike.%${query}%`);
+    const lowercaseQuery = query.toLowerCase();
+    mergedUsers = mergedUsers.filter(u =>
+      u.email?.toLowerCase().includes(lowercaseQuery) ||
+      u.full_name?.toLowerCase().includes(lowercaseQuery)
+    );
   }
 
-  const { data: users, error } = await userQuery.limit(50);
+  mergedUsers.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  const users = mergedUsers.slice(0, 50);
 
-  if (error) {
-    return <div className="p-8 text-destructive">Error: {error.message}</div>;
-  }
+
 
   return (
     <div className="p-8">

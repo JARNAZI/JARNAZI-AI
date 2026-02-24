@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/server-admin';
 import { revalidatePath } from 'next/cache';
 
 export async function updateSetting(key: string, value: string) {
@@ -14,34 +15,31 @@ export async function updateSetting(key: string, value: string) {
         throw new Error('Unauthorized');
     }
 
-    // Supports both schemas:
-// A) KV schema: upsert { key, value }
-// B) Single-row schema: update JSONB `features`
-let error: any = null;
+    const adminSupabase = await createAdminClient();
 
-try {
-    const res = await supabase.from('site_settings').upsert({
+    // Supports both schemas safely using admin client
+    let error: any = null;
+
+    const res = await adminSupabase.from('site_settings').upsert({
         key,
         value,
         updated_at: new Date().toISOString()
     });
-    error = (res as any).error;
-    if (!error) {
-        // ok
-    }
-} catch (_) {
-    // fall through
-}
 
-if (error) {
-    // Fallback: single-row `features` JSONB
-    const { data: row, error: readErr } = await supabase.from('site_settings').select('id,features').limit(1).maybeSingle();
-    if (readErr) throw readErr;
-    const id = (row as any)?.id;
-    const features = { ...((row as any)?.features || {}), [key]: value, };
-    const { error: updErr } = await supabase.from('site_settings').update({ features, updated_at: new Date().toISOString() }).eq('id', id);
-    if (updErr) throw updErr;
-}
+    error = res.error;
+
+    if (error) {
+        // Fallback: single-row `features` JSONB
+        const { data: row, error: readErr } = await adminSupabase.from('site_settings').select('id,features').limit(1).maybeSingle();
+        if (readErr) throw new Error(`Schema A failed: ${error.message} AND Schema B failed: ${readErr.message}`);
+
+        const id = row?.id;
+        if (!id) throw new Error(`Failed to update setting: ${error.message}`);
+
+        const features = { ...(row?.features || {}), [key]: value };
+        const { error: updErr } = await adminSupabase.from('site_settings').update({ features, updated_at: new Date().toISOString() }).eq('id', id);
+        if (updErr) throw updErr;
+    }
     revalidatePath('/admin/settings');
     revalidatePath('/'); // Refresh home for logo/title changes
     return { success: true };

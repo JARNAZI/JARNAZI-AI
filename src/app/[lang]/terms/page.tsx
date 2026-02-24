@@ -1,5 +1,8 @@
 import { getSetting } from '@/lib/settings';
 import Link from 'next/link';
+import { renderMarkdown } from '@/lib/markdown';
+
+export const dynamic = 'force-dynamic';
 
 export default async function TermsPage({
   params,
@@ -7,7 +10,8 @@ export default async function TermsPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  const html = await getSetting<string>('terms_text', '<h1>Terms of Use</h1><p>Coming soon.</p>');
+  const rawMarkdown = await getSetting<string>('terms_of_service', '');
+  const html = renderMarkdown(rawMarkdown);
 
   return (
     <main className="min-h-screen bg-background text-foreground p-6">

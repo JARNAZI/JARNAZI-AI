@@ -6,17 +6,11 @@ export {
   sendPasswordResetEmailLink,
   sendTokenPurchaseInvoice,
   sendAdminTokenGrant,
+  sendAdminAlert,
+  sendContactReply
 } from './email/index';
 
 // No-op stubs for legacy calls (we do NOT send marketing/notification emails).
 export async function sendDebateSummary(email?: string, topic?: string, debateId?: string) {
-  return { success: true };
-}
-
-export async function sendAdminAlert(subject?: string, message?: string) {
-  return { success: true };
-}
-
-export async function sendContactReply(toEmail?: string, data?: any) {
   return { success: true };
 }

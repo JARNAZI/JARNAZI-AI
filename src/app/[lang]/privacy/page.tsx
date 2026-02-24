@@ -1,6 +1,9 @@
 import { getSetting } from '@/lib/settings';
 import { getDictionary } from '@/i18n/get-dictionary';
 import Link from 'next/link';
+import { renderMarkdown } from '@/lib/markdown';
+
+export const dynamic = 'force-dynamic';
 
 export default async function PrivacyPage({
   params,
@@ -9,7 +12,8 @@ export default async function PrivacyPage({
 }) {
   const { lang } = await params;
   const dict = await getDictionary(lang);
-  const html = await getSetting<string>('privacy_text', `<h1>${dict.footer.privacy}</h1><p>Coming soon.</p>`);
+  const rawMarkdown = await getSetting<string>('privacy_policy', '');
+  const html = renderMarkdown(rawMarkdown);
 
   return (
     <main className="min-h-screen bg-background text-foreground p-6">

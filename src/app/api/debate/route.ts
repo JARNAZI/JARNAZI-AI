@@ -9,6 +9,7 @@ import {
   validateContentSafety
 } from '@/lib/security';
 import { DebateOrchestrator } from '@/lib/orchestrator';
+import { getSettings } from '@/lib/settings';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60; // Extend duration for multi-step AI orchestration
@@ -33,14 +34,22 @@ async function countActiveTextProviders(supabaseAdmin: any) {
 }
 
 /**
- * Calculates a conservative token budget for the Maestro.
- * Maestro usually plans 3-5 steps. We budget for 5 steps per round.
+ * Calculates a conservative token budget for the Maestro from database settings.
  */
-function computeTokenCost(providerCount: number, requestType: RequestType) {
-  const base = 2; // Planning overhead
-  const perStep = 1;
-  const maxSteps = 5;
-  const mediaOverhead = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? 5 : 0;
+function computeTokenCost(
+  providerCount: number,
+  requestType: RequestType,
+  settings: Record<string, unknown>
+) {
+  const base = Number(settings.debate_base_cost) || 1;
+  const perStep = Number(settings.debate_cost_per_turn) || 1;
+  const maxSteps = Number(settings.debate_rounds) || 2;
+  const sMediaOverhead = Number(settings.debate_media_overhead) || 2;
+
+  const mediaOverhead = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? sMediaOverhead : 0;
+
+  // Example conservative formula: base cost + (max rounds * providers * cost per step) + media 
+  // We'll preserve the structural intent: base + (maxSteps * perStep) + mediaOverhead
   return base + (maxSteps * perStep) + mediaOverhead;
 }
 
@@ -106,7 +115,15 @@ export async function POST(req: Request) {
 
     // 2. Token Accounting
     const providerCount = await countActiveTextProviders(supabaseAdmin);
-    const tokenCost = computeTokenCost(providerCount, requestType);
+
+    // Fetch dynamic settings for debate parameters
+    const settingsArr = await getSettings([
+      'debate_base_cost',
+      'debate_cost_per_turn',
+      'debate_rounds',
+      'debate_media_overhead'
+    ]);
+    const tokenCost = computeTokenCost(providerCount, requestType, settingsArr);
 
     try {
       await reserveTokens(supabaseAdmin, user.id, tokenCost);
