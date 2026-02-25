@@ -8,7 +8,7 @@ create table public.contact_messages (
   subject text not null,
   message text not null,
   status message_status default 'pending',
-  reply_text text,
+  admin_reply text,
   replied_at timestamp with time zone,
   replied_by uuid references public.profiles(id),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null

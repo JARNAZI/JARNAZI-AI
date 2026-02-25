@@ -8,10 +8,23 @@ import {
   renderVerificationEmail,
 } from './templates';
 
-// Initialize Resend SDK
-const resendApiKey = process.env.RESEND_API_KEY || process.env.RESEND_API_KEY_LIVE;
-const resendFrom = process.env.RESEND_FROM_EMAIL || 'system@jarnazi.com';
-const resend = resendApiKey ? new Resend(resendApiKey) : null;
+import { getSetting } from '../settings';
+
+// Initialize Resend SDK (Module level fallback)
+const RESEND_API_KEY = process.env.RESEND_API_KEY || process.env.RESEND_API_KEY_LIVE;
+const DEFAULT_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'system@jarnazi.com';
+
+async function getEmailConfig() {
+  // Only the sender address can be overridden from the DB for flexibility,
+  // the API key MUST come from Environment Variables for security as requested.
+  const from = await getSetting<string>('email_from_address', DEFAULT_FROM_EMAIL);
+
+  return {
+    apiKey: RESEND_API_KEY,
+    from,
+    resend: RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null
+  };
+}
 
 function getSupabaseAdmin() {
   const url = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL);
@@ -30,15 +43,20 @@ async function callEmailFunction(payload: {
   to: string | string[];
   subject: string;
   html: string;
+  from?: string;
 }) {
-  console.log(`[Email Service] Attempting to send email to: ${payload.to}`);
+  const { apiKey, from, resend } = await getEmailConfig();
+  console.log(`[Email Service] Attempting to send email to: ${payload.to} via ${from}`);
+
+  // Inject the dynamically determined 'from' address into the payload for the Edge Function fallback
+  const enrichedPayload = { ...payload, from: payload.from || from };
 
   // METHOD 1: Direct Resend SDK (Primary)
   if (resend) {
     try {
       console.log(`[Email Service] Using Resend SDK directly...`);
       const { data, error } = await resend.emails.send({
-        from: resendFrom,
+        from: from,
         to: payload.to,
         subject: payload.subject,
         html: payload.html,
@@ -56,7 +74,7 @@ async function callEmailFunction(payload: {
       // Fall through to Method 2
     }
   } else {
-    console.warn('[Email Service] RESEND_API_KEY not found in Next.js environment. Skipping direct SDK method.');
+    console.warn('[Email Service] Resend configuration (API Key) missing in Environment. Skipping direct SDK method.');
   }
 
   // METHOD 2: Supabase Edge Function (Fallback)
@@ -65,7 +83,7 @@ async function callEmailFunction(payload: {
   const secret = process.env.EMAIL_FUNCTION_SECRET;
 
   if (!supabase) {
-    const msg = '[Email Service] CRITICAL: Both direct SDK and Supabase Edge Function are unavailable. (Check RESEND_API_KEY and SUPABASE_SERVICE_ROLE_KEY)';
+    const msg = '[Email Service] CRITICAL: Both direct SDK and Supabase Edge Function are unavailable. (Check environment variables)';
     console.error(msg);
     throw new Error(msg);
   }
@@ -73,7 +91,7 @@ async function callEmailFunction(payload: {
   try {
     console.log(`[Email Service] Invoking 'send-email' edge function...`);
     const { data, error } = await supabase.functions.invoke('send-email', {
-      body: payload,
+      body: enrichedPayload,
       headers: secret ? { 'x-email-secret': secret } : {},
     });
 

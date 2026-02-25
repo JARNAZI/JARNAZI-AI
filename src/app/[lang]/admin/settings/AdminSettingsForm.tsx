@@ -279,7 +279,29 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
             {/* Admin Profile */}
             <AdminProfile />
 
-            {/* Legal Pages */}
+            {/* Email Config */}
+            <section className="bg-white/5 border border-white/10 p-6 rounded-xl">
+                <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+                    <span className="w-1 h-6 bg-yellow-500 rounded-full" />
+                    Email Configuration
+                </h2>
+                <div className="grid grid-cols-1 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Support Email (Display Sender)</label>
+                        <input
+                            type="email"
+                            placeholder="support@yourdomain.com"
+                            defaultValue={settings['email_from_address']?.value || ''}
+                            onBlur={(e) => handleUpdate('email_from_address', e.target.value)}
+                            className="w-full bg-black/50 border border-border rounded-lg px-4 py-2 text-white outline-none focus:border-indigo-500"
+                        />
+                    </div>
+                </div>
+                <p className="mt-4 text-xs text-gray-500">
+                    Important: Ensure the "From Address" is verified in your Resend account. If empty, the system will use defaults.
+                </p>
+            </section>
+
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
                     <h3 className="font-semibold text-white mb-4">{d.privacyPolicy || 'Privacy Policy (Markdown)'}</h3>

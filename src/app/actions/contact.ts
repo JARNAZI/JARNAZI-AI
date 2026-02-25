@@ -66,7 +66,9 @@ export async function replyToMessage(messageId: string, replyText: string) {
     // Update DB
     const { error } = await supabase.from('contact_messages').update({
         status: 'replied',
-        admin_reply: replyText
+        admin_reply: replyText,
+        replied_at: new Date().toISOString(),
+        replied_by: user.id
     }).eq('id', messageId);
 
     if (error) throw error;
