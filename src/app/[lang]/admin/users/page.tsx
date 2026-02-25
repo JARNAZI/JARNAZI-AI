@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/lib/supabase/server-admin';
+import { createServiceRoleClient } from '@/lib/supabase/server-admin';
 import CreateStaffModal from './CreateStaffModal';
 import UserListActions from './UserListActions';
 import { getDictionary } from '@/i18n/get-dictionary';
@@ -13,20 +13,45 @@ export default async function AdminUsersPage(props: {
   const dict = await getDictionary(lang);
 
   const searchParams = await props.searchParams;
-  const supabase = await createAdminClient();
+  const supabase = await createServiceRoleClient();
   const query = searchParams.q || '';
 
-  let userQuery = supabase.from('profiles').select('*').order('created_at', { ascending: false });
+  const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
+  const { data: profiles, error: profileError } = await supabase.from('profiles').select('*');
 
+  if (authError || profileError) {
+    return <div className="p-8 text-destructive">Error: {authError?.message || profileError?.message}</div>;
+  }
+
+  // Merge auth users with their profiles
+  let users = authUsers.map(authUser => {
+    const profile = profiles?.find(p => p.id === authUser.id);
+    return {
+      id: authUser.id,
+      email: authUser.email,
+      full_name: profile?.full_name || authUser.user_metadata?.full_name || '',
+      role: profile?.role || 'user',
+      token_balance: profile?.token_balance ?? 0,
+      is_banned: profile?.is_banned || false,
+      created_at: authUser.created_at
+    };
+  });
+
+  // Apply search filter
   if (query) {
-    userQuery = userQuery.or(`email.ilike.%${query}%,full_name.ilike.%${query}%`);
+    const q = query.toLowerCase();
+    users = users.filter(u =>
+      u.email?.toLowerCase().includes(q) ||
+      u.full_name?.toLowerCase().includes(q) ||
+      u.id.toLowerCase().includes(q)
+    );
   }
 
-  const { data: users, error } = await userQuery.limit(50);
+  // Sort by created_at desc
+  users.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-  if (error) {
-    return <div className="p-8 text-destructive">Error: {error.message}</div>;
-  }
+  // Limit to 50 for performance as before
+  users = users.slice(0, 50);
 
   return (
     <div className="p-8">

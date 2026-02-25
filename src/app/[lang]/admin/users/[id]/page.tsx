@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceRoleClient } from '@/lib/supabase/server-admin';
 import { notFound } from 'next/navigation';
 import UserManagementPanel from './UserManagementPanel';
 import StaffManagementPanel from './StaffManagementPanel';
@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export default async function UserDetailsPage(props: { params: Promise<{ lang: string; id: string }> }) {
     const params = await props.params;
     const lang = params.lang;
-    const supabase = await createClient();
+    const supabase = await createServiceRoleClient();
 
     // Fetch profile
     const { data: profile } = await supabase.from('profiles').select('*').eq('id', params.id).single();

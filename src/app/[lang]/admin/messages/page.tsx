@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceRoleClient } from '@/lib/supabase/server-admin';
 import { Mail, CheckCircle } from 'lucide-react';
 import ReplyModal from '@/components/admin/ReplyModal';
 import { getDictionary } from '@/i18n/get-dictionary';
@@ -9,7 +9,7 @@ export default async function AdminMessagesPage(props: { params: Promise<{ lang:
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
 
-  const supabase = await createClient();
+  const supabase = await createServiceRoleClient();
 
   const { data: messages, error } = await supabase
     .from('contact_messages')

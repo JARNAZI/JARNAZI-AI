@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceRoleClient } from '@/lib/supabase/server-admin';
 import AdminManageProviders from './AdminManageProviders';
 import { getDictionary } from '@/i18n/get-dictionary';
 
@@ -8,7 +8,7 @@ export default async function AdminProvidersPage(props: { params: Promise<{ lang
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
 
-  const supabase = await createClient();
+  const supabase = await createServiceRoleClient();
 
   // Fetch DB providers
   const { data: providers } = await supabase.from('ai_providers').select('*').order('name');
