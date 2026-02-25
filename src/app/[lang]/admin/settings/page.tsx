@@ -20,12 +20,14 @@ export default async function AdminSettingsPage() {
     } catch (_) { }
 
     if (Object.keys(settingMap).length === 0) {
-        // Single-row schema with `features` JSONB
-        const { data } = await supabase.from('site_settings').select('features').limit(1).maybeSingle();
-        const features = (data as any)?.features || {};
-        for (const [k, v] of Object.entries(features)) {
-            settingMap[k] = { key: k, value: v };
-        }
+        try {
+            // Single-row schema with `features` JSONB
+            const { data } = await supabase.from('site_settings').select('features').limit(1).maybeSingle();
+            const features = (data as any)?.features || {};
+            for (const [k, v] of Object.entries(features)) {
+                settingMap[k] = { key: k, value: String(v) };
+            }
+        } catch (_) { }
     }
 
     return (

@@ -58,7 +58,16 @@ export default function PlansEditor({ settings }: PlansEditorProps) {
         try {
             const val = settings['token_plans']?.value;
             if (val) {
-                setPlans(JSON.parse(val));
+                let parsed = val;
+                if (typeof val === 'string') {
+                    parsed = JSON.parse(val);
+                }
+                if (Array.isArray(parsed)) {
+                    setPlans(parsed);
+                } else {
+                    console.error("Parsed plans is not an array:", parsed);
+                    setPlans(DEFAULT_PLANS);
+                }
             } else {
                 setPlans(DEFAULT_PLANS);
             }
