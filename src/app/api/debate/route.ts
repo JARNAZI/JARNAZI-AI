@@ -33,24 +33,39 @@ async function countActiveTextProviders(supabaseAdmin: any) {
   return Number(count || 0);
 }
 
+async function fetchAiCosts(supabaseAdmin: any) {
+  const { data } = await supabaseAdmin.from('ai_costs').select('*').eq('is_active', true);
+  return data || [];
+}
+
 /**
  * Calculates a conservative token budget for the Maestro from database settings.
  */
 function computeTokenCost(
   providerCount: number,
   requestType: RequestType,
-  settings: Record<string, unknown>
+  settings: Record<string, unknown>,
+  aiCosts: any[]
 ) {
-  const base = Number(settings.debate_base_cost) || 1;
-  const perStep = Number(settings.debate_cost_per_turn) || 1;
   const maxSteps = Number(settings.debate_rounds) || 2;
   const sMediaOverhead = Number(settings.debate_media_overhead) || 2;
 
   const mediaOverhead = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? sMediaOverhead : 0;
 
-  // Example conservative formula: base cost + (max rounds * providers * cost per step) + media 
-  // We'll preserve the structural intent: base + (maxSteps * perStep) + mediaOverhead
-  return base + (maxSteps * perStep) + mediaOverhead;
+  let sumCost = 0;
+  for (const c of aiCosts) {
+    if (c.cost_type === 'text') {
+      sumCost += Number(c.cost_per_unit) || 1;
+    }
+  }
+  if (sumCost === 0) sumCost = providerCount * 1; // fallback
+
+  const orchestrationCost = Number(aiCosts.find(c => c.provider === 'openai')?.cost_per_unit) || 1;
+
+  const totalCost = (sumCost * maxSteps) + orchestrationCost;
+  const userChargeToken = Math.ceil((totalCost * 1.25) + mediaOverhead);
+
+  return userChargeToken;
 }
 
 async function reserveTokens(supabaseAdmin: any, userId: string, tokens: number) {
@@ -118,12 +133,11 @@ export async function POST(req: Request) {
 
     // Fetch dynamic settings for debate parameters
     const settingsArr = await getSettings([
-      'debate_base_cost',
-      'debate_cost_per_turn',
       'debate_rounds',
       'debate_media_overhead'
     ]);
-    const tokenCost = computeTokenCost(providerCount, requestType, settingsArr);
+    const aiCosts = await fetchAiCosts(supabaseAdmin);
+    const tokenCost = computeTokenCost(providerCount, requestType, settingsArr, aiCosts);
 
     try {
       await reserveTokens(supabaseAdmin, user.id, tokenCost);

@@ -734,9 +734,6 @@ export default function DebateClient({
                     const j = await res.json().catch(() => ({} as any));
                     const missing = Number(j?.missingTokens ?? 0) || 0;
                     toast.error((dict?.notifications?.insufficientTokens || dict?.tokens?.insufficient || 'Insufficient tokens.') + (missing ? ` (Missing: ${missing})` : ''));
-                    // Redirect to buy-tokens with a return URL so user can come back.
-                    const ret = encodeURIComponent(`/${lang}/debate/${debateId}`);
-                    window.location.href = `/${lang}/buy-tokens?missing=${missing}&return=${ret}`;
                     return;
                 }
                 const errText = await res.text().catch(() => '');

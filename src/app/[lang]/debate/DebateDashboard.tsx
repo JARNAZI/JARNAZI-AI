@@ -179,7 +179,6 @@ export default function DebateDashboard({
 
             if (response.status === 402) {
                 toast.error(dict.notifications?.insufficientTokens || "Insufficient tokens. Please top up to start a new debate.");
-                router.push(`/${lang}/buy-tokens?returnUrl=${encodeURIComponent(`/${lang}/debate`)}`);
                 return;
             }
 

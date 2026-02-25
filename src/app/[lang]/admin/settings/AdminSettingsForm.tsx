@@ -194,31 +194,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
                     </button>
                 </div>
 
-                <div className="pt-3 border-t border-white/10" />
 
-                <div>
-                    <div className="text-white font-medium">{d.tokenCostPerTurn || 'Token Cost Per Turn'}</div>
-                    <div className="text-sm text-gray-400">{d.tokenCostDesc || 'How many tokens to charge per AI response per round.'}</div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <input
-                        type="number"
-                        min={1}
-                        max={50}
-                        className="w-28 px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white"
-                        value={settings['debate_cost_per_turn']?.value ?? '1'}
-                        onChange={(e) => setSettings((p) => ({ ...p, debate_cost_per_turn: { ...(p.debate_cost_per_turn ?? { value: '' }), value: e.target.value } }))}
-                    />
-                    <button
-                        className="px-3 py-2 rounded-md bg-indigo-600 text-white disabled:opacity-60"
-                        disabled={saving === 'debate_cost_per_turn'}
-                        onClick={() => handleUpdate('debate_cost_per_turn', settings['debate_cost_per_turn']?.value ?? '1')}
-                    >
-                        {saving === 'debate_cost_per_turn' ? (d.saving || 'Saving...') : (d.save || 'Save')}
-                    </button>
-                </div>
-
-                <div className="pt-3 border-t border-white/10" />
 
                 <div>
                     <div className="text-white font-medium">{d.mediaOverhead || 'Media Overhead'}</div>
@@ -242,29 +218,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
                     </button>
                 </div>
 
-                <div className="pt-3 border-t border-white/10" />
 
-                <div>
-                    <div className="text-white font-medium">{d.baseCost || 'Base Cost'}</div>
-                    <div className="text-sm text-gray-400">{d.baseCostDesc || 'Flat token cost added to every debate message.'}</div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <input
-                        type="number"
-                        min={0}
-                        max={50}
-                        className="w-28 px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white"
-                        value={settings['debate_base_cost']?.value ?? '1'}
-                        onChange={(e) => setSettings((p) => ({ ...p, debate_base_cost: { ...(p.debate_base_cost ?? { value: '' }), value: e.target.value } }))}
-                    />
-                    <button
-                        className="px-3 py-2 rounded-md bg-indigo-600 text-white disabled:opacity-60"
-                        disabled={saving === 'debate_base_cost'}
-                        onClick={() => handleUpdate('debate_base_cost', settings['debate_base_cost']?.value ?? '1')}
-                    >
-                        {saving === 'debate_base_cost' ? (d.saving || 'Saving...') : (d.save || 'Save')}
-                    </button>
-                </div>
             </div>
 
             {/* Payment Gateways */}

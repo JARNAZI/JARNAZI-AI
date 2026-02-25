@@ -13,25 +13,33 @@ function getSupabaseAdmin() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-async function getNumericSetting(supabaseAdmin: any, key: string, fallback: number) {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('site_settings')
-      .select('value')
-      .eq('key', key)
-      .maybeSingle();
-    if (!error) {
-      const raw = (data as any)?.value;
-      const n = Number(raw);
-      return Number.isFinite(n) && n > 0 ? n : fallback;
-    }
-  } catch (_) { }
-  return fallback;
+async function fetchAiCosts(supabaseAdmin: any) {
+  const { data } = await supabaseAdmin.from('ai_costs').select('*').eq('is_active', true);
+  return data || [];
 }
 
-function computeTokenCost(requestType: RequestType, base: number, perTurn: number) {
-  const media = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? 5 : 0;
-  return base + perTurn + media;
+async function getMediaOverheadSetting(supabaseAdmin: any) {
+  try {
+    const { data } = await supabaseAdmin.from('site_settings').select('value').eq('key', 'debate_media_overhead').maybeSingle();
+    return Number(data?.value) || 0;
+  } catch (e) { return 0; }
+}
+
+function computeTokenCost(requestType: RequestType, aiCosts: any[], mediaOverhead: number) {
+  let sumCost = 0;
+  let textCount = 0;
+  for (const c of aiCosts) {
+    if (c.cost_type === 'text') {
+      sumCost += Number(c.cost_per_unit) || 0;
+      textCount++;
+    }
+  }
+  const avgCost = textCount > 0 ? (sumCost / textCount) : 1;
+  const orchestrationCost = Number(aiCosts.find(c => c.provider === 'openai')?.cost_per_unit) || 1;
+
+  const totalCost = avgCost + orchestrationCost;
+  const media = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? mediaOverhead : 0;
+  return Math.ceil((totalCost * 1.25) + media);
 }
 
 async function reserveTokens(supabaseAdmin: any, userId: string, tokens: number) {
@@ -76,9 +84,9 @@ export async function POST(req: Request) {
     if (debRow.user_id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     // AI Orchestration Settings
-    const baseCost = await getNumericSetting(supabaseAdmin, 'debate_base_cost', 1);
-    const perTurn = await getNumericSetting(supabaseAdmin, 'debate_cost_per_turn', 1);
-    const tokenCost = computeTokenCost(requestType, baseCost, perTurn);
+    const aiCosts = await fetchAiCosts(supabaseAdmin);
+    const mediaOverhead = await getMediaOverheadSetting(supabaseAdmin);
+    const tokenCost = computeTokenCost(requestType, aiCosts, mediaOverhead);
 
     try {
       await reserveTokens(supabaseAdmin, user.id, tokenCost);

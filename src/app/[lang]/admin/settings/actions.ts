@@ -18,23 +18,26 @@ export async function updateSetting(key: string, value: string) {
     const adminSupabase = await createAdminClient();
 
     // Supports both schemas safely using admin client
-    let error: any = null;
+    const { data: existing, error: checkErr } = await adminSupabase.from('site_settings').select('id, key').eq('key', key).maybeSingle();
 
-    const res = await adminSupabase.from('site_settings').upsert({
-        key,
-        value,
-        updated_at: new Date().toISOString()
-    });
+    let dbError: any = null;
+    if (existing) {
+        const { error } = await adminSupabase.from('site_settings').update({ value, updated_at: new Date().toISOString() }).eq('id', existing.id);
+        dbError = error;
+    } else if (!checkErr) {
+        const { error } = await adminSupabase.from('site_settings').insert({ key, value, updated_at: new Date().toISOString() });
+        dbError = error;
+    } else {
+        dbError = checkErr;
+    }
 
-    error = res.error;
-
-    if (error) {
+    if (dbError) {
         // Fallback: single-row `features` JSONB
         const { data: row, error: readErr } = await adminSupabase.from('site_settings').select('id,features').limit(1).maybeSingle();
-        if (readErr) throw new Error(`Schema A failed: ${error.message} AND Schema B failed: ${readErr.message}`);
+        if (readErr) throw new Error(`Schema A failed: ${dbError.message} AND Schema B failed: ${readErr.message}`);
 
         const id = row?.id;
-        if (!id) throw new Error(`Failed to update setting: ${error.message}`);
+        if (!id) throw new Error(`Failed to update setting: ${dbError.message}`);
 
         const features = { ...(row?.features || {}), [key]: value };
         const { error: updErr } = await adminSupabase.from('site_settings').update({ features, updated_at: new Date().toISOString() }).eq('id', id);
