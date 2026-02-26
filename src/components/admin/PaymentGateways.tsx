@@ -24,21 +24,13 @@ export default function PaymentGateways({ settings, onUpdate }: PaymentGatewaysP
     const isStripeTestMode = settings['stripe_test_mode']?.value === 'true';
 
     const handleToggle = async (key: string, checked: boolean) => {
-        // Find existing key if it's the alternate one
-        let targetKey = key;
-        if (key === 'gateway_stripe_enabled' && !settings[key] && settings['payments_stripe_enabled']) {
-            targetKey = 'payments_stripe_enabled';
-        } else if (key === 'gateway_nowpayments_enabled' && !settings[key] && settings['payments_nowpayments_enabled']) {
-            targetKey = 'payments_nowpayments_enabled';
-        }
-
         const val = String(checked);
         setSaving(key); // UI shows loading for the primary key
         try {
             if (onUpdate) {
-                await onUpdate(targetKey, val);
+                await onUpdate(key, val);
             } else {
-                await updateSetting(targetKey, val);
+                await updateSetting(key, val);
             }
             toast.success(`Setting updated`);
         } catch (error: any) {

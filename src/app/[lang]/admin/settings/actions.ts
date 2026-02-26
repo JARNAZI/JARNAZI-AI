@@ -1,18 +1,25 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createAdminDbClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 
 export async function updateSetting(key: string, value: string) {
-    const supabase = await createClient();
+    const supabaseUser = await createClient();
 
-    // Check Permission
-    const { data: { user } } = await supabase.auth.getUser();
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single();
+    // Check Permission via user client
+    const { data: { user } } = await supabaseUser.auth.getUser();
+    const { data: profile } = await supabaseUser.from('profiles').select('role').eq('id', user?.id).single();
 
     if (profile?.role !== 'admin' && profile?.role !== 'super_admin') {
         throw new Error('Unauthorized');
     }
+
+    // Bypass RLS for actual update since we manually verified admin role
+    const supabaseAdmin = createAdminDbClient(
+        (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL)!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
     // Supports both schemas:
 // A) KV schema: upsert { key, value }
@@ -20,7 +27,7 @@ export async function updateSetting(key: string, value: string) {
 let error: any = null;
 
 try {
-    const res = await supabase.from('site_settings').upsert({
+    const res = await supabaseAdmin.from('site_settings').upsert({
         key,
         value,
         updated_at: new Date().toISOString()
@@ -35,21 +42,21 @@ try {
 
     if (error) {
         // Fallback: single-row `features` JSONB
-        const { data: row, error: readErr } = await supabase.from('site_settings').select('id,features').limit(1).maybeSingle();
+        const { data: row, error: readErr } = await supabaseAdmin.from('site_settings').select('id,features').limit(1).maybeSingle();
         if (readErr) throw readErr;
         
         const id = (row as any)?.id;
         const features = { ...((row as any)?.features || {}), [key]: value };
         
         if (id) {
-            const { error: updErr } = await supabase.from('site_settings').update({ 
+            const { error: updErr } = await supabaseAdmin.from('site_settings').update({ 
                 features, 
                 updated_at: new Date().toISOString() 
             }).eq('id', id);
             if (updErr) throw updErr;
         } else {
             // First time saving in single-row mode
-            const { error: insErr } = await supabase.from('site_settings').insert({ 
+            const { error: insErr } = await supabaseAdmin.from('site_settings').insert({ 
                 features, 
                 updated_at: new Date().toISOString() 
             });

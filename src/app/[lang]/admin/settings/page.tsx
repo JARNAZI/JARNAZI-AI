@@ -11,11 +11,13 @@ export default async function AdminSettingsPage() {
     
     // 1. Fetch from KV schema
     try {
-        const { data: kvSettings } = await supabase.from('site_settings').select('*').order('label');
+        const { data: kvSettings } = await supabase.from('site_settings').select('*');
         if (Array.isArray(kvSettings)) {
             kvSettings.forEach(curr => {
-                if (curr?.key) {
-                    settingMap[curr.key] = curr;
+                const rowKey = curr?.key || curr?.setting_key;
+                const rowVal = curr?.value !== undefined ? curr?.value : curr?.setting_value;
+                if (rowKey) {
+                    settingMap[rowKey] = { key: rowKey, value: String(rowVal ?? '') };
                 }
             });
         }
