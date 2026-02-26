@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { updateSetting } from '@/app/[lang]/admin/settings/actions';
 import { toast } from 'sonner';
 import { CreditCard, Loader2 } from 'lucide-react';
