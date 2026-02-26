@@ -630,9 +630,68 @@ export default function DebateClient({
     };
 
 
+    const handleMediaClickCapture = (e: React.MouseEvent | React.TouchEvent) => {
+        const hasTokens = (profileInfo?.token_balance ?? 0) > 0;
+        if (hasTokens) return true;
+
+        if (enableFreeTrial) {
+            if (freeTrialUsed) {
+                toast.error(dict?.debate?.freeTrialUsedUp || 'عفوًا، الحصة المجانية متاحة لمرة واحدة فقط. يرجى شراء توكن.');
+            } else {
+                toast.error(dict?.debate?.freeTrialMediaBlocked || 'الحصة المجانية لا تدعم الوسائط. يرجى شراء توكن.');
+            }
+        } else {
+            toast.error(dict?.notifications?.insufficientTokens || dict?.tokens?.insufficient || 'رصيد التوكن غير كافٍ. يرجى شراء توكن لاستخدام هذه الميزة.');
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    };
+
+    const checkTextActionAllowed = () => {
+        const hasTokens = (profileInfo?.token_balance ?? 0) > 0;
+        if (hasTokens) return true;
+
+        if (enableFreeTrial && !freeTrialUsed) return true;
+
+        if (enableFreeTrial && freeTrialUsed) {
+            toast.error(dict?.debate?.freeTrialUsedUp || 'عفوًا، الحصة المجانية متاحة لمرة واحدة فقط. يرجى شراء توكن.');
+        } else {
+            toast.error(dict?.notifications?.insufficientTokens || dict?.tokens?.insufficient || 'رصيد التوكن غير كافٍ لإدخال أسئلة. يرجى شراء توكن.');
+        }
+        return false;
+    };
+
+    const handleTextFocusCapture = (e: React.FocusEvent | React.MouseEvent | React.TouchEvent) => {
+        if (!checkTextActionAllowed()) {
+            e.preventDefault();
+            e.stopPropagation();
+            (e.target as HTMLElement).blur();
+        }
+    };
+
     // Send Handler
     const handleSend = async () => {
         if (!inputContent.trim() && !selectedFile && !recordedAudio) return;
+
+        const isMedia = !!selectedFile || !!recordedAudio;
+        const hasTokens = (profileInfo?.token_balance ?? 0) > 0;
+
+        if (!hasTokens) {
+            if (enableFreeTrial) {
+                if (freeTrialUsed) {
+                    toast.error(dict?.debate?.freeTrialUsedUp || 'عفوًا، الحصة المجانية متاحة لمرة واحدة فقط. يرجى شراء توكن.');
+                    return;
+                } else if (isMedia) {
+                    toast.error(dict?.debate?.freeTrialMediaBlocked || 'الحصة المجانية لا تدعم الوسائط. يرجى شراء توكن.');
+                    return;
+                }
+            } else {
+                toast.error(dict?.notifications?.insufficientTokens || dict?.tokens?.insufficient || 'رصيد التوكن غير كافٍ. يرجى شراء توكن للاستمرار.');
+                return;
+            }
+        }
 
         // 1. Prepare Content & Enforce LaTeX
         let contentToSend = inputContent;
@@ -1169,7 +1228,7 @@ export default function DebateClient({
 
                         {/* Toolstrip */}
                         <div className="relative">
-                            <div ref={inputStripRef} onScroll={updateInputStripScrollHints} className="flex items-center gap-1 flex-wrap pb-2 border-b border-border mb-1">
+                            <div ref={inputStripRef} onScroll={updateInputStripScrollHints} onClickCapture={handleMediaClickCapture} onTouchStartCapture={handleMediaClickCapture} className="flex items-center gap-1 flex-wrap pb-2 border-b border-border mb-1">
                                 {enableFreeTrial && !freeTrialUsed ? (
                                     <div className="flex items-center gap-2 px-3 py-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20 mb-1 w-full">
                                         <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
@@ -1201,6 +1260,9 @@ export default function DebateClient({
                             <div className={`flex-1 bg-background border border-border rounded-xl p-3 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/50 transition-all shadow-inner`}>
                                 <textarea
                                     ref={textareaRef}
+                                    onFocusCapture={handleTextFocusCapture}
+                                    onMouseDownCapture={handleTextFocusCapture}
+                                    onTouchStartCapture={handleTextFocusCapture}
                                     value={inputContent}
                                     onChange={(e) => setInputContent(e.target.value)}
                                     placeholder={dict?.debate?.placeholder || "Enter your argument..."}
