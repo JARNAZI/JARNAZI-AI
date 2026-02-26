@@ -8,7 +8,7 @@ import {
   checkRateLimit,
   validateContentSafety
 } from '@/lib/security';
-import { DebateOrchestrator } from '@/lib/orchestrator';
+import { DebateOrchestrator, calculateDynamicTokenCost } from '@/lib/orchestrator';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60; // Extend duration for multi-step AI orchestration
@@ -22,27 +22,7 @@ function getSupabaseAdmin() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-async function countActiveTextProviders(supabaseAdmin: any) {
-  const { count, error } = await supabaseAdmin
-    .from('ai_providers')
-    .select('id', { count: 'exact', head: true })
-    .eq('enabled', true)
-    .eq('kind', 'text');
-  if (error) throw error;
-  return Number(count || 0);
-}
 
-/**
- * Calculates a conservative token budget for the Maestro.
- * Maestro usually plans 3-5 steps. We budget for 5 steps per round.
- */
-function computeTokenCost(providerCount: number, requestType: RequestType) {
-  const base = 2; // Planning overhead
-  const perStep = 1;
-  const maxSteps = 5;
-  const mediaOverhead = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? 5 : 0;
-  return base + (maxSteps * perStep) + mediaOverhead;
-}
 
 async function reserveTokens(supabaseAdmin: any, userId: string, tokens: number) {
   const { error } = await supabaseAdmin.rpc('reserve_tokens', { p_user_id: userId, p_tokens: tokens });
@@ -104,15 +84,17 @@ export async function POST(req: Request) {
 
     if (debErr || !debate) throw debErr || new Error('Failed to create debate');
 
-    // 2. Token Accounting
-    const providerCount = await countActiveTextProviders(supabaseAdmin);
-    const tokenCost = computeTokenCost(providerCount, requestType);
+    // 2. Trigger Maestro to Plan the Debate first
+    const plan = await orchestrator.planDebate(topic);
+
+    // 3. Token Accounting using dynamic pricing
+    const tokenCost = await calculateDynamicTokenCost(supabaseAdmin, plan);
 
     try {
       await reserveTokens(supabaseAdmin, user.id, tokenCost);
     } catch (e: any) {
       if (e.message?.includes('INSUFFICIENT_TOKENS')) {
-        return NextResponse.json({ error: 'Insufficient tokens' }, { status: 402 });
+        return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', tokensNeeded: tokenCost }, { status: 402 });
       }
       throw e;
     }
@@ -120,7 +102,7 @@ export async function POST(req: Request) {
     // 3. Trigger Maestro (Non-blocking or await depending on requirements)
     // We await here to ensure we can handle errors and refund, local Next.js supports longer timeouts.
     try {
-      await orchestrator.runFullDebate(debate.id, user.id, topic);
+      await orchestrator.runFullDebate(debate.id, user.id, topic, plan);
 
       // Update final cost if applicable
       await supabaseAdmin.from('debates').update({ total_cost_cents: tokenCost }).eq('id', debate.id);

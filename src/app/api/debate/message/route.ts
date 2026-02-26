@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { DebateOrchestrator } from '@/lib/orchestrator';
+import { DebateOrchestrator, calculateDynamicTokenCost } from '@/lib/orchestrator';
 
 export const runtime = 'nodejs';
 
@@ -11,27 +11,6 @@ function getSupabaseAdmin() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("Missing Supabase Admin credentials in debate/message");
   return createClient(url, key, { auth: { persistSession: false } });
-}
-
-async function getNumericSetting(supabaseAdmin: any, key: string, fallback: number) {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('site_settings')
-      .select('value')
-      .eq('key', key)
-      .maybeSingle();
-    if (!error) {
-      const raw = (data as any)?.value;
-      const n = Number(raw);
-      return Number.isFinite(n) && n > 0 ? n : fallback;
-    }
-  } catch (_) { }
-  return fallback;
-}
-
-function computeTokenCost(requestType: RequestType, mediaOverhead: number) {
-  const isMedia = (requestType === 'image' || requestType === 'video' || requestType === 'file');
-  return 1 + (isMedia ? mediaOverhead : 0);
 }
 
 async function reserveTokens(supabaseAdmin: any, userId: string, tokens: number) {
@@ -75,9 +54,16 @@ export async function POST(req: Request) {
     if (debErr || !debRow) return NextResponse.json({ error: 'Debate not found' }, { status: 404 });
     if (debRow.user_id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
+    // Build the step plan to calculate cost
+    const replyStep = {
+      role: "Interlocutor / Rebuttal",
+      provider_preference: [], // Use dynamic selection
+      task_type: requestType === 'image' || requestType === 'video' ? 'image' : 'text' as any,
+      instructions: `Participate in the debate based on the user's input: "${rawPrompt}"`
+    };
+
     // AI Orchestration Settings
-    const mediaOverhead = await getNumericSetting(supabaseAdmin, 'debate_media_overhead', 2);
-    const tokenCost = computeTokenCost(requestType, mediaOverhead);
+    const tokenCost = await calculateDynamicTokenCost(supabaseAdmin, [replyStep]);
 
     // Free Trial check
     const { data: profile, error: profErr } = await supabaseAdmin
@@ -113,7 +99,7 @@ export async function POST(req: Request) {
         await reserveTokens(supabaseAdmin, user.id, tokenCost);
       } catch (e: any) {
         if (e.message?.includes('INSUFFICIENT_TOKENS')) {
-          return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', requiredTokens: tokenCost }, { status: 402 });
+          return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', tokensNeeded: tokenCost }, { status: 402 });
         }
         throw e;
       }
@@ -133,13 +119,7 @@ export async function POST(req: Request) {
         previousTurns: (turns || []).map((t: any) => ({ ai_name: t.ai_name_snapshot, content: t.content }))
       };
 
-      // 2. Execute a reply using the Maestro's best candidate selection
-      const replyStep = {
-        role: "Interlocutor / Rebuttal",
-        provider_preference: [], // Use dynamic selection
-        task_type: requestType === 'image' || requestType === 'video' ? 'image' : 'text' as any,
-        instructions: `Participate in the debate based on the user's input: "${rawPrompt}"`
-      };
+      // 2. Execute a reply using the Maestro's best candidate selection (replyStep created above)
 
       const result = await orchestrator.executeStep(replyStep, context);
 

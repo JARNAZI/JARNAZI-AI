@@ -76,9 +76,9 @@ export class DebateOrchestrator {
      * Executes the entire planned debate sequence for a given topic.
      * This is the "Master" entry point for a new debate.
      */
-    async runFullDebate(debateId: string, userId: string, topic: string) {
+    async runFullDebate(debateId: string, userId: string, topic: string, precomputedPlan?: TaskPlan['sequence']) {
         console.log(`[Maestro] Starting full debate session for ${debateId}`);
-        const plan = await this.planDebate(topic);
+        const plan = precomputedPlan || await this.planDebate(topic);
         const context: DebateContext = {
             topic,
             debateId,
@@ -465,5 +465,73 @@ export class DebateOrchestrator {
 
         await this.supabase.from('debate_turns').insert(payload);
     }
+}
+
+export async function calculateDynamicTokenCost(supabaseAdmin: any, plan: TaskPlan['sequence']): Promise<number> {
+    let totalRealCents = 0;
+
+    for (const step of plan) {
+        let providerName = step.provider_preference[0];
+        
+        // If no preference, pick a default active one to estimate
+        if (!providerName) {
+            const { data } = await supabaseAdmin.from('ai_providers').select('name').eq('enabled', true).eq('kind', step.task_type).limit(1).maybeSingle();
+            if (data) providerName = data.name;
+        }
+
+        if (providerName) {
+            // Find cost rate for this provider
+            const { data: costData } = await supabaseAdmin.from('ai_costs')
+                .select('cost_per_unit, unit')
+                .ilike('provider', `%${providerName}%`)
+                .eq('cost_type', step.task_type === 'latex' ? 'text' : step.task_type)
+                .eq('is_active', true)
+                .order('cost_per_unit', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if (costData) {
+                const cpu = Number(costData.cost_per_unit);
+                const unit = String(costData.unit).toLowerCase();
+                
+                let stepUsd = 0;
+                if (step.task_type === 'text' || step.task_type === 'latex') {
+                    // Assume ~2k tokens (2 units of per_1k_tokens) per turn
+                    if (unit.includes('1k_tokens') || unit.includes('token')) {
+                        stepUsd = cpu * 2;
+                    } else {
+                        stepUsd = cpu;
+                    }
+                } else {
+                    stepUsd = cpu; // 1 image / video
+                }
+                totalRealCents += Math.max(0, stepUsd * 100);
+            } else {
+                 // Fallback: 10 cents for text, 20 cents for media if no cost defined
+                totalRealCents += (step.task_type === 'text' || step.task_type === 'latex' ? 10 : 20);
+            }
+        }
+    }
+
+    // Apply the 75% -> 25% profit margin logic
+    let baseTokens = 0;
+    if (totalRealCents > 0) {
+        const sellCents = Math.ceil(totalRealCents / 0.75);
+        baseTokens = Math.ceil((sellCents * 3) / 100); // 3 tokens per USD
+    }
+
+    let tokensNeeded = Math.max(1, baseTokens);
+
+    // Add media overhead if any step contains media
+    const hasMedia = plan.some(s => s.task_type === 'image' || s.task_type === 'video');
+    if (hasMedia) {
+        try {
+            const { data: kvData } = await supabaseAdmin.from('site_settings').select('value').eq('key', 'debate_media_overhead').maybeSingle();
+            const mediaOverhead = Number(kvData?.value) || 2;
+            tokensNeeded += mediaOverhead;
+        } catch (_) {}
+    }
+
+    return tokensNeeded;
 }
 
