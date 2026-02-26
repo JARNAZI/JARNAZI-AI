@@ -62,23 +62,41 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
     // Read payment gateway toggles from `site_settings`.
     (async () => {
       try {
+        // Try KV schema first
         const { data, error } = await supabase
           .from('site_settings')
           .select('key,value')
           .in('key', ['gateway_stripe_enabled', 'gateway_nowpayments_enabled']);
 
-        if (!error && data) {
-          const map: Record<string, string> = {};
+        let map: Record<string, string> = {};
+
+        if (!error && data && data.length > 0) {
           data.forEach(row => {
             map[row.key] = String(row.value);
           });
+        } else {
+          // Fallback: single-row schema with `features` JSONB
+          const { data: rowData, error: rowError } = await supabase
+            .from('site_settings')
+            .select('features')
+            .limit(1)
+            .maybeSingle();
 
-          if (map.gateway_stripe_enabled !== undefined) {
-            setStripeEnabled(map.gateway_stripe_enabled === 'true');
+          if (!rowError && rowData?.features) {
+            const features = rowData.features as Record<string, any>;
+            if (features.gateway_stripe_enabled !== undefined) map.gateway_stripe_enabled = String(features.gateway_stripe_enabled);
+            else if (features.payments_stripe_enabled !== undefined) map.gateway_stripe_enabled = String(features.payments_stripe_enabled);
+
+            if (features.gateway_nowpayments_enabled !== undefined) map.gateway_nowpayments_enabled = String(features.gateway_nowpayments_enabled);
+            else if (features.payments_nowpayments_enabled !== undefined) map.gateway_nowpayments_enabled = String(features.payments_nowpayments_enabled);
           }
-          if (map.gateway_nowpayments_enabled !== undefined) {
-            setNowpaymentsEnabled(map.gateway_nowpayments_enabled === 'true');
-          }
+        }
+
+        if (map.gateway_stripe_enabled !== undefined) {
+          setStripeEnabled(map.gateway_stripe_enabled === 'true');
+        }
+        if (map.gateway_nowpayments_enabled !== undefined) {
+          setNowpaymentsEnabled(map.gateway_nowpayments_enabled === 'true');
         }
       } catch (err) {
         console.error("Failed to load payment settings:", err);

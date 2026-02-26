@@ -268,7 +268,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
             </div>
 
             {/* Payment Gateways */}
-            <PaymentGateways settings={settings} />
+            <PaymentGateways settings={settings} onUpdate={handleUpdate} />
 
             {/* Token Plans Editor */}
             <PlansEditor settings={settings} />

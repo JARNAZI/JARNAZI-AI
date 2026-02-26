@@ -7,9 +7,10 @@ import { CreditCard, Loader2 } from 'lucide-react';
 
 interface PaymentGatewaysProps {
     settings: any;
+    onUpdate?: (key: string, value: string) => void;
 }
 
-export default function PaymentGateways({ settings }: PaymentGatewaysProps) {
+export default function PaymentGateways({ settings, onUpdate }: PaymentGatewaysProps) {
     // Helper to safely get boolean value from setting object or string
     const getBool = (key: string) => {
         const val = settings[key]?.value;
@@ -22,11 +23,24 @@ export default function PaymentGateways({ settings }: PaymentGatewaysProps) {
     });
     const [saving, setSaving] = useState<string | null>(null);
 
+    // Sync with props
+    useEffect(() => {
+        setGateways({
+            stripe: getBool('gateway_stripe_enabled'),
+            nowpayments: getBool('gateway_nowpayments_enabled'),
+        });
+    }, [settings]);
+
     const handleToggle = async (gateway: 'stripe' | 'nowpayments', checked: boolean) => {
         const key = `gateway_${gateway}_enabled`;
+        const val = String(checked);
         setSaving(key);
         try {
-            await updateSetting(key, String(checked));
+            if (onUpdate) {
+                await onUpdate(key, val);
+            } else {
+                await updateSetting(key, val);
+            }
             setGateways(prev => ({ ...prev, [gateway]: checked }));
             toast.success(`${gateway === 'nowpayments' ? 'NowPayments' : 'Stripe'} ${checked ? 'enabled' : 'disabled'}`);
         } catch (error: any) {
