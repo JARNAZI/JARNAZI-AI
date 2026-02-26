@@ -17,7 +17,7 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    const supabase = createClient({ supabaseUrl, supabaseAnonKey });
+    const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
 
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();

@@ -38,7 +38,7 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
     }, [searchParams, d.emailVerified, router, pathname]);
 
     // Use injected credentials if available (runtime config), else fallback to env vars (build-time config)
-    const supabase = createClient({ supabaseUrl, supabaseAnonKey })
+    const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }))
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
