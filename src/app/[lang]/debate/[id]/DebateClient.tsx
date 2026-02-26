@@ -10,7 +10,8 @@ import { toast } from 'sonner';
 
 // ICONS
 import { LANGUAGES } from '@/i18n/config';
-import { Menu, Send, Image as ImageIcon, Video, FileText, Printer, Copy, ArrowLeft, ChevronLeft, ChevronRight, User, CreditCard, LogOut, Sun, Moon, PlusCircle, Globe, Trash2, Mail, Coins, MessageSquare, X, Zap, Shield } from 'lucide-react';
+import { Menu, Send, Image as ImageIcon, Video, FileText, Printer, Copy, ArrowLeft, ChevronLeft, ChevronRight, User, CreditCard, LogOut, Sun, Moon, PlusCircle, Globe, Trash2, Mail, Coins, MessageSquare, X, Zap, Shield, Info } from 'lucide-react';
+
 
 // REMOVED LOCAL TYPE DEF - moved to src/types/mathlive.d.ts
 
@@ -1058,10 +1059,11 @@ export default function DebateClient({
             }
 
             const msg =
-                urls.length > 1
+                (urls.length > 1
                     ? (dict?.debate?.longVideoGenSuccess ||
-                        `Long video generated as ${urls.length} scenes. It will play continuously in the player.`)
-                    : (dict?.debate?.videoGenSuccess || 'Video generated successfully.');
+                        `Long video generated as ${urls.length} scenes. It will play continuously in the player. It will be deleted after 3 days.`)
+                    : (dict?.debate?.videoGenSuccess || 'Video generated successfully. It will be deleted after 3 days.'));
+
 
             setMessages((prev) => [
                 ...prev,
@@ -1319,6 +1321,14 @@ export default function DebateClient({
                 </aside>
                 <main ref={scrollRef} onScroll={handleScroll} className={`flex-1 overflow-y-auto bg-background transition-colors`}>
                     <div className="w-full max-w-5xl mx-auto flex flex-col gap-6 p-4">
+
+                        <div className="flex items-start gap-4 p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900 shadow-sm text-indigo-700 dark:text-indigo-300">
+                            <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm font-medium leading-relaxed">
+                                {dict?.debate?.deletedAfter3DaysInfo || 'All debates and media are kept for 3 days before auto-deletion to protect privacy.'}
+                            </p>
+                        </div>
+
                         {lastVideoAssetUrl && (
                             <div className={`rounded-2xl overflow-hidden border border-border bg-card shadow-sm`}>
                                 <div className={`px-4 py-2 text-xs font-black uppercase tracking-wider bg-muted text-foreground/80`}>

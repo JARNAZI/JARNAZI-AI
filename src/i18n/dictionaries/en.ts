@@ -84,8 +84,10 @@ const en = {
     sessionInitialized: "Session Initialized. The Council is ready.",
     imageGenSuccess: "Image generated successfully. It will be deleted after 3 days.",
     imageGenStarted: "Image generation started.",
-    videoGenSuccess: "Video generated successfully.",
-    videoGenStarted: "Video generation started. Your video will appear here when ready."
+    videoGenSuccess: "Video generated successfully. It will be deleted after 3 days.",
+    longVideoGenSuccess: "Long video generated. It will play continuously and will be deleted after 3 days.",
+    videoGenStarted: "Video generation started. Your video will appear here when ready.",
+    deletedAfter3DaysInfo: "All debates and media are kept for 3 days before auto-deletion to protect privacy."
   },
   notifications: {
     welcome: "Welcome to Jarnazi Consensus. The Council is ready.",
