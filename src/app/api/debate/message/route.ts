@@ -29,9 +29,9 @@ async function getNumericSetting(supabaseAdmin: any, key: string, fallback: numb
   return fallback;
 }
 
-function computeTokenCost(requestType: RequestType, base: number, perTurn: number) {
-  const media = (requestType === 'image' || requestType === 'video' || requestType === 'file') ? 5 : 0;
-  return base + perTurn + media;
+function computeTokenCost(requestType: RequestType, mediaOverhead: number) {
+  const isMedia = (requestType === 'image' || requestType === 'video' || requestType === 'file');
+  return 1 + (isMedia ? mediaOverhead : 0);
 }
 
 async function reserveTokens(supabaseAdmin: any, userId: string, tokens: number) {
@@ -76,9 +76,8 @@ export async function POST(req: Request) {
     if (debRow.user_id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     // AI Orchestration Settings
-    const baseCost = await getNumericSetting(supabaseAdmin, 'debate_base_cost', 1);
-    const perTurn = await getNumericSetting(supabaseAdmin, 'debate_cost_per_turn', 1);
-    const tokenCost = computeTokenCost(requestType, baseCost, perTurn);
+    const mediaOverhead = await getNumericSetting(supabaseAdmin, 'debate_media_overhead', 2);
+    const tokenCost = computeTokenCost(requestType, mediaOverhead);
 
     // Free Trial check
     const { data: profile, error: profErr } = await supabaseAdmin

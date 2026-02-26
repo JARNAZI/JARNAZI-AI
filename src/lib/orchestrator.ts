@@ -153,6 +153,21 @@ export class DebateOrchestrator {
         const providers = rawProviders.map(this.normalizeProvider);
         const providerNames = providers.map(p => p.name);
 
+        // Fetch debate_rounds setting for accurate planning length
+        let maxRounds = 3; // default
+        try {
+            const { data: kvData } = await this.supabase.from('site_settings').select('value').eq('key', 'debate_rounds').maybeSingle();
+            if (kvData?.value) {
+                maxRounds = parseInt(kvData.value, 10) || 3;
+            } else {
+                // Check single-row JSON fallback
+                const { data: srData } = await this.supabase.from('site_settings').select('features').limit(1).maybeSingle();
+                if (srData?.features?.debate_rounds) {
+                    maxRounds = parseInt(srData.features.debate_rounds, 10) || 3;
+                }
+            }
+        } catch (_) {}
+
         // Call Master Agent (OpenAI)
         const masterPrompt = `
         You are the CENTRAL OPENAI AGENT in a multi-AI debate platform.
@@ -161,7 +176,7 @@ export class DebateOrchestrator {
 
         Your Responsibilities:
         1. AI API Selection:
-           - Analyze the topic and decide which AI APIs should participate (select at least 2-3).
+           - Analyze the topic and decide which AI APIs should participate.
            - Assign appropriate roles to each.
            - IMPORTANT: For any mathematical expressions, YOU MUST instruct the agents to use LaTeX formatting enclosed in single dollar signs ($) for inline math and double dollar signs ($$) for block math.
 
@@ -186,7 +201,7 @@ export class DebateOrchestrator {
             ]
         }
         
-        Create a 3-5 step plan.
+        Create EXACTLY a ${maxRounds}-step plan (including the final consensus step).
         `;
 
         try {
