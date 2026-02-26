@@ -274,7 +274,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
             <PlansEditor settings={settings} />
 
             {/* Site Content Editor */}
-            <ContentEditor settings={settings} />
+            <ContentEditor settings={settings} onUpdate={handleUpdate} />
 
             {/* Admin Profile */}
             <AdminProfile />
@@ -301,28 +301,6 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
                     Important: Ensure the "From Address" is verified in your Resend account. If empty, the system will use defaults.
                 </p>
             </section>
-
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
-                    <h3 className="font-semibold text-white mb-4">{d.privacyPolicy || 'Privacy Policy (Markdown)'}</h3>
-                    <textarea
-                        rows={10}
-                        defaultValue={settings['privacy_policy']?.value || ''}
-                        onBlur={(e) => handleUpdate('privacy_policy', e.target.value)}
-                        className="w-full bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-sm text-gray-300 outline-none focus:border-indigo-500 resize-y"
-                    />
-                </div>
-                <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
-                    <h3 className="font-semibold text-white mb-4">{d.termsOfService || 'Terms of Service (Markdown)'}</h3>
-                    <textarea
-                        rows={10}
-                        defaultValue={settings['terms_of_service']?.value || ''}
-                        onBlur={(e) => handleUpdate('terms_of_service', e.target.value)}
-                        className="w-full bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-sm text-gray-300 outline-none focus:border-indigo-500 resize-y"
-                    />
-                </div>
-            </section>
-
         </div>
     );
 }
