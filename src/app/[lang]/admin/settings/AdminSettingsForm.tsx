@@ -301,6 +301,39 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
                     Important: Ensure the "From Address" is verified in your Resend account. If empty, the system will use defaults.
                 </p>
             </section>
+
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-white/10">
+                <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
+                    <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                        <span className="w-1 h-4 bg-pink-500 rounded-full" />
+                        {d.privacyPolicy || 'Privacy Policy (HTML)'}
+                    </h3>
+                    <textarea
+                        rows={15}
+                        value={settings['privacy_text']?.value || ''}
+                        onChange={(e) => setSettings(prev => ({ ...prev, privacy_text: { ...prev.privacy_text, value: e.target.value } }))}
+                        onBlur={(e) => handleUpdate('privacy_text', e.target.value)}
+                        placeholder="<h1>Privacy Policy</h1>..."
+                        className="w-full bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-sm text-gray-300 outline-none focus:border-pink-500 resize-y transition-all"
+                    />
+                    <div className="mt-2 text-[10px] text-gray-500">Auto-saves on blur. Supports HTML.</div>
+                </div>
+                <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
+                    <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                        <span className="w-1 h-4 bg-pink-500 rounded-full" />
+                        {d.termsOfService || 'Terms of Service (HTML)'}
+                    </h3>
+                    <textarea
+                        rows={15}
+                        value={settings['terms_text']?.value || ''}
+                        onChange={(e) => setSettings(prev => ({ ...prev, terms_text: { ...prev.terms_text, value: e.target.value } }))}
+                        onBlur={(e) => handleUpdate('terms_text', e.target.value)}
+                        placeholder="<h1>Terms of Service</h1>..."
+                        className="w-full bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-sm text-gray-300 outline-none focus:border-pink-500 resize-y transition-all"
+                    />
+                    <div className="mt-2 text-[10px] text-gray-500">Auto-saves on blur. Supports HTML.</div>
+                </div>
+            </section>
         </div>
     );
 }

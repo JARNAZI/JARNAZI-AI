@@ -11,8 +11,6 @@ interface ContentEditorProps {
 }
 
 const CONTENT_KEYS = [
-    { key: 'terms_text', label: 'Terms of Use (HTML)', default: '<h1>Terms of Use</h1><p>...</p>' },
-    { key: 'privacy_text', label: 'Privacy Policy (HTML)', default: '<h1>Privacy Policy</h1><p>...</p>' },
     { key: 'home_hero_title', label: 'Homepage Hero Title', default: 'Debate with AI, Reach Consensus' },
     { key: 'home_hero_subtitle', label: 'Homepage Hero Subtitle', default: 'Engage in thought-provoking discussions with advanced AI models.' },
     { key: 'pricing_header_title', label: 'Pricing Page Title', default: 'Invest in Intelligence' },
