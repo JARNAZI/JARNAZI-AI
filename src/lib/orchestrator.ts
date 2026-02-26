@@ -166,7 +166,7 @@ export class DebateOrchestrator {
                     maxRounds = parseInt(srData.features.debate_rounds, 10) || 3;
                 }
             }
-        } catch (_) {}
+        } catch (_) { }
 
         // Call Master Agent (OpenAI)
         const masterPrompt = `
@@ -472,7 +472,7 @@ export async function calculateDynamicTokenCost(supabaseAdmin: any, plan: TaskPl
 
     for (const step of plan) {
         let providerName = step.provider_preference[0];
-        
+
         // If no preference, pick a default active one to estimate
         if (!providerName) {
             const { data } = await supabaseAdmin.from('ai_providers').select('name').eq('enabled', true).eq('kind', step.task_type).limit(1).maybeSingle();
@@ -484,7 +484,7 @@ export async function calculateDynamicTokenCost(supabaseAdmin: any, plan: TaskPl
             const { data: costData } = await supabaseAdmin.from('ai_costs')
                 .select('cost_per_unit, unit')
                 .ilike('provider', `%${providerName}%`)
-                .eq('cost_type', step.task_type === 'latex' ? 'text' : step.task_type)
+                .eq('cost_type', step.task_type === 'math' ? 'text' : step.task_type)
                 .eq('is_active', true)
                 .order('cost_per_unit', { ascending: false })
                 .limit(1)
@@ -493,9 +493,9 @@ export async function calculateDynamicTokenCost(supabaseAdmin: any, plan: TaskPl
             if (costData) {
                 const cpu = Number(costData.cost_per_unit);
                 const unit = String(costData.unit).toLowerCase();
-                
+
                 let stepUsd = 0;
-                if (step.task_type === 'text' || step.task_type === 'latex') {
+                if (step.task_type === 'text' || step.task_type === 'math') {
                     // Assume ~2k tokens (2 units of per_1k_tokens) per turn
                     if (unit.includes('1k_tokens') || unit.includes('token')) {
                         stepUsd = cpu * 2;
@@ -507,8 +507,8 @@ export async function calculateDynamicTokenCost(supabaseAdmin: any, plan: TaskPl
                 }
                 totalRealCents += Math.max(0, stepUsd * 100);
             } else {
-                 // Fallback: 10 cents for text, 20 cents for media if no cost defined
-                totalRealCents += (step.task_type === 'text' || step.task_type === 'latex' ? 10 : 20);
+                // Fallback: 10 cents for text, 20 cents for media if no cost defined
+                totalRealCents += (step.task_type === 'text' || step.task_type === 'math' ? 10 : 20);
             }
         }
     }
@@ -529,7 +529,7 @@ export async function calculateDynamicTokenCost(supabaseAdmin: any, plan: TaskPl
             const { data: kvData } = await supabaseAdmin.from('site_settings').select('value').eq('key', 'debate_media_overhead').maybeSingle();
             const mediaOverhead = Number(kvData?.value) || 2;
             tokensNeeded += mediaOverhead;
-        } catch (_) {}
+        } catch (_) { }
     }
 
     return tokensNeeded;
