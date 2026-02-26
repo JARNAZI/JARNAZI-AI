@@ -1549,7 +1549,10 @@ Suggested amount: $${amount}`
                                         <div className="mt-2 px-1">
                                             <div className="flex flex-wrap items-center gap-3 opacity-80 hover:opacity-100 transition-opacity">
                                                 <button
-                                                    onClick={() => navigator.clipboard.writeText(finalConsensus.content)}
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(finalConsensus.content);
+                                                        toast.success(dict?.debate?.copy || 'Copied to clipboard');
+                                                    }}
                                                     className="flex items-center gap-1 text-[10px] opacity-80 hover:opacity-100 uppercase tracking-wider font-bold transition-opacity"
                                                     title={dict?.debate?.copy || "Copy Content"}
                                                 >
@@ -1646,7 +1649,10 @@ Suggested amount: $${amount}`
                                                         <div className="mt-2 px-1">
                                                             <div className="flex flex-wrap items-center gap-3 opacity-80 hover:opacity-100 transition-opacity">
                                                                 <button
-                                                                    onClick={() => navigator.clipboard.writeText(msg.content)}
+                                                                    onClick={() => {
+                                                                        navigator.clipboard.writeText(msg.content);
+                                                                        toast.success(dict?.debate?.copy || 'Copied to clipboard');
+                                                                    }}
                                                                     className="flex items-center gap-1 text-[10px] opacity-80 hover:opacity-100 uppercase tracking-wider font-bold transition-opacity"
                                                                 >
                                                                     <Copy className="w-3 h-3" /> {dict?.debate?.copy || 'Copy'}
