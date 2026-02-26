@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { Loader2, Upload } from 'lucide-react';
 import Image from 'next/image';
 import PaymentGateways from '@/components/admin/PaymentGateways';
-import PlansEditor from '@/components/admin/PlansEditor';
 import ContentEditor from '@/components/admin/ContentEditor';
 import AdminProfile from '@/components/admin/AdminProfile';
 
@@ -275,9 +274,6 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
 
             {/* Payment Gateways */}
             <PaymentGateways settings={settings} onUpdate={handleUpdate} />
-
-            {/* Token Plans Editor */}
-            <PlansEditor settings={settings} />
 
             {/* Site Content Editor */}
             <ContentEditor settings={settings} onUpdate={handleUpdate} />
