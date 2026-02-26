@@ -2,14 +2,17 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { amountToTokens, isValidPurchaseAmount, normalizeAmount } from '@/lib/tokens';
+import { getSetting } from '@/lib/settings';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: Request) {
   try {
-    const stripeSecret = process.env.STRIPE_SECRET_LIVE_KEY || process.env.STRIPE_TEST_SECRET_KEY;
+    const isTestMode = (await getSetting('stripe_test_mode', 'false')) === 'true';
+    const stripeSecret = isTestMode ? process.env.STRIPE_TEST_SECRET_KEY : (process.env.STRIPE_SECRET_LIVE_KEY || process.env.STRIPE_SECRET_KEY);
+    
     if (!stripeSecret) {
-      return NextResponse.json({ error: 'Stripe is not configured' }, { status: 500 });
+      return NextResponse.json({ error: `Stripe is not configured for ${isTestMode ? 'TEST' : 'LIVE'} mode` }, { status: 500 });
     }
 
     const body = await req.json().catch(() => ({}));

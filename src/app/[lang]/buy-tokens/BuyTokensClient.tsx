@@ -50,6 +50,7 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
   const [loading, setLoading] = useState(false);
   const [stripeEnabled, setStripeEnabled] = useState(true);
   const [nowpaymentsEnabled, setNowpaymentsEnabled] = useState(false);
+  const [stripeTestMode, setStripeTestMode] = useState(false);
 
   const amountNum = useMemo(() => normalizeAmount(amount) ?? 0, [amount]);
 
@@ -66,7 +67,7 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
         const { data, error } = await supabase
           .from('site_settings')
           .select('key,value')
-          .in('key', ['gateway_stripe_enabled', 'gateway_nowpayments_enabled']);
+          .in('key', ['gateway_stripe_enabled', 'gateway_nowpayments_enabled', 'stripe_test_mode']);
 
         let map: Record<string, string> = {};
 
@@ -89,6 +90,8 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
 
             if (features.gateway_nowpayments_enabled !== undefined) map.gateway_nowpayments_enabled = String(features.gateway_nowpayments_enabled);
             else if (features.payments_nowpayments_enabled !== undefined) map.gateway_nowpayments_enabled = String(features.payments_nowpayments_enabled);
+            
+            if (features.stripe_test_mode !== undefined) map.stripe_test_mode = String(features.stripe_test_mode);
           }
         }
 
@@ -97,6 +100,9 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
         }
         if (map.gateway_nowpayments_enabled !== undefined) {
           setNowpaymentsEnabled(map.gateway_nowpayments_enabled === 'true');
+        }
+        if (map.stripe_test_mode !== undefined) {
+          setStripeTestMode(map.stripe_test_mode === 'true');
         }
       } catch (err) {
         console.error("Failed to load payment settings:", err);
@@ -213,13 +219,22 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
 
           <div className="mt-6 space-y-3">
             {stripeEnabled ? (
-              <button
-                disabled={loading}
-                onClick={payWithStripe}
-                className="w-full rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest py-3 disabled:opacity-50 hover:opacity-90 transition-all shadow-lg"
-              >
-                {d.payAddTokens || d.payWithStripe || 'Pay & Add Tokens'}
-              </button>
+              <div className="space-y-2">
+                <button
+                  disabled={loading}
+                  onClick={payWithStripe}
+                  className="w-full rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest py-3 disabled:opacity-50 hover:opacity-90 transition-all shadow-lg"
+                >
+                  {d.payAddTokens || d.payWithStripe || 'Pay & Add Tokens'}
+                </button>
+                {stripeTestMode && (
+                  <div className="text-center">
+                    <span className="text-[10px] font-bold bg-orange-500/20 text-orange-500 px-2 py-0.5 rounded uppercase tracking-tighter">
+                      Test Mode Active
+                    </span>
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="text-sm text-muted-foreground italic">{d.stripeDisabled || 'Stripe payments are currently disabled.'}</div>
             )}

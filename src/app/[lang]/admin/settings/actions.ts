@@ -33,15 +33,29 @@ try {
     // fall through
 }
 
-if (error) {
-    // Fallback: single-row `features` JSONB
-    const { data: row, error: readErr } = await supabase.from('site_settings').select('id,features').limit(1).maybeSingle();
-    if (readErr) throw readErr;
-    const id = (row as any)?.id;
-    const features = { ...((row as any)?.features || {}), [key]: value, };
-    const { error: updErr } = await supabase.from('site_settings').update({ features, updated_at: new Date().toISOString() }).eq('id', id);
-    if (updErr) throw updErr;
-}
+    if (error) {
+        // Fallback: single-row `features` JSONB
+        const { data: row, error: readErr } = await supabase.from('site_settings').select('id,features').limit(1).maybeSingle();
+        if (readErr) throw readErr;
+        
+        const id = (row as any)?.id;
+        const features = { ...((row as any)?.features || {}), [key]: value };
+        
+        if (id) {
+            const { error: updErr } = await supabase.from('site_settings').update({ 
+                features, 
+                updated_at: new Date().toISOString() 
+            }).eq('id', id);
+            if (updErr) throw updErr;
+        } else {
+            // First time saving in single-row mode
+            const { error: insErr } = await supabase.from('site_settings').insert({ 
+                features, 
+                updated_at: new Date().toISOString() 
+            });
+            if (insErr) throw insErr;
+        }
+    }
     revalidatePath('/admin/settings');
     revalidatePath('/'); // Refresh home for logo/title changes
     return { success: true };

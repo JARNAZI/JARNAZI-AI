@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useDictionary } from '@/i18n/use-dictionary';
 import { updateSetting, uploadLogo } from './actions';
@@ -30,6 +30,12 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
     }, [initialSettings]);
 
     const [settings, setSettings] = useState<SettingsMap>(normalizedInitialSettings);
+
+    // Sync state with props if server data changes (e.g. after revalidatePath)
+    useEffect(() => {
+        setSettings(normalizedInitialSettings);
+    }, [normalizedInitialSettings]);
+
     const [saving, setSaving] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
