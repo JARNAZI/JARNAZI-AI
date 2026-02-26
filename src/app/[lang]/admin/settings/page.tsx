@@ -6,27 +6,34 @@ export const dynamic = 'force-dynamic';
 export default async function AdminSettingsPage() {
     const supabase = await createServiceRoleClient();
 
-    // Fetch settings (supports both schemas)
+    // Fetch settings - merging both schemas for robustness
     let settingMap: Record<string, any> = {};
+    
+    // 1. Fetch from KV schema
     try {
-        // KV schema
-        const { data: settings } = await supabase.from('site_settings').select('*').order('label');
-        if (Array.isArray(settings) && settings.length > 0 && (settings as any)[0]?.key != null) {
-            settingMap = (settings as any[]).reduce((acc: any, curr) => {
-                acc[curr.key] = curr;
-                return acc;
-            }, {}) || {};
+        const { data: kvSettings } = await supabase.from('site_settings').select('*').order('label');
+        if (Array.isArray(kvSettings)) {
+            kvSettings.forEach(curr => {
+                if (curr?.key) {
+                    settingMap[curr.key] = curr;
+                }
+            });
         }
-    } catch (_) { }
+    } catch (_) { /* Table might not support KV schema */ }
 
-    if (Object.keys(settingMap).length === 0) {
-        // Single-row schema with `features` JSONB
-        const { data } = await supabase.from('site_settings').select('features').limit(1).maybeSingle();
-        const features = (data as any)?.features || {};
-        for (const [k, v] of Object.entries(features)) {
-            settingMap[k] = { key: k, value: v };
+    // 2. Fetch from Single-row (features JSONB) schema and merge
+    try {
+        const { data: srData } = await supabase.from('site_settings').select('features').limit(1).maybeSingle();
+        if (srData?.features) {
+            const features = srData.features as Record<string, any>;
+            for (const [k, v] of Object.entries(features)) {
+                // KV takes precedence if it already has the key
+                if (!settingMap[k]) {
+                    settingMap[k] = { key: k, value: String(v) };
+                }
+            }
         }
-    }
+    } catch (_) { /* Table might not have features column */ }
 
     return (
         <div className="p-8 max-w-4xl mx-auto">

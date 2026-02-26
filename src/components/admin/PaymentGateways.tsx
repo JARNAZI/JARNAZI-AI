@@ -13,26 +13,40 @@ interface PaymentGatewaysProps {
 export default function PaymentGateways({ settings, onUpdate }: PaymentGatewaysProps) {
     const [saving, setSaving] = useState<string | null>(null);
 
+    const isStripeEnabled = 
+        settings['gateway_stripe_enabled']?.value === 'true' || 
+        settings['payments_stripe_enabled']?.value === 'true';
+
+    const isNowpaymentsEnabled = 
+        settings['gateway_nowpayments_enabled']?.value === 'true' || 
+        settings['payments_nowpayments_enabled']?.value === 'true';
+
+    const isStripeTestMode = settings['stripe_test_mode']?.value === 'true';
+
     const handleToggle = async (key: string, checked: boolean) => {
+        // Find existing key if it's the alternate one
+        let targetKey = key;
+        if (key === 'gateway_stripe_enabled' && !settings[key] && settings['payments_stripe_enabled']) {
+            targetKey = 'payments_stripe_enabled';
+        } else if (key === 'gateway_nowpayments_enabled' && !settings[key] && settings['payments_nowpayments_enabled']) {
+            targetKey = 'payments_nowpayments_enabled';
+        }
+
         const val = String(checked);
-        setSaving(key);
+        setSaving(key); // UI shows loading for the primary key
         try {
             if (onUpdate) {
-                await onUpdate(key, val);
+                await onUpdate(targetKey, val);
             } else {
-                await updateSetting(key, val);
+                await updateSetting(targetKey, val);
             }
-            toast.success(`Setting ${checked ? 'enabled' : 'disabled'}`);
+            toast.success(`Setting updated`);
         } catch (error: any) {
             toast.error((error instanceof Error ? error.message : String(error)));
         } finally {
             setSaving(null);
         }
     };
-
-    const isStripeEnabled = settings['gateway_stripe_enabled']?.value === 'true';
-    const isNowpaymentsEnabled = settings['gateway_nowpayments_enabled']?.value === 'true';
-    const isStripeTestMode = settings['stripe_test_mode']?.value === 'true';
 
     return (
         <section className="bg-white/5 border border-white/10 p-6 rounded-xl">
