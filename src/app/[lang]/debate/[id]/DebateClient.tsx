@@ -1243,21 +1243,7 @@ export default function DebateClient({
 
                 <aside className="w-full md:w-[380px] flex-none overflow-y-auto bg-card border-t md:border-t-0 md:border-r border-border p-4">
                     <div className="flex flex-col gap-4">
-                        {/* View Mode Toggle */}
-                        <div className="flex items-center justify-between mb-2 w-full">
-                            <button
-                                onClick={() => setShowFinalOnly(false)}
-                                className={`flex-1 px-3 py-2 rounded-l-xl text-[9px] font-black uppercase tracking-widest border transition-all ${!showFinalOnly ? 'bg-primary border-primary text-primary-foreground' : 'bg-muted border-border text-muted-foreground'}`}
-                            >
-                                {dict.debate?.fullDebate || 'Full Debate'}
-                            </button>
-                            <button
-                                onClick={() => setShowFinalOnly(true)}
-                                className={`flex-1 px-3 py-2 rounded-r-xl text-[9px] font-black uppercase tracking-widest border transition-all ${showFinalOnly ? 'bg-primary border-primary text-primary-foreground' : 'bg-muted border-border text-muted-foreground'}`}
-                            >
-                                {dict.debate?.consensusOnly || 'Consensus Only'}
-                            </button>
-                        </div>
+
 
 
                         {/* Toolstrip */}
@@ -1319,7 +1305,26 @@ export default function DebateClient({
 
                     </div>
                 </aside>
-                <main ref={scrollRef} onScroll={handleScroll} className={`flex-1 overflow-y-auto bg-background transition-colors`}>
+                <main ref={scrollRef} onScroll={handleScroll} className={`flex-1 overflow-y-auto bg-background transition-colors relative`}>
+
+                    {/* View Mode Toggle - Sticky at the top of chat */}
+                    <div className="sticky top-0 z-20 w-full bg-background/80 backdrop-blur-xl border-b border-border p-3 flex justify-center shadow-sm">
+                        <div className="flex items-center w-full max-w-sm justify-center shadow-sm rounded-xl">
+                            <button
+                                onClick={() => setShowFinalOnly(false)}
+                                className={`flex-1 px-4 py-2.5 rounded-l-xl text-[10px] font-black uppercase tracking-widest border transition-all hover:opacity-90 ${!showFinalOnly ? 'bg-primary border-primary text-primary-foreground scale-[1.02] shadow-md z-10' : 'bg-muted border-border text-muted-foreground'}`}
+                            >
+                                {dict.debate?.fullDebate || 'Full Debate'}
+                            </button>
+                            <button
+                                onClick={() => setShowFinalOnly(true)}
+                                className={`flex-1 px-4 py-2.5 rounded-r-xl text-[10px] font-black uppercase tracking-widest border transition-all hover:opacity-90 ${showFinalOnly ? 'bg-primary border-primary text-primary-foreground scale-[1.02] shadow-md z-10' : 'bg-muted border-border text-muted-foreground'}`}
+                            >
+                                {dict.debate?.consensusOnly || 'Consensus Only'}
+                            </button>
+                        </div>
+                    </div>
+
                     <div className="w-full max-w-5xl mx-auto flex flex-col gap-6 p-4">
 
                         <div className="flex items-start gap-4 p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900 shadow-sm text-indigo-700 dark:text-indigo-300">
