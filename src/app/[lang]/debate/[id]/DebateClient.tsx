@@ -371,6 +371,8 @@ export default function DebateClient({
     // Keeping unused state triggers build-breaking ESLint errors on Netlify/Next.js.
     const [debateTopic, setDebateTopic] = useState<string>('');
     const [initializingCouncil, setInitializingCouncil] = useState(false);
+    const [freeTrialUsed, setFreeTrialUsed] = useState<boolean>(false);
+    const [enableFreeTrial, setEnableFreeTrial] = useState<boolean>(false);
 
     // Attachments State
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -451,12 +453,13 @@ export default function DebateClient({
                 if (user) {
                     const { data: p } = await supabase
                         .from('profiles')
-                        .select('token_balance, role')
+                        .select('token_balance, role, free_trial_used')
                         .eq('id', user.id)
                         .maybeSingle();
 
                     if (p) {
                         setProfileInfo({ token_balance: Number((p as any).token_balance || 0) });
+                        setFreeTrialUsed(!!(p as any).free_trial_used);
                         if (p.role) {
                             console.log("DebateClient: Role fetched from DB:", p.role);
                             setRole(p.role);
@@ -472,6 +475,12 @@ export default function DebateClient({
 
             const { data: debate } = await supabase.from('debates').select('topic').eq('id', debateId).single();
             if (debate?.topic) setDebateTopic(debate.topic);
+
+            // Fetch enable_free_trial setting
+            try {
+                const { data: st } = await supabase.from('site_settings').select('value').eq('key', 'enable_free_trial').maybeSingle();
+                setEnableFreeTrial((st as any)?.value === 'true');
+            } catch { }
 
             const { data: turns } = await supabase.from('debate_turns').select('*').eq('debate_id', debateId).order('created_at', { ascending: true });
             if (turns && turns.length > 0) {
@@ -729,9 +738,17 @@ export default function DebateClient({
             });
 
             if (!res.ok) {
+                const j = await res.json().catch(() => ({} as any));
+
+                if (res.status === 403 && j?.error === 'FREE_TRIAL_TEXT_ONLY') {
+                    toast.error(j.message || 'Free trial is limited to text only.');
+                    // Clean up optimistic message
+                    setMessages(prev => prev.filter(m => m.id !== tempId));
+                    return;
+                }
+
                 // Token shortage: prompt user to buy tokens and optionally return back to this debate.
                 if (res.status === 402) {
-                    const j = await res.json().catch(() => ({} as any));
                     const missing = Number(j?.missingTokens ?? 0) || 0;
                     toast.error((dict?.notifications?.insufficientTokens || dict?.tokens?.insufficient || 'Insufficient tokens.') + (missing ? ` (Missing: ${missing})` : ''));
                     // Redirect to buy-tokens with a return URL so user can come back.
@@ -739,7 +756,7 @@ export default function DebateClient({
                     window.location.href = `/${lang}/buy-tokens?missing=${missing}&return=${ret}`;
                     return;
                 }
-                const errText = await res.text().catch(() => '');
+                const errText = j?.error || await res.text().catch(() => '');
                 throw new Error(`Debate message failed: ${res.status} ${errText}`);
             }
 
@@ -750,6 +767,10 @@ export default function DebateClient({
     };
 
     const openImageGeneration = () => {
+        if (enableFreeTrial && !freeTrialUsed) {
+            toast.error(dict.debate?.freeTrialMediaBlocked || 'Free trial is limited to text only. Please buy tokens to generate images.');
+            return;
+        }
         const fc = [...messages].reverse().find((m: any) => m.role === 'agreement' || m.phase === 'consensus');
         if (!fc) {
             toast.error(dict?.debate?.needConsensus || 'Generate an answer first, then you can generate media from the final consensus.');
@@ -762,6 +783,10 @@ export default function DebateClient({
     };
 
     const openVideoGeneration = () => {
+        if (enableFreeTrial && !freeTrialUsed) {
+            toast.error(dict.debate?.freeTrialMediaBlocked || 'Free trial is limited to text only. Please buy tokens to generate video.');
+            return;
+        }
         const fc = [...messages].reverse().find((m: any) => m.role === 'agreement' || m.phase === 'consensus');
         if (!fc) {
             toast.error(dict?.debate?.needConsensus || 'Generate an answer first, then you can generate media from the final consensus.');
@@ -1145,12 +1170,21 @@ export default function DebateClient({
                         {/* Toolstrip */}
                         <div className="relative">
                             <div ref={inputStripRef} onScroll={updateInputStripScrollHints} className="flex items-center gap-1 flex-wrap pb-2 border-b border-border mb-1">
-
-
-                                <MediaUploader label={dict.dashboard?.files || "File"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
-                                <MediaUploader label={dict.dashboard?.pics || "Image"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
-                                <MediaUploader label={dict.dashboard?.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
-                                <AudioRecorder onRecordingComplete={setRecordedAudio} label={dict.dashboard?.audio || "Audio"} />
+                                {enableFreeTrial && !freeTrialUsed ? (
+                                    <div className="flex items-center gap-2 px-3 py-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20 mb-1 w-full">
+                                        <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
+                                        <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
+                                            {dict.dashboard?.trialModeDesc || 'Trial Mode: Text Only'}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <MediaUploader label={dict.dashboard?.files || "File"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
+                                        <MediaUploader label={dict.dashboard?.pics || "Image"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
+                                        <MediaUploader label={dict.dashboard?.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
+                                        <AudioRecorder onRecordingComplete={setRecordedAudio} label={dict.dashboard?.audio || "Audio"} />
+                                    </>
+                                )}
                             </div>
                         </div>
 

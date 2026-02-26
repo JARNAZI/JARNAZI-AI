@@ -60,8 +60,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
 
     const admin = getSupabaseAdmin();
-    const features = await getFeatures(admin);
-
     const { data: profile, error: profileErr } = await admin
       .from('profiles')
       .select('token_balance, free_trial_used')
@@ -69,7 +67,10 @@ export async function POST(req: Request) {
       .maybeSingle();
     if (profileErr) return NextResponse.json({ error: profileErr.message }, { status: 500 });
 
-    if (features?.free_trial_enabled && !profile?.free_trial_used) {
+    const { data: stData } = await admin.from('site_settings').select('value').eq('key', 'enable_free_trial').maybeSingle();
+    const enableFreeTrial = (stData as any)?.value === 'true';
+
+    if (enableFreeTrial && !profile?.free_trial_used && (Number(profile?.token_balance || 0) < estimateImageTokens({ quality }))) {
       return NextResponse.json({ error: 'Free trial is text-only. Buy tokens to generate images.' }, { status: 403 });
     }
 

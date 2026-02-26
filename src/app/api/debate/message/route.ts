@@ -80,13 +80,44 @@ export async function POST(req: Request) {
     const perTurn = await getNumericSetting(supabaseAdmin, 'debate_cost_per_turn', 1);
     const tokenCost = computeTokenCost(requestType, baseCost, perTurn);
 
-    try {
-      await reserveTokens(supabaseAdmin, user.id, tokenCost);
-    } catch (e: any) {
-      if (e.message?.includes('INSUFFICIENT_TOKENS')) {
-        return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', requiredTokens: tokenCost }, { status: 402 });
+    // Free Trial check
+    const { data: profile, error: profErr } = await supabaseAdmin
+      .from('profiles')
+      .select('free_trial_used, token_balance')
+      .eq('id', user.id)
+      .single();
+
+    const { data: stData } = await supabaseAdmin
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'enable_free_trial')
+      .maybeSingle();
+    const enableFreeTrial = (stData as any)?.value === 'true';
+
+    let isTrialTurn = false;
+    if (enableFreeTrial && profile && !profile.free_trial_used) {
+      if (requestType === 'text') {
+        isTrialTurn = true;
+      } else {
+        // User is trying to use their trial with media
+        if ((profile.token_balance || 0) < tokenCost) {
+          return NextResponse.json({ 
+            error: 'FREE_TRIAL_TEXT_ONLY', 
+            message: 'The free trial is limited to one text-only question. Please buy tokens to use images, video, or audio.' 
+          }, { status: 403 });
+        }
       }
-      throw e;
+    }
+
+    if (!isTrialTurn) {
+      try {
+        await reserveTokens(supabaseAdmin, user.id, tokenCost);
+      } catch (e: any) {
+        if (e.message?.includes('INSUFFICIENT_TOKENS')) {
+          return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', requiredTokens: tokenCost }, { status: 402 });
+        }
+        throw e;
+      }
     }
 
     try {
@@ -124,19 +155,25 @@ export async function POST(req: Request) {
           { user_prompt: rawPrompt }
         );
 
-        // Ledger write
-        await supabaseAdmin.from('token_ledger').insert({
-          user_id: user.id,
-          amount: -tokenCost,
-          description: `Debate turn cost for session: ${debateId}`
-        });
+        if (isTrialTurn) {
+          await supabaseAdmin.from('profiles').update({ free_trial_used: true }).eq('id', user.id);
+        } else {
+          // Ledger write
+          await supabaseAdmin.from('token_ledger').insert({
+            user_id: user.id,
+            amount: -tokenCost,
+            description: `Debate turn cost for session: ${debateId}`
+          });
+        }
 
       } else {
         throw new Error(result.content);
       }
 
     } catch (e) {
-      await refundTokens(supabaseAdmin, user.id, tokenCost);
+      if (!isTrialTurn) {
+        await refundTokens(supabaseAdmin, user.id, tokenCost);
+      }
       throw e;
     }
 
