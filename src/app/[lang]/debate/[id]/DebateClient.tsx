@@ -263,6 +263,8 @@ export default function DebateClient({
                         if (aid) assetIds.push(String(aid));
                     }
 
+                    if (state?.canon) setLastVideoCanon(state.canon);
+
                     // Update local balance (best-effort)
                     if (profileInfo) {
                         const newBalance = Math.max(0, Number(profileInfo.token_balance) - totalDeducted);
@@ -271,6 +273,7 @@ export default function DebateClient({
 
                     if (urls.length) {
                         setLastVideoSegments(urls);
+                        if (state?.assetIds) setLastVideoAssetIds(state.assetIds);
                         setVideoSegmentIndex(0);
                         setLastVideoAssetUrl(urls[0]);
                     }
@@ -319,6 +322,7 @@ export default function DebateClient({
                                         debateId,
                                         assetIds: Array.isArray(st2.assetIds) ? st2.assetIds : [],
                                         durationSec: st2.durationSec ?? null,
+                                        canon: st2.canon,
                                     }),
                                 });
 
@@ -398,6 +402,7 @@ export default function DebateClient({
     const [lastVideoAssetUrl, setLastVideoAssetUrl] = useState<string | null>(null);
     const [lastVideoSegments, setLastVideoSegments] = useState<string[]>([]);
     const [lastVideoAssetIds, setLastVideoAssetIds] = useState<string[]>([]);
+    const [lastVideoCanon, setLastVideoCanon] = useState<any>(null);
     const [lastVideoJobId, setLastVideoJobId] = useState<string | null>(null);
     const [lastVideoFinalUrl, setLastVideoFinalUrl] = useState<string | null>(null);
     const [videoComposing, setVideoComposing] = useState(false);
@@ -937,6 +942,34 @@ export default function DebateClient({
             const assetIds: string[] = [];
             let totalDeducted = 0;
 
+            // 1. Extract Canon (Characters / Locations) for Continuity
+            let canon = null;
+            let canonContext = '';
+            try {
+                const canonRes = await fetch('/api/media/video/canon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: pendingVideoPrompt })
+                });
+                if (canonRes.ok) {
+                    const canonJson = await canonRes.json();
+                    if (canonJson.canon) {
+                        canon = canonJson.canon;
+                        setLastVideoCanon(canon);
+
+                        const chars = (canon.characters || []).map((c: any) => `${c.name}: ${c.description || ''}`).join(' | ');
+                        const locs = (canon.locations || []).map((l: any) => `${l.name}: ${l.description || ''}`).join(' | ');
+                        if (chars || locs) {
+                            canonContext = `\n[CONTINUITY Canon]\nCharacters: ${chars}\nLocations: ${locs}\n`;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to extract canon', e);
+            }
+
+            const basePromptWithCanon = canonContext ? `${canonContext}\n${pendingVideoPrompt}` : pendingVideoPrompt;
+
             // Generate sequentially to avoid timeouts and to allow partial progress.
             for (let i = 0; i < segments.length; i++) {
                 const segSec = segments[i];
@@ -945,9 +978,7 @@ export default function DebateClient({
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         debateId,
-                        prompt: segments.length > 1 ? `${pendingVideoPrompt}
-
-[Scene ${i + 1}/${segments.length}]` : pendingVideoPrompt,
+                        prompt: segments.length > 1 ? `${basePromptWithCanon}\n\n[Scene ${i + 1}/${segments.length}]` : basePromptWithCanon,
                         durationSec: segSec,
                         confirmed: true,
                     }),
@@ -975,6 +1006,7 @@ export default function DebateClient({
                                 totalSegments: segments.length,
                                 urls,
                                 assetIds,
+                                canon,
                                 totalDeducted,
                                 pendingId,
                                 expiresAt,
@@ -1371,6 +1403,7 @@ export default function DebateClient({
                                                                 debateId,
                                                                 assetIds: lastVideoAssetIds,
                                                                 durationSec: (Array.isArray(lastVideoAssetIds) ? lastVideoAssetIds.length : 1) * 600,
+                                                                canon: lastVideoCanon,
                                                             }),
                                                         });
                                                         const j = await res.json().catch(() => ({} as any));
@@ -1388,6 +1421,7 @@ export default function DebateClient({
                                                                         debateId,
                                                                         assetIds: lastVideoAssetIds,
                                                                         durationSec: (Array.isArray(lastVideoAssetIds) ? lastVideoAssetIds.length : 1) * 600,
+                                                                        canon: lastVideoCanon,
                                                                         pendingId,
                                                                         expiresAt: expiresAt2,
                                                                         ts: Date.now(),
