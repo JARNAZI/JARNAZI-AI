@@ -743,6 +743,10 @@ export default function DebateClient({
                         };
                         setLastUploadedAsset(asset);
                         contentToSend += `\n[ASSET_URL: ${asset.signedUrl}]\n[ASSET_PATH: ${asset.path}]\n[ASSET_KIND: ${asset.kind}]\n[ASSET_NAME: ${selectedFile.name}]`;
+
+                        if (up.tokensDeducted && up.tokensDeducted > 0 && profileInfo) {
+                            setProfileInfo(prev => prev ? { token_balance: Math.max(0, prev.token_balance - up.tokensDeducted) } : prev);
+                        }
                     } else {
                         contentToSend += `\n[FILE: ${selectedFile.name}]`;
                     }
@@ -1280,6 +1284,22 @@ export default function DebateClient({
                                     </>
                                 )}
                             </div>
+
+                            {/* View Mode Toggle - Always Visible */}
+                            <div className="flex items-center w-full justify-center shadow-sm rounded-xl mt-2 mb-2">
+                                <button
+                                    onClick={() => setShowFinalOnly(false)}
+                                    className={`flex-1 px-3 py-2 rounded-l-xl text-[10px] font-black uppercase tracking-widest border transition-all hover:opacity-90 ${!showFinalOnly ? 'bg-primary border-primary text-primary-foreground scale-[1.02] shadow-md z-10' : 'bg-muted border-border text-muted-foreground'}`}
+                                >
+                                    {dict.debate?.fullDebate || 'Full Debate'}
+                                </button>
+                                <button
+                                    onClick={() => setShowFinalOnly(true)}
+                                    className={`flex-1 px-3 py-2 rounded-r-xl text-[10px] font-black uppercase tracking-widest border transition-all hover:opacity-90 ${showFinalOnly ? 'bg-primary border-primary text-primary-foreground scale-[1.02] shadow-md z-10' : 'bg-muted border-border text-muted-foreground'}`}
+                                >
+                                    {dict.debate?.consensusOnly || 'Consensus Only'}
+                                </button>
+                            </div>
                         </div>
 
                         {/* Previews */}
@@ -1322,23 +1342,7 @@ export default function DebateClient({
                 </aside>
                 <main ref={scrollRef} onScroll={handleScroll} className={`flex-1 overflow-y-auto bg-background transition-colors relative`}>
 
-                    {/* View Mode Toggle - Sticky at the top of chat */}
-                    <div className="sticky top-0 z-20 w-full bg-background/80 backdrop-blur-xl border-b border-border p-3 flex justify-center shadow-sm">
-                        <div className="flex items-center w-full max-w-sm justify-center shadow-sm rounded-xl">
-                            <button
-                                onClick={() => setShowFinalOnly(false)}
-                                className={`flex-1 px-4 py-2.5 rounded-l-xl text-[10px] font-black uppercase tracking-widest border transition-all hover:opacity-90 ${!showFinalOnly ? 'bg-primary border-primary text-primary-foreground scale-[1.02] shadow-md z-10' : 'bg-muted border-border text-muted-foreground'}`}
-                            >
-                                {dict.debate?.fullDebate || 'Full Debate'}
-                            </button>
-                            <button
-                                onClick={() => setShowFinalOnly(true)}
-                                className={`flex-1 px-4 py-2.5 rounded-r-xl text-[10px] font-black uppercase tracking-widest border transition-all hover:opacity-90 ${showFinalOnly ? 'bg-primary border-primary text-primary-foreground scale-[1.02] shadow-md z-10' : 'bg-muted border-border text-muted-foreground'}`}
-                            >
-                                {dict.debate?.consensusOnly || 'Consensus Only'}
-                            </button>
-                        </div>
-                    </div>
+                    {/* Chat Messages */}
 
                     <div className="w-full max-w-5xl mx-auto flex flex-col gap-6 p-4">
 

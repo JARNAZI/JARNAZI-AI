@@ -110,13 +110,13 @@ export async function POST(req: Request) {
       bucket,
       path,
       kind,
-      mime: file.type,
-      size: file.size,
-      signedUrl: signed.signedUrl,
+      mime: file.type || 'application/octet-stream',
       filename: safeName,
+      signedUrl: signed.signedUrl,
+      tokensDeducted: tokensNeeded
     });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || 'Unexpected error' }, { status: 500 });
+  } catch (err: any) {
+    console.error('Upload route error:', err);
+    return NextResponse.json({ error: 'Internal server error', details: err.message }, { status: 500 });
   }
 }
-
