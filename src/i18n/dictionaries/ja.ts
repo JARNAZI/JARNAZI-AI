@@ -54,7 +54,17 @@ const ja = {
     language: "言語",
     darkMode: "ダークモード",
     lightMode: "ライトモード",
-    deleteAccount: "アカウントを削除"
+    deleteAccount: "アカウントを削除",
+    fullDebate: "全討論",
+    consensusOnly: "合意のみ",
+    agreementTitle: "合意",
+    imageGenSuccess: "画像が正常に生成されました。3日後に削除されます。",
+    imageGenStarted: "画像の生成が開始されました。",
+    videoGenSuccess: "ビデオが正常に生成されました。3日後に削除されます。",
+    longVideoGenSuccess: "長いビデオが生成されました。継続的に再生され、3日後に削除されます。",
+    videoGenStarted: "ビデオの生成が開始されました。準備ができるとここに表示されます。",
+    deletedAfter3DaysInfo: "すべての討論とメディアはプライバシーを保護するため3日間保持された後、自動的に削除されます。"
+  
   },
   notifications: {
     welcome: "Jarnaziコンセンサスへようこそ。評議会の準備が整いました。",

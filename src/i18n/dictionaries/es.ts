@@ -54,7 +54,17 @@ const es = {
     language: "Idioma",
     darkMode: "Modo Oscuro",
     lightMode: "Modo Claro",
-    deleteAccount: "Eliminar Cuenta"
+    deleteAccount: "Eliminar Cuenta",
+    fullDebate: "Debate Completo",
+    consensusOnly: "Solo Consenso",
+    agreementTitle: "Acuerdo",
+    imageGenSuccess: "Imagen generada correctamente. Se eliminará después de 3 días.",
+    imageGenStarted: "Generación de imagen iniciada.",
+    videoGenSuccess: "Video generado correctamente. Se eliminará después de 3 días.",
+    longVideoGenSuccess: "Video largo generado. Se reproducirá de forma continua y se eliminará después de 3 días.",
+    videoGenStarted: "Generación de video iniciada. Su video aparecerá aquí cuando esté listo.",
+    deletedAfter3DaysInfo: "Todos los debates y medios se mantienen durante 3 días antes de eliminarse automáticamente para proteger la privacidad."
+  
   },
   notifications: {
     welcome: "Bienvenido al Consenso Jarnazi. El Consejo está listo.",

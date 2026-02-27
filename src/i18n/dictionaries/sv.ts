@@ -54,7 +54,17 @@ const sv = {
     language: "Språk",
     darkMode: "Mörkt läge",
     lightMode: "Ljust läge",
-    deleteAccount: "Ta bort konto"
+    deleteAccount: "Ta bort konto",
+    fullDebate: "Hela debatten",
+    consensusOnly: "Endast konsensus",
+    agreementTitle: "Överenskommelse",
+    imageGenSuccess: "Bilden genererades. Den kommer att raderas efter 3 dagar.",
+    imageGenStarted: "Bildgenerering startad.",
+    videoGenSuccess: "Video genererad. Den kommer att raderas efter 3 dagar.",
+    longVideoGenSuccess: "Lång video genererad. Den spelas upp kontinuerligt och raderas efter 3 dagar.",
+    videoGenStarted: "Videogenerering startad. Din video visas här när den är klar.",
+    deletedAfter3DaysInfo: "Alla debatter och media sparas i 3 dagar före automatisk radering för att skydda integriteten."
+  
   },
   notifications: {
     welcome: "Välkommen till Jarnazi Consensus. Rådet är redo.",

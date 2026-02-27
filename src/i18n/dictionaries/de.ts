@@ -46,6 +46,8 @@ const de = {
     longVideoGenSuccess: "Langes Video als mehrere Szenen generiert. Es wird kontinuierlich im Player abgespielt.",
     videoGenSuccess: "Video erfolgreich generiert.",
     videoGenStarted: "Videogenerierung gestartet. Ihr Video erscheint hier, wenn es bereit ist.",
+    longVideoGenSuccess: "Long video generated. It will play continuously and will be deleted after 3 days.",
+    deletedAfter3DaysInfo: "All debates and media are kept for 3 days before auto-deletion to protect privacy.",
     imageGenSuccess: "Bild erfolgreich generiert. Es wird nach 3 Tagen gelöscht.",
     imageGenStarted: "Bildgenerierung gestartet.",
     needConsensus: "Generieren Sie zuerst eine Antwort, dann können Sie Medien aus dem endgültigen Konsens generieren.",
