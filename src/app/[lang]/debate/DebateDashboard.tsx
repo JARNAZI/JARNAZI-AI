@@ -61,7 +61,8 @@ export default function DebateDashboard({
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const [role, setRole] = useState<string | null>(null);
-    const [profileInfo, setProfileInfo] = useState<{ role?: string; token_balance?: number } | null>(null);
+    const [profileInfo, setProfileInfo] = useState<{ role?: string; token_balance?: number; free_trial_used?: boolean } | null>(null);
+    const [enableFreeTrial, setEnableFreeTrial] = useState(false);
 
     // Advanced Input States
 
@@ -111,19 +112,24 @@ export default function DebateDashboard({
                 if (user) {
                     const { data: profile } = await supabase
                         .from('profiles')
-                        .select('role, token_balance')
+                        .select('role, token_balance, free_trial_used')
                         .eq('id', user.id)
                         .single();
 
                     if (profile) {
                         setRole(profile.role);
-                        setProfileInfo(profile as { role?: string, token_balance?: number });
-                        console.log("DebateDashboard: Role fetched from DB:", profile.role, "Balance:", profile.token_balance);
+                        setProfileInfo(profile as { role?: string, token_balance?: number, free_trial_used?: boolean });
+                        console.log("DebateDashboard: Role:", profile.role, "Balance:", profile.token_balance, "Trial Used:", profile.free_trial_used);
                     } else if (user.app_metadata?.role) {
                         console.log("DebateDashboard: Role found in App Metadata:", user.app_metadata.role);
                         setRole(user.app_metadata.role);
                     } else {
                         console.log("DebateDashboard: No role found for user", user.id);
+                    }
+
+                    const { data: stData } = await supabase.from('site_settings').select('value').eq('key', 'enable_free_trial').maybeSingle();
+                    if (stData) {
+                        setEnableFreeTrial(stData.value === 'true');
                     }
 
                     const { data, error } = await supabase
@@ -273,12 +279,22 @@ export default function DebateDashboard({
                                                 <MediaUploader label={d.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
                                                 <AudioRecorder onRecordingComplete={setRecordedAudio} label={d.audio || "Audio"} />
                                             </>
-                                        ) : (
+                                        ) : (enableFreeTrial && !(profileInfo?.free_trial_used)) ? (
                                             <div className="flex items-center gap-2 px-3 py-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20 mb-1 w-full">
                                                 <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
                                                 <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
                                                     {d.trialModeDesc || 'Trial Mode: Text Only'}
                                                 </span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2 px-3 py-2 bg-red-500/10 rounded-lg border border-red-500/20 mb-1 w-full">
+                                                <div className="w-2 h-2 bg-red-500 rounded-full" />
+                                                <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
+                                                    {dict.notifications?.insufficientTokens || 'Insufficient Tokens'}
+                                                </span>
+                                                <button onClick={() => router.push(`/${lang}/buy-tokens`)} className="ml-auto text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300">
+                                                    {dict.admin?.walletBuyTokens || "Buy"}
+                                                </button>
                                             </div>
                                         )}
                                     </div>

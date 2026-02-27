@@ -1268,21 +1268,31 @@ export default function DebateClient({
                         {/* Toolstrip */}
                         <div className="relative">
                             <div ref={inputStripRef} onScroll={updateInputStripScrollHints} onClickCapture={handleMediaClickCapture} onTouchStartCapture={handleMediaClickCapture} className="flex items-center gap-1 flex-wrap pb-2 border-b border-border mb-1">
-                                {enableFreeTrial && !freeTrialUsed ? (
-                                    <div className="flex items-center gap-2 px-3 py-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20 mb-1 w-full">
-                                        <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
-                                        <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
-                                            {dict.dashboard?.trialModeDesc || 'Trial Mode: Text Only'}
-                                        </span>
-                                    </div>
-                                ) : ((profileInfo?.token_balance ?? 0) > 0 ? (
+                                {(profileInfo?.token_balance ?? 0) > 0 ? (
                                     <>
                                         <MediaUploader label={dict.dashboard?.files || "File"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
                                         <MediaUploader label={dict.dashboard?.pics || "Image"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
                                         <MediaUploader label={dict.dashboard?.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
                                         <AudioRecorder onRecordingComplete={setRecordedAudio} label={dict.dashboard?.audio || "Audio"} />
                                     </>
-                                ) : null)}
+                                ) : (enableFreeTrial && !freeTrialUsed) ? (
+                                    <div className="flex items-center gap-2 px-3 py-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20 mb-1 w-full">
+                                        <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
+                                        <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
+                                            {dict.dashboard?.trialModeDesc || 'Trial Mode: Text Only'}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2 px-3 py-2 bg-red-500/10 rounded-lg border border-red-500/20 mb-1 w-full">
+                                        <div className="w-2 h-2 bg-red-500 rounded-full" />
+                                        <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
+                                            {dict.notifications?.insufficientTokens || 'Insufficient Tokens'}
+                                        </span>
+                                        <button onClick={() => router.push(`/${lang}/buy-tokens`)} className="ml-auto text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300">
+                                            {dict.admin?.walletBuyTokens || "Buy"}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
                             {/* View Mode Toggle - Always Visible */}
