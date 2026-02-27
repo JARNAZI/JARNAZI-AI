@@ -70,6 +70,17 @@ export async function POST(req: Request) {
 
     const user = userData.user;
 
+    // Check Free Trial vs Token Balance
+    const { data: profile } = await supabaseAdmin.from('profiles').select('token_balance, free_trial_used').eq('id', user.id).single();
+    const { data: stData } = await supabaseAdmin.from('site_settings').select('value').eq('key', 'enable_free_trial').maybeSingle();
+    const enableFreeTrial = (stData as any)?.value === 'true';
+    const isFreeTrialActive = enableFreeTrial && profile && !profile.free_trial_used;
+
+    // Reject non-text requests if relying ONLY on free trial
+    if (isFreeTrialActive && requestType !== 'text' && Number(profile?.token_balance || 0) <= 0) {
+      return NextResponse.json({ error: 'FREE_TRIAL_TEXT_ONLY', message: 'Free trial is text-only.' }, { status: 403 });
+    }
+
     // 1. Create Debate Record
     const { data: debate, error: debErr } = await supabaseAdmin
       .from('debates')
@@ -90,33 +101,50 @@ export async function POST(req: Request) {
     // 3. Token Accounting using dynamic pricing
     const tokenCost = await calculateDynamicTokenCost(supabaseAdmin, plan);
 
-    try {
-      await reserveTokens(supabaseAdmin, user.id, tokenCost);
-    } catch (e: any) {
-      if (e.message?.includes('INSUFFICIENT_TOKENS')) {
+    let isFreeTrialTurn = false;
+
+    // Check if user has no tokens -> Must rely on free trial
+    if (Number(profile?.token_balance || 0) < tokenCost) {
+      if (isFreeTrialActive && requestType === 'text') {
+        isFreeTrialTurn = true;
+      } else {
         return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', tokensNeeded: tokenCost }, { status: 402 });
       }
-      throw e;
+    } else {
+      try {
+        await reserveTokens(supabaseAdmin, user.id, tokenCost);
+      } catch (e: any) {
+        if (e.message?.includes('INSUFFICIENT_TOKENS')) {
+          return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', tokensNeeded: tokenCost }, { status: 402 });
+        }
+        throw e;
+      }
     }
 
-    // 3. Trigger Maestro (Non-blocking or await depending on requirements)
+    // 4. Trigger Maestro (Non-blocking or await depending on requirements)
     // We await here to ensure we can handle errors and refund, local Next.js supports longer timeouts.
     try {
       await orchestrator.runFullDebate(debate.id, user.id, topic, plan);
 
-      // Update final cost if applicable
-      await supabaseAdmin.from('debates').update({ total_cost_cents: tokenCost }).eq('id', debate.id);
+      if (isFreeTrialTurn) {
+        await supabaseAdmin.from('profiles').update({ free_trial_used: true }).eq('id', user.id);
+      } else {
+        // Update final cost if applicable
+        await supabaseAdmin.from('debates').update({ total_cost_cents: tokenCost }).eq('id', debate.id);
 
-      // Log to Ledger
-      await supabaseAdmin.from('token_ledger').insert({
-        user_id: user.id,
-        amount: -tokenCost,
-        description: `Debate cost for session: ${debate.id}`
-      });
+        // Log to Ledger
+        await supabaseAdmin.from('token_ledger').insert({
+          user_id: user.id,
+          amount: -tokenCost,
+          description: `Debate cost for session: ${debate.id}`
+        });
+      }
 
     } catch (e) {
       console.error("[API/Debate] Maestro Execution Failed:", e);
-      await refundTokens(supabaseAdmin, user.id, tokenCost);
+      if (!isFreeTrialTurn) {
+        await refundTokens(supabaseAdmin, user.id, tokenCost);
+      }
       await supabaseAdmin.from('debates').update({ status: 'failed' }).eq('id', debate.id);
       throw e;
     }

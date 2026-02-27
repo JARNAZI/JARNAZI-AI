@@ -1275,14 +1275,14 @@ export default function DebateClient({
                                             {dict.dashboard?.trialModeDesc || 'Trial Mode: Text Only'}
                                         </span>
                                     </div>
-                                ) : (
+                                ) : ((profileInfo?.token_balance ?? 0) > 0 ? (
                                     <>
                                         <MediaUploader label={dict.dashboard?.files || "File"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
                                         <MediaUploader label={dict.dashboard?.pics || "Image"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
                                         <MediaUploader label={dict.dashboard?.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
                                         <AudioRecorder onRecordingComplete={setRecordedAudio} label={dict.dashboard?.audio || "Audio"} />
                                     </>
-                                )}
+                                ) : null)}
                             </div>
 
                             {/* View Mode Toggle - Always Visible */}

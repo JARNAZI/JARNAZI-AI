@@ -62,8 +62,7 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
                 throw error
             }
 
-            router.push(`/${lang}/debate`)
-            router.refresh()
+            window.location.href = `/${lang}/debate`;
         } catch (err: unknown) {
             const mappedError = mapAuthError(err, dict);
             setError(mappedError)
