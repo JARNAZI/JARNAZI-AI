@@ -982,6 +982,7 @@ export default function DebateClient({
                         prompt: segments.length > 1 ? `${basePromptWithCanon}\n\n[Scene ${i + 1}/${segments.length}]` : basePromptWithCanon,
                         durationSec: segSec,
                         confirmed: true,
+                        sequenceNumber: i + 1,
                     }),
                 });
 

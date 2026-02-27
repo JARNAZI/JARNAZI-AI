@@ -240,6 +240,7 @@ export interface Database {
                     storage_path: string | null
                     public_url: string | null
                     cost_cents: number | null
+                    sequence_number: number | null
                     created_at: string | null
                 }
                 Insert: {
@@ -253,6 +254,7 @@ export interface Database {
                     storage_path?: string | null
                     public_url?: string | null
                     cost_cents?: number | null
+                    sequence_number?: number | null
                     created_at?: string | null
                 }
                 Update: {
@@ -266,6 +268,7 @@ export interface Database {
                     storage_path?: string | null
                     public_url?: string | null
                     cost_cents?: number | null
+                    sequence_number?: number | null
                     created_at?: string | null
                 }
             }

@@ -89,6 +89,7 @@ export async function POST(req: Request) {
     const debateId: string | null = body?.debateId ?? null;
     const prompt: string = body?.prompt ?? '';
     let durationSec: number = Number(body?.durationSec ?? 6);
+    const sequenceNumber: number | null = body?.sequenceNumber ? Number(body.sequenceNumber) : null;
 
     if (!Number.isFinite(durationSec) || durationSec <= 0 || durationSec > 600) {
       return NextResponse.json({ error: 'durationSec must be between 1 and 600' }, { status: 400 });
@@ -211,6 +212,7 @@ export async function POST(req: Request) {
         storage_path,
         public_url,
         cost_cents: tokensNeeded,
+        sequence_number: sequenceNumber,
       } as any)
       .select('*')
       .single();
