@@ -95,6 +95,15 @@ export async function POST(req: Request) {
                         );
                     }
 
+                    // Notify user in-app
+                    await supabaseAdmin.from('notifications').insert({
+                        user_id: userId,
+                        title: 'Purchase Successful',
+                        body: `Successfully purchased ${tokensToAdd} tokens.`,
+                        type: 'success',
+                        is_read: false
+                    });
+
                     // Mark processed
                     await supabaseAdmin.from('payment_events')
                         .update({ status: 'processed' })

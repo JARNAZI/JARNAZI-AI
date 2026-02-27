@@ -9,7 +9,7 @@ type NotificationRow = {
   id: string;
   user_id: string;
   title: string;
-  message: string;
+  body: string;
   created_at: string;
   is_read: boolean;
 };
@@ -140,7 +140,7 @@ export default function NotificationBell({
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <h4 className="text-white font-medium text-sm group-hover:text-indigo-300 transition-colors">{n.title}</h4>
-                      <p className="text-white/70 text-sm mt-1">{n.message}</p>
+                      <p className="text-white/70 text-sm mt-1">{n.body}</p>
                       <p className="text-white/40 text-xs mt-2">
                         {new Date(n.created_at).toLocaleString()}
                       </p>

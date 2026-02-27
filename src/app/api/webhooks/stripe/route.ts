@@ -85,6 +85,15 @@ export async function POST(req: Request) {
           await sendTokenPurchaseInvoice(session.customer_details.email, amountFormatted, tokensToAdd, 'en', session.id);
         }
 
+        // Notify user in-app
+        await supabaseAdmin.from('notifications').insert({
+          user_id: userId,
+          title: 'Purchase Successful',
+          body: `Successfully purchased ${tokensToAdd} tokens.`,
+          type: 'success',
+          is_read: false
+        });
+
         try {
           await processPendingForUser(userId);
         } catch (e) {
