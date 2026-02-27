@@ -203,8 +203,8 @@ export async function POST(req: Request) {
       .in('id', assetIds);
 
     if (aErr) return NextResponse.json({ error: aErr.message }, { status: 500 });
-    const paths = (assets ?? [])
-      .map((a: any) => a?.storage_path)
+    const paths = assetIds
+      .map((id: string) => (assets ?? []).find((a: any) => a.id === id)?.storage_path)
       .filter((p: any) => typeof p === 'string' && p.length > 0);
 
     if (!paths.length) return NextResponse.json({ error: 'No storage paths found' }, { status: 400 });
