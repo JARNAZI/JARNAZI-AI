@@ -747,9 +747,23 @@ export default function DebateClient({
                         contentToSend += `\n[FILE: ${selectedFile.name}]`;
                     }
                 } else {
+                    const errorJson = await upRes.json().catch(() => ({}));
+                    if (upRes.status === 402 || errorJson?.error === 'INSUFFICIENT_TOKENS') {
+                        const missing = Number(errorJson?.missingTokens || 0);
+                        toast.error((dict?.notifications?.insufficientTokensForUpload || 'Insufficient tokens for upload.') + (missing > 0 ? ` (Missing: ${missing})` : ''));
+                        setUploadingAsset(false);
+                        return; // Halt message submission
+                    }
+                    if (upRes.status === 403 && errorJson?.error === 'FREE_TRIAL_TEXT_ONLY') {
+                        toast.error(errorJson.message || dict?.debate?.freeTrialMediaBlocked || 'Free trial is text-only. Buy tokens to upload media.');
+                        setUploadingAsset(false);
+                        return; // Halt message submission
+                    }
+                    toast.error(errorJson?.error || 'Upload failed');
                     contentToSend += `\n[FILE: ${selectedFile.name}]`;
                 }
             } catch {
+                toast.error('Upload failed with network error');
                 contentToSend += `\n[FILE: ${selectedFile.name}]`;
             } finally {
                 setUploadingAsset(false);

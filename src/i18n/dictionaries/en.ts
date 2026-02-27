@@ -106,6 +106,7 @@ const en = {
     paymentFailed: "Payment failed. Please try again or contact support.",
     insufficientTokens: "Insufficient tokens to start this session.",
     notEnoughTokens: "Not enough tokens.",
+    insufficientTokensForUpload: "Insufficient tokens to upload this file. Please purchase more tokens to continue.",
     tokenReservationFailed: "Token reservation failed. Please try again.",
     messageSendSuccess: "Message sent successfully.",
     messageSendFailed: "Failed to send message.",

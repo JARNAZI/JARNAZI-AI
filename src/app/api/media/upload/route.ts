@@ -46,6 +46,37 @@ export async function POST(req: Request) {
     const safeName = sanitizeFileName(file.name || 'upload.bin');
     const path = `user_uploads/${userRes.user.id}/${Date.now()}_${safeName}`;
 
+    // --- Token Charging Logic for Uploads ---
+    // 1 token for images, 1 token per MB for videos/files (minimum 1)
+    const sizeMb = file.size / (1024 * 1024);
+    const tokensNeeded = kind === 'image' ? 1 : Math.max(1, Math.ceil(sizeMb));
+
+    const { data: profile } = await supabase.from('profiles').select('token_balance, free_trial_used').eq('id', userRes.user.id).single();
+    const currentBalance = Number(profile?.token_balance || 0);
+
+    const { data: stData } = await supabase.from('site_settings').select('value').eq('key', 'enable_free_trial').maybeSingle();
+    const enableFreeTrial = (stData as any)?.value === 'true';
+
+    // Free trial users cannot upload media, block them if they haven't bought tokens yet.
+    if (enableFreeTrial && !profile?.free_trial_used && currentBalance < tokensNeeded) {
+      return NextResponse.json({ error: 'FREE_TRIAL_TEXT_ONLY', message: 'Free trial is text-only. Buy tokens to upload media.' }, { status: 403 });
+    }
+
+    if (currentBalance < tokensNeeded) {
+      return NextResponse.json({
+        error: 'INSUFFICIENT_TOKENS',
+        missingTokens: tokensNeeded - currentBalance,
+        requiredTokens: tokensNeeded
+      }, { status: 402 });
+    }
+
+    // Reserve tokens
+    const { error: reserveErr } = await supabase.rpc('reserve_tokens', { p_user_id: userRes.user.id, p_tokens: tokensNeeded });
+    if (reserveErr) {
+      return NextResponse.json({ error: 'Failed to reserve tokens for upload' }, { status: 402 });
+    }
+    // ----------------------------------------
+
     const buf = Buffer.from(await file.arrayBuffer());
 
     const { error: upErr } = await supabase.storage.from(bucket).upload(path, buf, {
@@ -53,7 +84,9 @@ export async function POST(req: Request) {
       upsert: false,
     });
 
+    // If upload fails, try to refund tokens (optional, but good practice)
     if (upErr) {
+      await supabase.rpc('refund_tokens', { p_user_id: userRes.user.id, p_tokens: tokensNeeded });
       return NextResponse.json({ error: `Upload failed: ${upErr.message}` }, { status: 500 });
     }
 

@@ -106,6 +106,7 @@ const ar = {
     paymentFailed: "فشلت عملية الدفع. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
     insufficientTokens: "رصيد نقاط غير كافٍ لبدء هذه الجلسة.",
     notEnoughTokens: "لا توجد نقاط كافية.",
+    insufficientTokensForUpload: "لا يوجد رصيد توكن كافٍ لرفع هذا الملف. يرجى الشراء للمتابعة.",
     tokenReservationFailed: "فشل حجز النقاط. يرجى المحاولة مرة أخرى.",
     messageSendSuccess: "تم إرسال الرسالة بنجاح.",
     messageSendFailed: "فشل إرسال الرسالة.",

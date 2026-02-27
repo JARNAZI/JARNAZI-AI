@@ -92,7 +92,18 @@ const fr = {
     langSwitched: "Langue changée en {lang}",
     notifications: "Notifications",
     noNotifications: "Aucune notification",
-    markAllAsRead: "Tout marquer comme lu"
+    markAllAsRead: "Tout marquer comme lu",
+    insufficientTokens: "Jetons insuffisants pour démarrer cette session.",
+    notEnoughTokens: "Pas assez de jetons.",
+    insufficientTokensForUpload: "Jetons insuffisants pour télécharger ce fichier. Veuillez acheter plus de jetons pour continuer.",
+    tokenReservationFailed: "La réservation des jetons a échoué. Veuillez réessayer.",
+    messageSendSuccess: "Message envoyé avec succès.",
+    messageSendFailed: "Échec de l'envoi du message.",
+    paymentSuccess: "Paiement réussi. Jetons ajoutés à votre solde.",
+    paymentCancel: "Paiement annulé.",
+    paymentFailed: "Le paiement a échoué. Veuillez réessayer ou contacter le support.",
+    debateFinished: "Débat terminé et consensus atteint.",
+    outputReady: "Le consensus final est prêt."
   },
   nav: {
     features: "Fonctionnalités",

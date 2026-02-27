@@ -89,7 +89,18 @@ const de = {
     loginRequired: "Bitte loggen Sie sich ein, um eine Debatte zu starten",
     councilError: "Ratsfehler",
     themeSwitched: "Modus zu {theme} gewechselt",
-    langSwitched: "Sprache zu {lang} gewechselt"
+    langSwitched: "Sprache zu {lang} gewechselt",
+    insufficientTokens: "Nicht genügend Tokens, um diese Sitzung zu starten.",
+    notEnoughTokens: "Nicht genug Tokens.",
+    insufficientTokensForUpload: "Nicht genügend Tokens zum Hochladen dieser Datei. Bitte kaufen Sie mehr Tokens, um fortzufahren.",
+    tokenReservationFailed: "Token-Reservierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    messageSendSuccess: "Nachricht erfolgreich gesendet.",
+    messageSendFailed: "Fehler beim Senden der Nachricht.",
+    paymentSuccess: "Zahlung erfolgreich. Tokens wurden Ihrem Guthaben hinzugefügt.",
+    paymentCancel: "Zahlung abgebrochen.",
+    paymentFailed: "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+    debateFinished: "Debatte beendet und Konsens erreicht.",
+    outputReady: "Der endgültige Konsens ist bereit."
   },
   nav: {
     features: "Funktionen",
