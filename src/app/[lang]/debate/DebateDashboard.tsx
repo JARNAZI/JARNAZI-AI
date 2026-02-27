@@ -61,6 +61,7 @@ export default function DebateDashboard({
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const [role, setRole] = useState<string | null>(null);
+    const [profileInfo, setProfileInfo] = useState<{ role?: string; token_balance?: number } | null>(null);
 
     // Advanced Input States
 
@@ -108,16 +109,16 @@ export default function DebateDashboard({
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
-                    // Fetch generic role first
                     const { data: profile } = await supabase
                         .from('profiles')
-                        .select('role')
+                        .select('role, token_balance')
                         .eq('id', user.id)
                         .single();
 
-                    if (profile?.role) {
-                        console.log("DebateDashboard: Role fetched from DB:", profile.role);
+                    if (profile) {
                         setRole(profile.role);
+                        setProfileInfo(profile as { role?: string, token_balance?: number });
+                        console.log("DebateDashboard: Role fetched from DB:", profile.role, "Balance:", profile.token_balance);
                     } else if (user.app_metadata?.role) {
                         console.log("DebateDashboard: Role found in App Metadata:", user.app_metadata.role);
                         setRole(user.app_metadata.role);
@@ -265,10 +266,21 @@ export default function DebateDashboard({
 
 
                                     <div className="flex items-center gap-1 md:gap-2">
-                                        <MediaUploader label={d.files || "Files"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
-                                        <MediaUploader label={d.pics || "Pics"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
-                                        <MediaUploader label={d.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
-                                        <AudioRecorder onRecordingComplete={setRecordedAudio} label={d.audio || "Audio"} />
+                                        {(profileInfo?.token_balance ?? 0) > 0 ? (
+                                            <>
+                                                <MediaUploader label={d.files || "Files"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
+                                                <MediaUploader label={d.pics || "Pics"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
+                                                <MediaUploader label={d.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
+                                                <AudioRecorder onRecordingComplete={setRecordedAudio} label={d.audio || "Audio"} />
+                                            </>
+                                        ) : (
+                                            <div className="flex items-center gap-2 px-3 py-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20 mb-1 w-full">
+                                                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
+                                                <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
+                                                    {d.trialModeDesc || 'Trial Mode: Text Only'}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 {/* Mobile Scroll Hint Mask */}
