@@ -59,13 +59,7 @@ async function run() {
             }
         }
 
-        if (inputs.length === 0) {
-            console.log("[DB] Fallback: Fetching shots from video_shots table");
-            const { data: shots } = await supabase.from("video_shots").select("*").eq("job_id", jobId).order("metadata->sequence", { ascending: true });
-            if (shots && shots.length > 0) {
-                inputs = shots.map(s => s.output_url).filter(Boolean);
-            }
-        }
+
 
         if (inputs.length === 0) {
             throw new Error("No input video segments found for composition");
