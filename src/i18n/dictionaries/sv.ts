@@ -64,7 +64,7 @@ const sv = {
     longVideoGenSuccess: "Lång video genererad. Den spelas upp kontinuerligt och raderas efter 3 dagar.",
     videoGenStarted: "Videogenerering startad. Din video visas här när den är klar.",
     deletedAfter3DaysInfo: "Alla debatter och media sparas i 3 dagar före automatisk radering för att skydda integriteten."
-  
+
   },
   notifications: {
     welcome: "Välkommen till Jarnazi Consensus. Rådet är redo.",
@@ -74,7 +74,18 @@ const sv = {
     loginRequired: "Logga in för att starta en debatt",
     councilError: "Rådsfel",
     themeSwitched: "Ändrade till {theme}-läge",
-    langSwitched: "Ändrade språk till {lang}"
+    langSwitched: "Ändrade språk till {lang}",
+    insufficientTokens: "Otillräckligt med tokens för att starta denna session.",
+    notEnoughTokens: "Inte tillräckligt med tokens.",
+    insufficientTokensForUpload: "Otillräckligt med tokens för att ladda upp den här filen. Köp fler tokens för att fortsätta.",
+    tokenReservationFailed: "Tokenreservation misslyckades. Försök igen.",
+    messageSendSuccess: "Meddelandet skickades framgångsrikt.",
+    messageSendFailed: "Kunde inte skicka meddelandet.",
+    paymentSuccess: "Betalningen lyckades. Tokens har lagts till i ditt saldo.",
+    paymentCancel: "Betalningen avbröts.",
+    paymentFailed: "Betalningen misslyckades. Försök igen eller kontakta support.",
+    debateFinished: "Debatten avslutad och konsensus nådd.",
+    outputReady: "Slutgiltig konsensus är klar."
   },
   nav: {
     features: "Funktioner",

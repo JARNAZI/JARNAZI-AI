@@ -64,7 +64,7 @@ const pt = {
     longVideoGenSuccess: "Vídeo longo gerado. Será reproduzido continuamente e será excluído após 3 dias.",
     videoGenStarted: "Geração de vídeo iniciada. Seu vídeo aparecerá aqui quando estiver pronto.",
     deletedAfter3DaysInfo: "Todos os debates e mídias são guardados por 3 dias antes da exclusão automática para proteger a privacidade."
-  
+
   },
   notifications: {
     welcome: "Bem-vindo ao Jarnazi Consensus. O Conselho está pronto.",
@@ -74,7 +74,18 @@ const pt = {
     loginRequired: "Faça login para iniciar um debate",
     councilError: "Erro do Conselho",
     themeSwitched: "Alterado para o modo {theme}",
-    langSwitched: "Idioma alterado para {lang}"
+    langSwitched: "Idioma alterado para {lang}",
+    insufficientTokens: "Tokens insuficientes para iniciar esta sessão.",
+    notEnoughTokens: "Não há tokens suficientes.",
+    insufficientTokensForUpload: "Tokens insuficientes para enviar este arquivo. Por favor, compre mais tokens para continuar.",
+    tokenReservationFailed: "Falha na reserva de tokens. Tente novamente.",
+    messageSendSuccess: "Mensagem enviada com sucesso.",
+    messageSendFailed: "Falha ao enviar a mensagem.",
+    paymentSuccess: "Pagamento concluído com sucesso. Tokens adicionados ao seu saldo.",
+    paymentCancel: "Pagamento cancelado.",
+    paymentFailed: "O pagamento falhou. Tente novamente ou contate o suporte.",
+    debateFinished: "Debate concluído e consenso alcançado.",
+    outputReady: "O consenso final está pronto."
   },
   nav: {
     features: "Recursos",

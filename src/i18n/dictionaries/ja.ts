@@ -64,7 +64,7 @@ const ja = {
     longVideoGenSuccess: "長いビデオが生成されました。継続的に再生され、3日後に削除されます。",
     videoGenStarted: "ビデオの生成が開始されました。準備ができるとここに表示されます。",
     deletedAfter3DaysInfo: "すべての討論とメディアはプライバシーを保護するため3日間保持された後、自動的に削除されます。"
-  
+
   },
   notifications: {
     welcome: "Jarnaziコンセンサスへようこそ。評議会の準備が整いました。",
@@ -74,7 +74,18 @@ const ja = {
     loginRequired: "ディベートを開始するにはログインが必要です",
     councilError: "評議会エラー",
     themeSwitched: "{theme}モードに切り替えました",
-    langSwitched: "言語を{lang}に切り替えました"
+    langSwitched: "言語を{lang}に切り替えました",
+    insufficientTokens: "このセッションを開始するためのトークンが不足しています。",
+    notEnoughTokens: "トークンが足りません。",
+    insufficientTokensForUpload: "このファイルをアップロードするためのトークンが不足しています。続行するにはさらに購入してください。",
+    tokenReservationFailed: "トークンの予約に失敗しました。もう一度お試しください。",
+    messageSendSuccess: "メッセージが正常に送信されました。",
+    messageSendFailed: "メッセージの送信に失敗しました。",
+    paymentSuccess: "支払いが完了しました。トークンが残高に追加されました。",
+    paymentCancel: "支払いがキャンセルされました。",
+    paymentFailed: "支払いに失敗しました。もう一度お試しいただくか、サポートにお問い合わせください。",
+    debateFinished: "討論が終了し、コンセンサスに達しました。",
+    outputReady: "最終コンセンサスの準備ができました。"
   },
   nav: {
     features: "特徴",
