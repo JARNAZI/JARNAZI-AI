@@ -34,6 +34,38 @@ export async function submitContactForm(prevState: unknown, formData: FormData) 
     try {
         const { data: { user } } = await supabase.auth.getUser();
 
+        // 1. Rate limit per user or email (max 3 messages per 5 minutes)
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+        let rateLimitQuery = supabase
+            .from('contact_messages')
+            .select('id', { count: 'exact', head: true })
+            .gte('created_at', fiveMinutesAgo);
+
+        if (user) {
+            rateLimitQuery = rateLimitQuery.eq('user_id', user.id);
+        } else {
+            rateLimitQuery = rateLimitQuery.eq('email', rawData.email);
+        }
+
+        const { count } = await rateLimitQuery;
+        if (count !== null && count >= 3) {
+            return { success: false, error: 'Too many requests. Please wait a few minutes before sending another message.' };
+        }
+
+        // 2. Global rate limit for anonymous messages to prevent distributed bot spam (max 10 per minute system-wide)
+        if (!user) {
+            const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
+            const { count: globalCount } = await supabase
+                .from('contact_messages')
+                .select('id', { count: 'exact', head: true })
+                .is('user_id', null)
+                .gte('created_at', oneMinuteAgo);
+
+            if (globalCount !== null && globalCount >= 10) {
+                return { success: false, error: 'System is receiving too many requests. Please try again later.' };
+            }
+        }
+
         // Insert
         const { error } = await supabase.from('contact_messages').insert({
             user_id: user?.id || null, // Optional, allow guests if policy permits
