@@ -1267,48 +1267,51 @@ export default function DebateClient({
 
                         {/* Toolstrip */}
                         <div className="relative">
-                            <div ref={inputStripRef} onScroll={updateInputStripScrollHints} onClickCapture={handleMediaClickCapture} onTouchStartCapture={handleMediaClickCapture} className="flex items-center gap-1 flex-wrap pb-2 border-b border-border mb-1">
-                                {(profileInfo?.token_balance ?? 0) > 0 ? (
-                                    <>
-                                        <MediaUploader label={dict.dashboard?.files || "File"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
-                                        <MediaUploader label={dict.dashboard?.pics || "Image"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
-                                        <MediaUploader label={dict.dashboard?.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
-                                        <AudioRecorder onRecordingComplete={setRecordedAudio} label={dict.dashboard?.audio || "Audio"} />
-                                    </>
-                                ) : (enableFreeTrial && !freeTrialUsed) ? (
-                                    <div className="flex items-center gap-2 px-3 py-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20 mb-1 w-full">
-                                        <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
-                                        <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
-                                            {dict.dashboard?.trialModeDesc || 'Trial Mode: Text Only'}
-                                        </span>
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center gap-2 px-3 py-2 bg-red-500/10 rounded-lg border border-red-500/20 mb-1 w-full">
-                                        <div className="w-2 h-2 bg-red-500 rounded-full" />
-                                        <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
-                                            {dict.notifications?.insufficientTokens || 'Insufficient Tokens'}
-                                        </span>
-                                        <button onClick={() => router.push(`/${lang}/buy-tokens`)} className="ml-auto text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300">
-                                            {dict.admin?.walletBuyTokens || "Buy"}
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
+                            <div ref={inputStripRef} onScroll={updateInputStripScrollHints} className="flex items-center gap-2 flex-wrap pb-2 border-b border-border mb-1">
+                                {/* Media Uploader Area */}
+                                <div onClickCapture={handleMediaClickCapture} onTouchStartCapture={handleMediaClickCapture} className="flex items-center gap-1 flex-1">
+                                    {(profileInfo?.token_balance ?? 0) > 0 ? (
+                                        <>
+                                            <MediaUploader label={dict.dashboard?.files || "File"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
+                                            <MediaUploader label={dict.dashboard?.pics || "Image"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
+                                            <MediaUploader label={dict.dashboard?.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
+                                            <AudioRecorder onRecordingComplete={setRecordedAudio} label={dict.dashboard?.audio || "Audio"} />
+                                        </>
+                                    ) : (enableFreeTrial && !freeTrialUsed) ? (
+                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 rounded-lg border border-indigo-500/20 max-w-fit">
+                                            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
+                                            <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-widest whitespace-nowrap">
+                                                {dict.dashboard?.trialModeDesc || 'Trial Mode: Text Only'}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 rounded-lg border border-red-500/20 max-w-fit">
+                                            <div className="w-2 h-2 bg-red-500 rounded-full" />
+                                            <span className="text-[9px] font-bold text-red-500 uppercase tracking-widest whitespace-nowrap">
+                                                {dict.notifications?.insufficientTokens || 'Insufficient Tokens'}
+                                            </span>
+                                            <button onClick={() => router.push(`/${lang}/buy-tokens`)} className="ml-2 text-[9px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300">
+                                                {dict.admin?.walletBuyTokens || "Buy"}
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
 
-                            {/* View Mode Toggle - Always Visible */}
-                            <div className="flex items-center w-full justify-center shadow-sm rounded-xl mt-2 mb-2">
-                                <button
-                                    onClick={() => setShowFinalOnly(false)}
-                                    className={`flex-1 px-3 py-2 rounded-l-xl text-[10px] font-black uppercase tracking-widest border transition-all hover:opacity-90 ${!showFinalOnly ? 'bg-primary border-primary text-primary-foreground scale-[1.02] shadow-md z-10' : 'bg-muted border-border text-muted-foreground'}`}
-                                >
-                                    {dict.debate?.fullDebate || 'Full Debate'}
-                                </button>
-                                <button
-                                    onClick={() => setShowFinalOnly(true)}
-                                    className={`flex-1 px-3 py-2 rounded-r-xl text-[10px] font-black uppercase tracking-widest border transition-all hover:opacity-90 ${showFinalOnly ? 'bg-primary border-primary text-primary-foreground scale-[1.02] shadow-md z-10' : 'bg-muted border-border text-muted-foreground'}`}
-                                >
-                                    {dict.debate?.consensusOnly || 'Consensus Only'}
-                                </button>
+                                {/* View Mode Toggle - Right Aligned */}
+                                <div className="flex items-center shadow-sm rounded-xl overflow-hidden border border-border bg-background shrink-0 ml-auto">
+                                    <button
+                                        onClick={() => setShowFinalOnly(false)}
+                                        className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest transition-all ${!showFinalOnly ? 'bg-primary text-primary-foreground scale-[1.02] shadow-md z-10' : 'text-muted-foreground hover:bg-muted'}`}
+                                    >
+                                        {dict.debate?.fullDebate || 'Full Debate'}
+                                    </button>
+                                    <button
+                                        onClick={() => setShowFinalOnly(true)}
+                                        className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest transition-all border-l border-border ${showFinalOnly ? 'bg-primary text-primary-foreground scale-[1.02] shadow-md z-10' : 'text-muted-foreground hover:bg-muted'}`}
+                                    >
+                                        {dict.debate?.consensusOnly || 'Consensus Only'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
