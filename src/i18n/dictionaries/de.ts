@@ -325,7 +325,7 @@ const de = {
         "name": "Starter-Paket",
         "description": "Perfekt für gelegentliche Debatten und Anfragen.",
         "features": [
-          "42 Konsens-Tokens",
+          "42.000 Konsens-Tokens",
           "Zugang zu GPT-4o & Claude 3",
           "Einfache Bildgenerierung",
           "Tokens verfallen nie",

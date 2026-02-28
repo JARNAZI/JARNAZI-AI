@@ -251,7 +251,7 @@ const it = {
         "name": "Pack Starter",
         "description": "Perfetto per dibattiti occasionali.",
         "features": [
-          "42 Gettoni Consenso",
+          "42,000 Gettoni Consenso",
           "Accesso a GPT-4o & Claude 3",
           "Generazione immagini base",
           "I gettoni non scadono mai",

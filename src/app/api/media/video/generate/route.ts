@@ -10,7 +10,7 @@ type RequestType = 'video';
 
 function estimateVideoTokens(input: { durationSec?: number }) {
   const duration = Math.max(1, Math.min(600, Number(input.durationSec ?? 6)));
-  const base = 35;
+  const base = 35000;
   return Math.round(base * (duration / 6));
 }
 
@@ -35,7 +35,7 @@ async function getActiveVideoCostRate(admin: any): Promise<VideoCostRate> {
 }
 
 function calcVideoTokensFromRate(durationSec: number, rate: { cost_per_unit: number; unit: string }) {
-  const tokensPerUsd = 3;
+  const tokensPerUsd = 3000;
   const real = rate.cost_per_unit;
   const unit = rate.unit;
 

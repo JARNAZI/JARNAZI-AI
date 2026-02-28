@@ -47,13 +47,13 @@ export async function POST(req: Request) {
     const path = `user_uploads/${userRes.user.id}/${Date.now()}_${safeName}`;
 
     // --- Token Charging Logic for Uploads ---
-    // Since 1 token = $0.33, charging 1 token per image is too expensive.
-    // We make image uploads free (0 tokens) and charge 1 token per 10MB for videos/files.
+    // Charging tokens per MB. With new scale, $1 = 3000 tokens. 
+    // Let's charge 1000 tokens per 10MB for videos/files, images free
     const sizeMb = file.size / (1024 * 1024);
     let tokensNeeded = 0;
 
     if (kind !== 'image') {
-      tokensNeeded = Math.max(1, Math.ceil(sizeMb / 10)); // 1 token per 10MB for videos/files
+      tokensNeeded = Math.max(1000, Math.ceil(sizeMb / 10) * 1000); // 1000 token per 10MB 
     }
 
     const { data: profile } = await supabase.from('profiles').select('token_balance, free_trial_used').eq('id', userRes.user.id).single();

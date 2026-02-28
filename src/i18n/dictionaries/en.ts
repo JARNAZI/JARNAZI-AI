@@ -374,7 +374,7 @@ const en = {
         "name": "Starter Pack",
         "description": "Perfect for casual debates and occasional queries.",
         "features": [
-          "42 Consensus Tokens",
+          "42,000 Consensus Tokens",
           "Access to GPT-4o & Claude 3",
           "Basic Image Generation",
           "Tokens Never Expire",

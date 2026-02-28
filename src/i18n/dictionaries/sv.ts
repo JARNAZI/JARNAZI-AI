@@ -251,7 +251,7 @@ const sv = {
         "name": "Starter-paket",
         "description": "Perfekt för tillfälliga debatter.",
         "features": [
-          "42 Konsensus-tokens",
+          "42,000 Konsensus-tokens",
           "Tillgång till GPT-4o & Claude 3",
           "Enkel bildgenerering",
           "Tokens går aldrig ut",

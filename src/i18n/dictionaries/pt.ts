@@ -251,7 +251,7 @@ const pt = {
         "name": "Pacote Starter",
         "description": "Perfeito para debates ocasionais.",
         "features": [
-          "42 Tokens de Consenso",
+          "42,000 Tokens de Consenso",
           "Acesso ao GPT-4o e Claude 3",
           "Geração de imagem básica",
           "Tokens nunca expiram",

@@ -183,6 +183,7 @@ export class DebateOrchestrator {
         2. Managing the Debate:
            - Direct selected APIs to engage in structured debate.
            - Ensure discussion is focused and relevant.
+           - YOU (OpenAI) MUST also participate in the debate before the final consensus. Assign at least one intermediate turn to yourself (e.g., using "OpenAI" or "gpt-4o" as the provider).
 
         3. Generating Final Agreement (MANDATORY FINAL STEP):
            - The LAST step of the plan MUST be a 'Consensus' or 'Agreement' step.
@@ -201,7 +202,7 @@ export class DebateOrchestrator {
             ]
         }
         
-        Create EXACTLY a ${maxRounds}-step plan (including the final consensus step).
+        Create EXACTLY a ${maxRounds}-step plan (including your participation turn and the final consensus step).
         `;
 
         try {
@@ -419,17 +420,20 @@ export class DebateOrchestrator {
     }
 
     private getFallbackPlan(providers: AIProvider[]): TaskPlan['sequence'] {
-        const steps = providers.length > 0 ? providers.slice(0, 2).map(p => ({
+        const steps: TaskPlan['sequence'] = providers.length > 0 ? providers.slice(0, 2).map(p => ({
             role: "Debater",
             provider_preference: [p.name],
             task_type: "text" as const,
             instructions: "Present your perspective."
-        })) : [{
-            role: "AI Thinker",
-            provider_preference: ["openai"],
+        })) : [];
+
+        // Explicitly inject OpenAI into the debate
+        steps.push({
+            role: "AI Thinker (OpenAI)",
+            provider_preference: ["openai", "gpt-4o"],
             task_type: "text" as const,
-            instructions: "Analyze the topic."
-        }];
+            instructions: "Analyze the topic and provide a comprehensive viewpoint before the final consensus."
+        });
 
         steps.push({
             role: "Consensus Generator",
@@ -517,7 +521,10 @@ export async function calculateDynamicTokenCost(supabaseAdmin: any, plan: TaskPl
     let baseTokens = 0;
     if (totalRealCents > 0) {
         const sellCents = Math.ceil(totalRealCents / 0.75);
-        baseTokens = Math.ceil((sellCents * 3) / 100); // 3 tokens per USD
+        // We import TOKENS_PER_USD dynamically since we are in a server function, or we can just import it at top.
+        // Wait, I am replacing the block, let's just use the import from top or require it inline.
+        const { TOKENS_PER_USD } = require('./tokens');
+        baseTokens = Math.ceil((sellCents * TOKENS_PER_USD) / 100);
     }
 
     let tokensNeeded = Math.max(1, baseTokens);
@@ -527,7 +534,8 @@ export async function calculateDynamicTokenCost(supabaseAdmin: any, plan: TaskPl
     if (hasMedia) {
         try {
             const { data: kvData } = await supabaseAdmin.from('site_settings').select('value').eq('key', 'debate_media_overhead').maybeSingle();
-            const mediaOverhead = Number(kvData?.value) || 2;
+            // Assuming default overhead was 2 tokens. Scale to 2000.
+            const mediaOverhead = Number(kvData?.value) || 2000;
             tokensNeeded += mediaOverhead;
         } catch (_) { }
     }

@@ -8,9 +8,9 @@ export const dynamic = 'force-dynamic';
 type RequestType = 'image';
 
 function estimateImageTokens({ quality }: { quality?: string }) {
-  const base = 18;
+  const base = 18000;
   const q = (quality || '').toLowerCase();
-  if (q.includes('high') || q.includes('hq')) return base + 12;
+  if (q.includes('high') || q.includes('hq')) return base + 12000;
   return base;
 }
 

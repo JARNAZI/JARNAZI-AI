@@ -122,10 +122,10 @@ export default function DebateClient({
     }, [supabase]);
 
     const missingTokensToAmount = (missingTokens: number) => {
-        const TOKENS_PER_USD = 3;
+        const TOKENS_PER_USD = 3000;
         const min = 14;
         const tokens = Math.max(0, Math.floor(Number(missingTokens) || 0));
-        // Need amount such that floor(amount*3) >= tokens
+        // Need amount such that floor(amount*TOKENS_PER_USD) >= tokens
         const cents = Math.ceil((tokens * 100) / TOKENS_PER_USD);
         const amount = Math.max(min, cents / 100);
         return Math.round(amount * 100) / 100;

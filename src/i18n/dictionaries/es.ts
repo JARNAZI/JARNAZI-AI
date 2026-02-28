@@ -259,7 +259,7 @@ const es = {
         "name": "Paquete Starter",
         "description": "Perfecto para debates casuales y consultas ocasionales.",
         "features": [
-          "42 tokens de consenso",
+          "42,000 tokens de consenso",
           "Acceso a GPT-4o & Claude 3",
           "Generación de imágenes básica",
           "Los tokens no caducan",

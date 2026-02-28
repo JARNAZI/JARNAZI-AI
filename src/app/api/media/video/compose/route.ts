@@ -33,7 +33,7 @@ async function getActiveComposeCostRate(admin: any): Promise<VideoCostRate> {
 }
 
 function calcTokensFromRate(durationSec: number, rate: { cost_per_unit: number; unit: string }) {
-  const tokensPerUsd = 3;
+  const tokensPerUsd = 3000;
   const real = rate.cost_per_unit;
   const unit = rate.unit;
 

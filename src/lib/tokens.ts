@@ -9,14 +9,14 @@
  * - Tokens = floor(amount_usd * TOKENS_PER_USD)
  *
  * Recommended default:
- * - 1 USD = 3 tokens  (=> $14 = 42 tokens)
+ * - 1 USD = 3000 tokens  (=> $14 = 42000 tokens)
  *
  * You can safely change TOKENS_PER_USD later; the UI will show the correct token amount
  * for any entered USD amount.
  */
 
 export const MIN_PURCHASE_AMOUNT_USD = 14;
-export const TOKENS_PER_USD = 3; // 1 USD = 3 tokens (=> $14 = 42 tokens)
+export const TOKENS_PER_USD = 3000; // 1 USD = 3000 tokens (=> $14 = 42000 tokens)
 
 /** Normalize an amount coming from JSON/UI into a number with 2 decimals max. */
 export function normalizeAmount(amount: unknown): number | null {

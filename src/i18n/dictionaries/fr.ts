@@ -329,7 +329,7 @@ const fr = {
         "name": "Pack Starter",
         "description": "Parfait pour les débats occasionnels.",
         "features": [
-          "42 Jetons de Consensus",
+          "42,000 Jetons de Consensus",
           "Accès à GPT-4o & Claude 3",
           "Génération d'images basique",
           "Les jetons n'expirent jamais",

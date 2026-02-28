@@ -210,7 +210,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
                     <input
                         type="number"
                         min={0}
-                        max={50}
+                        max={50000}
                         className="w-28 px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white"
                         value={settings['debate_media_overhead']?.value ?? '2'}
                         onChange={(e) => setSettings((p) => ({ ...p, debate_media_overhead: { ...(p.debate_media_overhead ?? { value: '' }), value: e.target.value } }))}
