@@ -203,6 +203,24 @@ export function DebateCard({ role, name, content, provider }: DebateCardProps) {
                             controls
                             className="w-full max-h-[450px]"
                         />
+                        <button
+                            onClick={() => {
+                                const url = content.match(/\((.*?)\)/)?.[1];
+                                if (url) {
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = `jarnazi-video-${Date.now()}.mp4`;
+                                    a.target = '_blank'; // Some browsers need this for cross-origin downloads
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+                                }
+                            }}
+                            className="absolute top-4 right-4 p-2 bg-black/60 backdrop-blur-xl text-white hover:bg-primary rounded-xl border border-white/10 opacity-0 group-hover/video:opacity-100 transition-all shadow-2xl"
+                            title="Download Video"
+                        >
+                            <Download className="w-4 h-4" />
+                        </button>
                     </div>
                 )}
 
