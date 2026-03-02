@@ -1,12 +1,13 @@
 /**
  * Token pricing rules
  *
- * We treat the DB fields `profiles.token_balance_cents` and `token_ledger.change_cents`
- * as **integer tokens** (despite the "cents" name) to avoid heavy migrations.
+ * We treat the DB fields `profiles.token_balance` and `token_ledger.amount`
+ * as **integer tokens** (despite the "cents" or "ledger" name) to reflect the current schema.
  *
  * Pricing model:
  * - User enters any amount in USD (min $14.00)
  * - Tokens = floor(amount_usd * TOKENS_PER_USD)
+
  *
  * Recommended default:
  * - 1 USD = 3000 tokens  (=> $14 = 42000 tokens)

@@ -23,7 +23,7 @@ export default function UsageClient({ dict, lang, supabaseUrl, supabaseAnonKey }
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('token_balance_cents, subscription_tier, created_at')
+        .select('token_balance, subscription_tier, created_at')
         .eq('id', user.id)
         .single();
 
@@ -44,7 +44,7 @@ export default function UsageClient({ dict, lang, supabaseUrl, supabaseAnonKey }
   }
 
   const tier = profile?.subscription_tier?.toUpperCase() || 'FREE';
-  const tokens = profile?.token_balance_cents || 0;
+  const tokens = profile?.token_balance || 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6 md:p-12">

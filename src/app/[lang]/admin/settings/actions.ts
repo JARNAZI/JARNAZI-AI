@@ -22,43 +22,64 @@ export async function updateSetting(key: string, value: string) {
     );
 
     // Supports both schemas:
-// A) KV schema: upsert { key, value }
-// B) Single-row schema: update JSONB `features`
-let error: any = null;
+    // A) KV schema: upsert { key, value }
+    // B) Alternate KV: upsert { setting_key, setting_value }
+    // C) Single-row schema: update JSONB `features`
+    let error: any = null;
 
-try {
-    const res = await supabaseAdmin.from('site_settings').upsert({
-        key,
-        value,
-        updated_at: new Date().toISOString()
-    });
-    error = (res as any).error;
-    if (!error) {
-        // ok
+    try {
+        console.log(`[Admin/Settings] Attempting upsert for key: ${key}`);
+
+        // Strategy 1: Try { key, value } - matches settings_v2.sql
+        const res1 = await supabaseAdmin.from('site_settings').upsert({
+            key,
+            value,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'key' });
+
+        if (res1.error) {
+            console.warn(`[Admin/Settings] Upsert strategy 1 failed: ${res1.error.message}. Trying strategy 2...`);
+
+            // Strategy 2: Try { setting_key, setting_value } - matches site_settings_schema.sql
+            const res2 = await supabaseAdmin.from('site_settings').upsert({
+                setting_key: key,
+                setting_value: value,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'setting_key' });
+
+            if (res2.error) {
+                console.error(`[Admin/Settings] All KV upsert strategies failed.`);
+                error = res2.error;
+            }
+        }
+    } catch (upsertCatch: any) {
+        console.error(`[Admin/Settings] Exception during KV upsert:`, upsertCatch.message);
+        error = upsertCatch;
     }
-} catch (_) {
-    // fall through
-}
 
     if (error) {
+        console.log(`[Admin/Settings] Falling back to single-row JSONB 'features' update...`);
         // Fallback: single-row `features` JSONB
         const { data: row, error: readErr } = await supabaseAdmin.from('site_settings').select('id,features').limit(1).maybeSingle();
-        if (readErr) throw readErr;
-        
+        if (readErr) {
+            console.error(`[Admin/Settings] Fallback READ failed:`, readErr.message);
+            throw readErr;
+        }
+
         const id = (row as any)?.id;
         const features = { ...((row as any)?.features || {}), [key]: value };
-        
+
         if (id) {
-            const { error: updErr } = await supabaseAdmin.from('site_settings').update({ 
-                features, 
-                updated_at: new Date().toISOString() 
+            const { error: updErr } = await supabaseAdmin.from('site_settings').update({
+                features,
+                updated_at: new Date().toISOString()
             }).eq('id', id);
             if (updErr) throw updErr;
         } else {
             // First time saving in single-row mode
-            const { error: insErr } = await supabaseAdmin.from('site_settings').insert({ 
-                features, 
-                updated_at: new Date().toISOString() 
+            const { error: insErr } = await supabaseAdmin.from('site_settings').insert({
+                features,
+                updated_at: new Date().toISOString()
             });
             if (insErr) throw insErr;
         }

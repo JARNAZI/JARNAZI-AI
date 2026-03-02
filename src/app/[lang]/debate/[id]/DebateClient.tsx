@@ -523,7 +523,7 @@ export default function DebateClient({
                             role: (newTurn.role as any) || (() => {
                                 const name = newTurn.ai_name_snapshot || '';
                                 if (name === 'User') return 'user';
-                                const n = name.toLowerCase();
+                                const n = newTurn.ai_name_snapshot.toLowerCase();
                                 if (n.includes('leader') || n.includes('agreement') || n.includes('الاتفاق')) return 'agreement';
                                 return 'assistant';
                             })(),
@@ -538,7 +538,7 @@ export default function DebateClient({
             .subscribe();
 
         return () => { supabase.removeChannel(channel); };
-    }, [debateId, supabase]);
+    }, [debateId, supabase, searchParams]);
 
     const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
         bottomRef.current?.scrollIntoView({ behavior });

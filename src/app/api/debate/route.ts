@@ -72,8 +72,11 @@ export async function POST(req: Request) {
 
     // Check Free Trial vs Token Balance
     const { data: profile } = await supabaseAdmin.from('profiles').select('token_balance, free_trial_used').eq('id', user.id).single();
-    const { data: stData } = await supabaseAdmin.from('site_settings').select('value').eq('key', 'enable_free_trial').maybeSingle();
-    const enableFreeTrial = (stData as any)?.value === 'true';
+
+    // Robustly fetch 'enable_free_trial'
+    const { getRobustSetting } = require('@/lib/settings-robust');
+    const enableFreeTrial = await getRobustSetting(supabaseAdmin, 'enable_free_trial', 'false') === 'true';
+
     const isFreeTrialActive = enableFreeTrial && profile && !profile.free_trial_used;
 
     // Reject non-text requests if relying ONLY on free trial

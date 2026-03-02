@@ -67,11 +67,11 @@ export async function POST(req: Request) {
                     console.error('Failed to record payment event (nowpayments):', peInsertErr);
                     return NextResponse.json({ error: 'Failed to record payment event' }, { status: 500 });
                 }
-                const { data: profile } = await supabaseAdmin.from('profiles').select('token_balance_cents').eq('id', userId).single();
+                const { data: profile } = await supabaseAdmin.from('profiles').select('token_balance').eq('id', userId).single();
 
                 if (profile) {
                     await supabaseAdmin.from('profiles').update({
-                        token_balance_cents: ((profile as any).token_balance_cents || 0) + tokensToAdd
+                        token_balance: ((profile as any).token_balance || 0) + tokensToAdd
                     }).eq('id', userId);
 
                     await supabaseAdmin.from('transactions').insert({

@@ -70,7 +70,7 @@ export async function submitContactForm(prevState: unknown, formData: FormData) 
         const { error } = await supabase.from('contact_messages').insert({
             user_id: user?.id || null, // Optional, allow guests if policy permits
             ...rawData,
-            status: 'new'
+            status: 'pending'
         });
 
         if (error) throw error;

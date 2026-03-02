@@ -2,24 +2,18 @@ import 'server-only';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 
+import { getRobustSetting, getAllRobustSettings } from './settings-robust';
+
 export type AppSetting = { key: string; value: unknown };
 
 export async function getSettings(keys?: string[]) {
   const supabase = await createServerClient();
-  let q = supabase.from('site_settings').select('key,value');
-  if (keys && keys.length) q = q.in('key', keys);
-  const { data, error } = await q;
-  const out: Record<string, unknown> = {};
-  if (error) return out;
-  for (const row of data || []) out[row.key] = row.value;
-  return out;
+  return getAllRobustSettings(supabase, keys);
 }
 
 export async function getSetting<T = unknown>(key: string, fallback?: T): Promise<T> {
   const supabase = await createServerClient();
-  const { data, error } = await supabase.from('site_settings').select('value').eq('key', key).maybeSingle();
-  if (error) return fallback as T;
-  return (data?.value ?? fallback) as T;
+  return getRobustSetting<T>(supabase, key, fallback);
 }
 
 export function getAdminClient() {

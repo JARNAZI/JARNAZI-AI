@@ -72,12 +72,8 @@ export async function POST(req: Request) {
       .eq('id', user.id)
       .single();
 
-    const { data: stData } = await supabaseAdmin
-      .from('site_settings')
-      .select('value')
-      .eq('key', 'enable_free_trial')
-      .maybeSingle();
-    const enableFreeTrial = (stData as any)?.value === 'true';
+    const { getRobustSetting } = require('@/lib/settings-robust');
+    const enableFreeTrial = await getRobustSetting(supabaseAdmin, 'enable_free_trial', 'false') === 'true';
 
     let isTrialTurn = false;
     if (enableFreeTrial && profile && !profile.free_trial_used) {
@@ -86,9 +82,9 @@ export async function POST(req: Request) {
       } else {
         // User is trying to use their trial with media
         if ((profile.token_balance || 0) < tokenCost) {
-          return NextResponse.json({ 
-            error: 'FREE_TRIAL_TEXT_ONLY', 
-            message: 'The free trial is limited to one text-only question. Please buy tokens to use images, video, or audio.' 
+          return NextResponse.json({
+            error: 'FREE_TRIAL_TEXT_ONLY',
+            message: 'The free trial is limited to one text-only question. Please buy tokens to use images, video, or audio.'
           }, { status: 403 });
         }
       }

@@ -21,13 +21,13 @@ export default function PricingPage(props: { params: Promise<{ lang: string }> }
     const fetchProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // token balance is stored as integer tokens in token_balance_cents (legacy name)
+        // token balance is stored as integer tokens in token_balance
         const { data } = await supabase
           .from("profiles")
-          .select("token_balance_cents")
+          .select("token_balance")
           .eq("id", user.id)
           .single();
-        if (data) setBalance((data as any).token_balance_cents ?? 0);
+        if (data) setBalance((data as any).token_balance ?? 0);
       }
       setLoading(false);
     };

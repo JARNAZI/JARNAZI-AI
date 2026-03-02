@@ -39,14 +39,14 @@ export function DebateMenu() {
 
                 const { data: profile, error: dbError } = await supabase
                     .from('profiles')
-                    .select('token_balance_cents, subscription_tier, role')
+                    .select('token_balance, subscription_tier, role')
                     .eq('id', user.id)
                     .single();
 
                 console.log("DebateMenu: DB Profile:", profile, "DB Error:", dbError);
 
                 if (profile) {
-                    setBalance(profile.token_balance_cents);
+                    setBalance(profile.token_balance);
                     setSubscription(profile.subscription_tier || 'Free');
                     // Prefer profile role if available
                     if (profile.role) {
@@ -64,7 +64,7 @@ export function DebateMenu() {
                         filter: `id=eq.${user.id}`
                     }, (payload) => {
                         console.log("DebateMenu: Realtime Update:", payload);
-                        if (payload.new.token_balance_cents !== undefined) setBalance(payload.new.token_balance_cents);
+                        if (payload.new.token_balance !== undefined) setBalance(payload.new.token_balance);
                         if (payload.new.subscription_tier !== undefined) setSubscription(payload.new.subscription_tier);
                         if (payload.new.role !== undefined) {
                             console.log("DebateMenu: Realtime Role Update:", payload.new.role);

@@ -59,6 +59,12 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
             })
 
             if (error) {
+                // If the error message suggests a configuration or network issue, it might need a reload
+                if (error.message.includes('fetch') || error.message.includes('missing-supabase-url')) {
+                    console.error("Login attempt failed due to config/network issue. Retrying with full reload...");
+                    window.location.reload();
+                    return;
+                }
                 throw error
             }
 
@@ -68,6 +74,13 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
             setError(mappedError)
             toast.error(mappedError)
             setTurnstileToken("")
+
+            // If the error indicates a system failure (not just invalid creds), 
+            // the user might benefit from a page refresh as they requested.
+            if (mappedError.toLowerCase().includes('network') || mappedError.toLowerCase().includes('failed to fetch')) {
+                toast.info("Attempting to refresh the page to resolve connection issue...");
+                setTimeout(() => window.location.reload(), 2000);
+            }
         } finally {
             setLoading(false)
         }

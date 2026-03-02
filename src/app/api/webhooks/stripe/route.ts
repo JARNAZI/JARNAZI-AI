@@ -16,12 +16,25 @@ export async function POST(req: Request) {
   const body = await req.text();
   const sig = (await headers()).get('stripe-signature');
 
+  // STRATEGY: Try both Live and Test secrets if available, or just the main one.
+  const webhookSecret = process.env.STRIPE_WEBHOOK;
+  const webhookSecretTest = process.env.STRIPE_WEBHOOK_TEST || process.env.STRIPE_TEST_WEBHOOK;
+
   let event;
   try {
-    event = stripe.webhooks.constructEvent(body, sig!, process.env.STRIPE_WEBHOOK!);
+    event = stripe.webhooks.constructEvent(body, sig!, webhookSecret!);
   } catch (err: unknown) {
-    console.error('Stripe webhook signature verification failed:', (err instanceof Error ? err.message : String(err)));
-    return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) }, { status: 400 });
+    if (webhookSecretTest) {
+      try {
+        event = stripe.webhooks.constructEvent(body, sig!, webhookSecretTest);
+      } catch (err2) {
+        console.error('Stripe webhook verification failed for both secrets.');
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+      }
+    } else {
+      console.error('Stripe webhook signature verification failed:', (err instanceof Error ? err.message : String(err)));
+      return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) }, { status: 400 });
+    }
   }
 
   if (event.type === 'checkout.session.completed') {
@@ -39,7 +52,6 @@ export async function POST(req: Request) {
           .from('payment_events')
           .select('id')
           .eq('event_id', eventId)
-          .eq('provider', 'stripe')
           .maybeSingle();
 
         if (existingEvent) {
@@ -50,31 +62,39 @@ export async function POST(req: Request) {
         await supabaseAdmin.from('payment_events').insert({
           provider: 'stripe',
           event_id: eventId,
-          processed: false,
+          user_id: userId,
+          amount_cents: session.amount_total,
+          tokens_added: tokensToAdd,
+          status: 'processed',
+          raw: session,
         });
 
-        // Update balance
-        const { data: profile } = await supabaseAdmin
-          .from('profiles')
-          .select('token_balance')
-          .eq('id', userId)
-          .maybeSingle();
+        // Update balance ATOMICALLY using RPC if available, or UPDATE
+        // Preferred: Use the column 'token_balance' as identified in schema.sql
+        const { error: updErr } = await supabaseAdmin.rpc('refund_tokens', {
+          p_user_id: userId,
+          p_tokens: tokensToAdd
+        });
 
-        const newBalance = (profile?.token_balance || 0) + tokensToAdd;
-        await supabaseAdmin.from('profiles').update({ token_balance: newBalance }).eq('id', userId);
+        if (updErr) {
+          console.warn('RPC refund_tokens failed, falling back to manual increment:', updErr.message);
+          const { data: profile } = await supabaseAdmin.from('profiles').select('token_balance').eq('id', userId).single();
+          if (profile) {
+            await supabaseAdmin.from('profiles').update({
+              token_balance: ((profile as any).token_balance || 0) + tokensToAdd
+            }).eq('id', userId);
+          }
+        }
 
         // Record in ledger
         await supabaseAdmin.from('token_ledger').insert({
           user_id: userId,
-          amount: tokensToAdd,
-          description: `Stripe Payment: ${eventId}`
+          delta_tokens: tokensToAdd, // Migration 20260113 uses delta_tokens
+          amount: tokensToAdd,       // Types use amount
+          reason: 'purchase',
+          reference: eventId,
+          meta: { stripe_session_id: session.id }
         });
-
-        // Mark processed
-        await supabaseAdmin.from('payment_events')
-          .update({ processed: true })
-          .eq('provider', 'stripe')
-          .eq('event_id', eventId);
 
         // Email invoice
         if (session.customer_details?.email) {
