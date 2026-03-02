@@ -85,7 +85,7 @@ serve(async (req) => {
         }
 
         const payload: EmailRequest = await req.json()
-        const { to, subject: reqSubject, type, data, html: reqHtml } = payload
+        const { to, subject: reqSubject, type, data, html: reqHtml, from: reqFrom } = payload as any
 
         console.log(`Email request received for: ${Array.isArray(to) ? to.join(', ') : to} (Type: ${type || 'custom'})`);
 
@@ -153,8 +153,9 @@ serve(async (req) => {
         }
 
         const normalizedTo = Array.isArray(to) ? to : [to];
+        const finalFromOption = reqFrom || RESEND_FROM_EMAIL;
 
-        console.log(`Sending email via Resend to ${normalizedTo.length} recipients...`);
+        console.log(`Sending email via Resend to ${normalizedTo.length} recipients... (From: ${finalFromOption})`);
 
         const res = await fetch("https://api.resend.com/emails", {
             method: "POST",
@@ -163,7 +164,7 @@ serve(async (req) => {
                 "Authorization": `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-                from: RESEND_FROM_EMAIL,
+                from: finalFromOption,
                 to: normalizedTo,
                 subject: finalSubject,
                 html: reqHtml ? htmlContent : `<div style="${SUBSCRIPTION_STYLES}">${htmlContent}</div>`,

@@ -95,7 +95,16 @@ export async function replyToMessage(messageId: string, replyText: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Unauthorized');
 
-    // Update DB
+    // Send Email FIRST so if it fails, Database is not updated
+    await sendContactReply(message.email, {
+        name: message.name || undefined,
+        subject: message.subject || undefined,
+        originalMessage: message.message || undefined,
+        replyText,
+        // If the app stores preferred language in profile later, we can fetch it here.
+    });
+
+    // Update DB AFTER email was successfully sent
     const { error } = await supabase.from('contact_messages').update({
         status: 'replied',
         admin_reply: replyText,
@@ -104,15 +113,6 @@ export async function replyToMessage(messageId: string, replyText: string) {
     }).eq('id', messageId);
 
     if (error) throw error;
-
-    // Send Email
-    await sendContactReply(message.email, {
-        name: message.name || undefined,
-        subject: message.subject || undefined,
-        originalMessage: message.message || undefined,
-        replyText,
-        // If the app stores preferred language in profile later, we can fetch it here.
-    });
 
     // Send In-App Notification if user is registered
     if (message.user_id) {
