@@ -26,6 +26,7 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [turnstileToken, setTurnstileToken] = useState("")
+    const [turnstileKey, setTurnstileKey] = useState(0)
 
     useEffect(() => {
         if (searchParams.get('verified') === '1') {
@@ -74,6 +75,7 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
             setError(mappedError)
             toast.error(mappedError)
             setTurnstileToken("")
+            setTurnstileKey(prev => prev + 1)
 
             // If the error indicates a system failure (not just invalid creds), 
             // the user might benefit from a page refresh as they requested.
@@ -140,7 +142,7 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
                         </div>
                     </div>
 
-                    <TurnstileWidget onVerify={setTurnstileToken} siteKey={siteKey} />
+                    <TurnstileWidget key={turnstileKey} onVerify={setTurnstileToken} siteKey={siteKey} />
 
                     <button
                         type="submit"

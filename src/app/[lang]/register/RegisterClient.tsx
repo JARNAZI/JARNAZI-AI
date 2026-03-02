@@ -22,6 +22,7 @@ export default function RegisterClient({ dict, lang, siteKey, supabaseUrl, supab
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
     const [turnstileToken, setTurnstileToken] = useState("")
+    const [turnstileKey, setTurnstileKey] = useState(0)
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -59,6 +60,7 @@ export default function RegisterClient({ dict, lang, siteKey, supabaseUrl, supab
             setError(mappedError)
             toast.error(mappedError)
             setTurnstileToken("")
+            setTurnstileKey(prev => prev + 1)
         } finally {
             setLoading(false)
         }
@@ -169,7 +171,7 @@ export default function RegisterClient({ dict, lang, siteKey, supabaseUrl, supab
                         </label>
                     </div>
 
-                    <TurnstileWidget onVerify={setTurnstileToken} siteKey={siteKey} />
+                    <TurnstileWidget key={turnstileKey} onVerify={setTurnstileToken} siteKey={siteKey} />
 
                     <button
                         type="submit"

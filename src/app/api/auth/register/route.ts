@@ -57,17 +57,7 @@ export async function POST(req: Request) {
       }
     });
 
-    // 1) Create user (unconfirmed)
-    const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      user_metadata: { full_name: fullName || '' },
-      email_confirm: false,
-    });
-
-    if (createErr) throw createErr;
-
-    // 2) Generate verification link with correct redirect (avoid localhost)
+    // We use generateLink with type: 'signup' which creates the user and returns the verification link in one step.
     const baseUrl = getBaseUrl(req);
     const redirectTo = `${baseUrl}/${lang || 'en'}/login?verified=1`;
 
@@ -75,7 +65,10 @@ export async function POST(req: Request) {
       type: 'signup',
       email,
       password,
-      options: { redirectTo },
+      options: {
+        data: { full_name: fullName || '' },
+        redirectTo
+      },
     });
 
     if (linkErr) throw linkErr;
@@ -83,10 +76,12 @@ export async function POST(req: Request) {
     const actionLink = linkData?.properties?.action_link;
     if (!actionLink) throw new Error('Verification link not generated');
 
-    // 3) Send via Resend (Edge Function)
+    // Send via Resend (Edge Function)
     await sendVerificationEmailLink(email, actionLink, lang || 'en');
 
-    return NextResponse.json({ success: true, userId: created.user?.id });
+    // The user's UUID is returned in user properties of linkData if needed, but not necessarily populated.
+    // If not, we can just return success: true.
+    return NextResponse.json({ success: true, userId: linkData?.user?.id });
   } catch (error: unknown) {
     console.error('Register Error:', error);
     return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) || 'Registration failed' }, { status: 400 });
