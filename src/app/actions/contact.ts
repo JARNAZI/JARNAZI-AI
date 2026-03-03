@@ -153,26 +153,43 @@ export async function replyToMessage(messageId: string, replyText: string) {
         // If the app stores preferred language in profile later, we can fetch it here.
     });
 
+    // Create admin client to bypass any restrictive RLS triggers
+    const { createClient: createAdminClient } = await import('@supabase/supabase-js');
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!url || !key) throw new Error('Missing Supabase keys for reply');
+    const admin = createAdminClient(url, key);
+
     // Update DB AFTER email was successfully sent
-    const { error } = await supabase.from('contact_messages').update({
+    const { error } = await admin.from('contact_messages').update({
         status: 'replied',
         admin_reply: replyText,
         replied_at: new Date().toISOString(),
         replied_by: user.id
     }).eq('id', messageId);
 
-    if (error) throw error;
+    if (error) {
+        console.error("Failed to update contact message status:", error);
+        throw new Error("Failed to update message status after sending email.");
+    }
 
-    // Send In-App Notification if user is registered
+    // Send In-App Notification if user is registered using Admin client
     if (message.user_id) {
-        await createNotification(
-            message.user_id,
-            `Support replied to: ${message.subject}`,
-            'success',
-            '/contact'
-        );
+        try {
+            await admin.from('notifications').insert({
+                user_id: message.user_id,
+                title: '/contact',
+                body: `Support replied to: ${message.subject}`,
+                type: 'success',
+                is_read: false
+            });
+        } catch (err) {
+            console.error('Failed to create in-app notification:', err);
+        }
     }
 
     revalidatePath('/admin/messages');
     return { success: true };
 }
+
