@@ -173,9 +173,15 @@ export default function DebateDashboard({
                 finalTopic += `\n[Attachments: ${attachments.join(', ')}]`;
             }
 
+            const { data: { session } } = await supabase.auth.getSession();
+            const accessToken = session?.access_token;
+
             const response = await fetch('/api/debate', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {})
+                },
                 body: JSON.stringify({
                     topic: finalTopic,
                     userId: user.id
