@@ -230,7 +230,11 @@ export class DebateOrchestrator {
                 .select('name')
                 .eq('enabled', true)
                 .eq('kind', 'text');
-            if (data) candidates.push(...data.map(p => p.name));
+            if (data && data.length > 0) {
+                candidates.push(...data.map(p => p.name));
+            } else {
+                candidates.push('openai'); // Fallback trigger
+            }
         }
 
         let lastError: unknown = null;
@@ -251,6 +255,19 @@ export class DebateOrchestrator {
                 const { data: allEnabled } = await this.supabase.from('ai_providers').select('*').eq('enabled', true);
                 const found = allEnabled?.find(r => (r.config as any)?.provider?.toLowerCase() === providerName.toLowerCase());
                 if (found) agent = this.normalizeProvider(found);
+            }
+
+            if (!agent) {
+                // SYSTEM FALLBACK: If AI isn't configured in DB, but keys exist in Env, use them!
+                if (providerName.toLowerCase().includes('openai') && process.env.OPENAI_API_KEY) {
+                    agent = { id: 'fallback-openai', name: 'OpenAI (Fallback)', kind: 'text', enabled: true, env_key: 'OPENAI_API_KEY', provider: 'openai', model_id: 'gpt-4o' };
+                } else if (providerName.toLowerCase().includes('anthropic') && process.env.CLOUDE_API_KEY) {
+                    agent = { id: 'fallback-claude', name: 'Anthropic (Fallback)', kind: 'text', enabled: true, env_key: 'CLOUDE_API_KEY', provider: 'anthropic', model_id: 'claude-3-5-sonnet-20240620' };
+                } else if (providerName.toLowerCase().includes('deepseek') && process.env.DEEPSEEK_API_KEY) {
+                    agent = { id: 'fallback-deepseek', name: 'DeepSeek (Fallback)', kind: 'text', enabled: true, env_key: 'DEEPSEEK_API_KEY', provider: 'deepseek', model_id: 'deepseek-chat' };
+                } else if (process.env.OPENAI_API_KEY) {
+                    agent = { id: 'fallback-openai-universal', name: 'Universal AI (Fallback)', kind: 'text', enabled: true, env_key: 'OPENAI_API_KEY', provider: 'openai', model_id: 'gpt-4o' };
+                }
             }
 
             if (!agent) continue;

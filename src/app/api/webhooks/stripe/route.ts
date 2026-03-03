@@ -17,8 +17,8 @@ export async function POST(req: Request) {
   const sig = (await headers()).get('stripe-signature');
 
   // STRATEGY: Try both Live and Test secrets if available, or just the main one.
-  const webhookSecret = process.env.STRIPE_WEBHOOK;
-  const webhookSecretTest = process.env.STRIPE_WEBHOOK_TEST || process.env.STRIPE_TEST_WEBHOOK;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK;
+  const webhookSecretTest = process.env.STRIPE_TEST_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_TEST || process.env.STRIPE_TEST_WEBHOOK || process.env.STRIPE_WEBHOOK_SECRET_TEST;
 
   let event;
   try {
@@ -97,12 +97,18 @@ export async function POST(req: Request) {
         });
 
         // Email invoice
-        if (session.customer_details?.email) {
+        let recipientEmail = session.customer_details?.email;
+        if (!recipientEmail) {
+          const { data: { user } } = await supabaseAdmin.auth.admin.getUserById(userId);
+          if (user && user.email) recipientEmail = user.email;
+        }
+
+        if (recipientEmail) {
           const amountFormatted = (session.amount_total / 100).toLocaleString('en-US', {
             style: 'currency',
             currency: session.currency || 'usd',
           });
-          await sendTokenPurchaseInvoice(session.customer_details.email, amountFormatted, tokensToAdd, 'en', session.id);
+          await sendTokenPurchaseInvoice(recipientEmail, amountFormatted, tokensToAdd, 'en', session.id);
         }
 
         // Notify user in-app
