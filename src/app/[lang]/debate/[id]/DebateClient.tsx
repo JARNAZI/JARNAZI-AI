@@ -205,6 +205,7 @@ export default function DebateClient({
                                 debateId,
                                 prompt: totalSegments > 1 ? `${basePrompt}\n\n[Scene ${sceneNum}/${totalSegments}]` : basePrompt,
                                 durationSec: segSec,
+                                aspect: state.aspect,
                                 confirmed: true,
                             }),
                         });
@@ -226,6 +227,7 @@ export default function DebateClient({
                                         debateId,
                                         lang,
                                         prompt: basePrompt,
+                                        aspect: state.aspect,
                                         segments: remainingSegs,
                                         sceneOffset: sceneNum - 1,
                                         totalSegments,
@@ -399,6 +401,7 @@ export default function DebateClient({
     // Phase 8: Video generation safeguards (cost-before-generate + confirmation)
     const [pendingVideoPrompt, setPendingVideoPrompt] = useState<string>('');
     const [pendingVideoDurationSec, setPendingVideoDurationSec] = useState<number>(6);
+    const [pendingVideoAspect, setPendingVideoAspect] = useState<string>('16:9');
     const [videoGenerating, setVideoGenerating] = useState(false);
     const [lastVideoAssetUrl, setLastVideoAssetUrl] = useState<string | null>(null);
     const [lastVideoSegments, setLastVideoSegments] = useState<string[]>([]);
@@ -877,6 +880,7 @@ export default function DebateClient({
         }
         setPendingVideoPrompt(fc.content);
         setPendingVideoDurationSec(6);
+        setPendingVideoAspect('16:9');
         setIsVideoModalOpen(true);
     };
 
@@ -999,6 +1003,7 @@ export default function DebateClient({
                         debateId,
                         prompt: segments.length > 1 ? `${basePromptWithCanon}\n\n[Scene ${i + 1}/${segments.length}]` : basePromptWithCanon,
                         durationSec: segSec,
+                        aspect: pendingVideoAspect,
                         confirmed: true,
                         sequenceNumber: i + 1,
                     }),
@@ -1021,6 +1026,7 @@ export default function DebateClient({
                                 debateId,
                                 lang,
                                 prompt: pendingVideoPrompt,
+                                aspect: pendingVideoAspect,
                                 segments: remaining,
                                 sceneOffset: i,
                                 totalSegments: segments.length,
@@ -1927,9 +1933,29 @@ Suggested amount: $${amount}`
                             </div>
 
                             <div className="p-4 space-y-3">
-                                <p className={`text-sm ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>
-                                    {dict?.debate?.confirmVideoBody || 'The system will calculate the token cost before generation and block if your balance is insufficient.'}
-                                </p>
+                                <label className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>{dict?.debate?.finalVisualPrompt || 'Final Video Prompt'}</label>
+                                <textarea
+                                    value={pendingVideoPrompt}
+                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPendingVideoPrompt(e.target.value)}
+                                    rows={4}
+                                    className={`w-full rounded-xl border p-3 text-sm font-medium outline-none ${isDarkMode ? 'bg-zinc-900 border-white/10 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
+                                    placeholder={dict.debate?.videoPromptPlaceholder || "Describe the video to generate..."}
+                                />
+
+                                <div className={`rounded-xl p-3 border ${isDarkMode ? 'bg-zinc-900/40 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
+                                    <div className="text-xs font-bold uppercase tracking-wider opacity-80 mb-2">{dict?.debate?.aspectRatio || 'Aspect Ratio'}</div>
+                                    <select
+                                        value={pendingVideoAspect}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPendingVideoAspect(e.target.value)}
+                                        className={`w-full bg-transparent outline-none text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                                    >
+                                        <option value="16:9">16:9 (Landscape)</option>
+                                        <option value="9:16">9:16 (Portrait / Reels)</option>
+                                        <option value="1:1">1:1 (Square)</option>
+                                        <option value="4:3">4:3 (Standard)</option>
+                                        <option value="3:4">3:4</option>
+                                    </select>
+                                </div>
 
                                 <div className={`rounded-xl p-3 border ${isDarkMode ? 'bg-zinc-900/40 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
                                     <div className="flex items-center justify-between text-sm">

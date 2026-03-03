@@ -89,6 +89,7 @@ export async function POST(req: Request) {
     const debateId: string | null = body?.debateId ?? null;
     const prompt: string = body?.prompt ?? '';
     let durationSec: number = Number(body?.durationSec ?? 6);
+    const aspect: string = body?.aspect ?? '16:9';
     const sequenceNumber: number | null = body?.sequenceNumber ? Number(body.sequenceNumber) : null;
 
     if (!Number.isFinite(durationSec) || durationSec <= 0 || durationSec > 600) {
@@ -138,7 +139,7 @@ export async function POST(req: Request) {
         const { data: pendingId, error: pendErr } = await admin.rpc('create_pending_request', {
           p_user_id: user.id,
           p_kind: 'video',
-          p_payload: { debateId, prompt, durationSec },
+          p_payload: { debateId, prompt, durationSec, aspect },
           p_required_tokens: tokensNeeded,
           p_missing_tokens: missingTokens,
           p_ttl_minutes: 10,
@@ -188,6 +189,7 @@ export async function POST(req: Request) {
         debate_id: debateId,
         prompt,
         durationSec,
+        aspect,
         providers,
       },
     });
