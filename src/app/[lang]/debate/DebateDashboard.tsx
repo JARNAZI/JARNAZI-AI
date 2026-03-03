@@ -14,7 +14,7 @@ import {
     MessageSquare, CreditCard, User, Phone, Sun,
     Moon, Globe, LogOut, Loader2, AlertCircle,
     CheckCircle2, Info, X,
-    FileText, Image as ImageIcon, Video, Mic, Trash2, Shield
+    FileText, Image as ImageIcon, Video, Mic, Trash2, Shield, Camera
 } from 'lucide-react';
 
 // Dynamic imports for heavy components

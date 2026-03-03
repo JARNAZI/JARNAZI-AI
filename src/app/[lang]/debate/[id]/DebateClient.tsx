@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 
 // ICONS
 import { LANGUAGES } from '@/i18n/config';
-import { Menu, Send, Image as ImageIcon, Video, FileText, Printer, Copy, ArrowLeft, ChevronLeft, ChevronRight, User, CreditCard, LogOut, Sun, Moon, PlusCircle, Globe, Trash2, Mail, Coins, MessageSquare, X, Zap, Shield, Info } from 'lucide-react';
+import { Menu, Send, Image as ImageIcon, Video, FileText, Printer, Copy, ArrowLeft, ChevronLeft, ChevronRight, User, CreditCard, LogOut, Sun, Moon, PlusCircle, Globe, Trash2, Mail, Coins, MessageSquare, X, Zap, Shield, Info, Camera } from 'lucide-react';
 
 
 // REMOVED LOCAL TYPE DEF - moved to src/types/mathlive.d.ts
