@@ -66,6 +66,12 @@ export default function ContactPage() {
                 </div>
 
                 <form ref={formRef} action={formAction} className="space-y-6">
+                    {/* Honeypot field (hidden from users, filled by bot scrapers) */}
+                    <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                        <label htmlFor="website_url">Leave this field empty</label>
+                        <input type="text" name="website_url" id="website_url" autoComplete="off" tabIndex={-1} />
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-muted-foreground">{t.name || 'Name'}</label>
