@@ -1281,6 +1281,7 @@ export default function DebateClient({
                                             <MediaUploader label={dict.dashboard?.files || "File"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
                                             <MediaUploader label={dict.dashboard?.pics || "Image"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
                                             <MediaUploader label={dict.dashboard?.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
+                                            <MediaUploader label={dict.dashboard?.camera || "Camera"} icon={Camera} accept="image/*,video/*" capture="environment" onFileSelected={setSelectedFile} />
                                             <AudioRecorder onRecordingComplete={setRecordedAudio} label={dict.dashboard?.audio || "Audio"} />
                                         </>
                                     ) : (enableFreeTrial && !freeTrialUsed) ? (

@@ -12,7 +12,7 @@ interface MediaUploaderProps {
     icon?: ElementType;
 }
 
-export function MediaUploader({ onFileSelected, accept, label, icon: Icon = Upload }: MediaUploaderProps) {
+export function MediaUploader({ onFileSelected, accept, label, icon: Icon = Upload, capture }: MediaUploaderProps & { capture?: "environment" | "user" }) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +32,7 @@ export function MediaUploader({ onFileSelected, accept, label, icon: Icon = Uplo
                 ref={fileInputRef}
                 type="file"
                 accept={accept}
+                capture={capture}
                 className="hidden"
                 onChange={handleFileChange}
             />

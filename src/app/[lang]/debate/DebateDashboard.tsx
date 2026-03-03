@@ -283,6 +283,7 @@ export default function DebateDashboard({
                                                 <MediaUploader label={d.files || "Files"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
                                                 <MediaUploader label={d.pics || "Pics"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
                                                 <MediaUploader label={d.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
+                                                <MediaUploader label={d.camera || "Camera"} icon={Camera} accept="image/*,video/*" capture="environment" onFileSelected={setSelectedFile} />
                                                 <AudioRecorder onRecordingComplete={setRecordedAudio} label={d.audio || "Audio"} />
                                             </>
                                         ) : (enableFreeTrial && !(profileInfo?.free_trial_used)) ? (
@@ -459,167 +460,169 @@ export default function DebateDashboard({
                         </div>
                     )}
                 </div>
-            </main>
+            </main >
 
             {/* DASHBOARD MENU OVERLAY */}
-            {isMenuOpen && (
-                <div className="fixed inset-0 z-[100] flex justify-end">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md transition-all duration-500" onClick={() => setIsMenuOpen(false)} />
-                    <div className="relative w-full max-w-sm h-full bg-background border-l border-border shadow-[20px_0_60px_-15px_rgba(0,0,0,0.5)] p-8 flex flex-col animate-in slide-in-from-right duration-500 ease-out">
-                        <div className="flex items-center justify-between mb-12 border-b border-border pb-8">
-                            <div className="flex items-center gap-4 text-left">
-                                <div className="p-3 bg-indigo-500/20 rounded-[1.25rem] ring-1 ring-primary/50">
-                                    <LayoutTemplate className="w-6 h-6 text-primary" />
-                                </div>
-                                <div>
-                                    <h2 className="text-md font-black uppercase tracking-[0.2em] text-foreground">{d.nodeConsole || "Node Console"}</h2>
-                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mt-1">{d.version || "Version Stable"} 1.0.0</p>
-                                </div>
-                            </div>
-                            <button onClick={() => setIsMenuOpen(false)} className="p-3 rounded-2xl bg-muted hover:bg-secondary text-muted-foreground hover:text-foreground transition-all border border-border active:scale-95">
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
-
-                        <nav className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar text-left font-black">
-                            {role === 'admin' && (
-                                <>
-                                    <p className="text-[10px] font-black text-red-500 uppercase tracking-[0.3em] mb-4 mt-2 ml-4">{d.systemAccess || "System Access"}</p>
-                                    <Link href={`/${lang}/admin`} className="flex items-center gap-5 p-5 rounded-[1.5rem] bg-red-500/5 hover:bg-red-500/10 active:bg-red-500/15 border border-red-500/10 group transition-all" onClick={() => setIsMenuOpen(false)}>
-                                        <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
-                                            <Shield className="w-5 h-5" />
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="font-black uppercase tracking-widest text-[12px] text-red-500 group-hover:text-red-600">{dict?.adminDashboard?.title || "Admin Dashboard"}</span>
-                                            <span className="text-[9px] font-bold text-red-500/50 uppercase tracking-tight">{d.privilegedAccess || "Privileged Access Only"}</span>
-                                        </div>
-                                    </Link>
-                                    <div className="my-6 h-px bg-border" />
-                                </>
-                            )}
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mb-4 mt-2 ml-4">{d.terminalRouting || "Terminal Routing"}</p>
-
-                            <Link href={`/${lang}/neural-hub`} className="flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all" onClick={() => setIsMenuOpen(false)}>
-                                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
-                                    <Zap className="w-5 h-5" />
-                                </div>
-                                <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground">{d.neuralHub || "Neural Hub"}</span>
-                            </Link>
-
-                            <Link href={`/${lang}/debate/saved`} className="flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all" onClick={() => setIsMenuOpen(false)}>
-                                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
-                                    <History className="w-5 h-5" />
-                                </div>
-                                <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground">{d.archiveVault || "Archive Vault"}</span>
-                            </Link>
-
-                            <div className="my-10 h-px bg-border" />
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mb-4 ml-4">{d.resourceManagement || "Resource Management"}</p>
-
-                            <button
-                                onClick={() => {
-                                    console.log("[Dev] Navigating to Usage");
-                                    setIsMenuOpen(false);
-                                    router.push(`/${lang}/debate/usage`);
-                                }}
-                                className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] border border-primary/30 bg-primary/5 hover:bg-primary/10 active:bg-primary/20 group transition-all shadow-xl shadow-primary/5 text-left"
-                            >
-                                <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                                    <Zap className="w-5 h-5 fill-current" />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="font-black uppercase tracking-widest text-[12px] text-foreground">{d.liquidityStatus || "Liquidity Status"}</span>
-                                    <span className="text-[9px] font-black text-primary uppercase tracking-tighter mt-0.5">{d.tokenBalance || "Token Balance"}</span>
-                                </div>
-                            </button>
-
-                            <button
-                                onClick={() => {
-                                    console.log("[Dev] Navigating to Buy Tokens");
-                                    setIsMenuOpen(false);
-                                    router.push(`/${lang}/buy-tokens`);
-                                }}
-                                className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all text-left"
-                            >
-                                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
-                                    <CreditCard className="w-5 h-5" />
-                                </div>
-                                <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground">{d.allocateBudget || "Allocate Budget"}</span>
-                            </button>
-
-                            <button
-                                onClick={() => {
-                                    console.log("[Dev] Navigating to Profile Settings");
-                                    setIsMenuOpen(false);
-                                    router.push(`/${lang}/profile/settings`);
-                                }}
-                                className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all text-left"
-                            >
-                                <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
-                                    <User className="w-5 h-5" />
-                                </div>
-                                <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground">{d.userMatrix || "User Matrix"}</span>
-                            </button>
-
-                            <div className="my-10 h-px bg-border" />
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mb-4 ml-4">{d.globalSettings || "Global Matrix Settings"}</p>
-
-                            <button
-                                onClick={handleThemeToggle}
-                                className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all text-left"
-                            >
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${resolvedTheme === 'dark' ? 'bg-amber-500/10 text-amber-500' : 'bg-primary/10 text-primary'} group-hover:scale-110`}>
-                                    {resolvedTheme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                                </div>
-                                <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground leading-none pt-1">
-                                    {resolvedTheme === 'dark' ? (d.solarSpectrum || 'Solar Spectrum') : (d.lunarSpectrum || 'Lunar Spectrum')}
-                                </span>
-                            </button>
-
-                            <div className="relative group">
-                                <div className="flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted group transition-all">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
-                                        <Globe className="w-5 h-5" />
+            {
+                isMenuOpen && (
+                    <div className="fixed inset-0 z-[100] flex justify-end">
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-md transition-all duration-500" onClick={() => setIsMenuOpen(false)} />
+                        <div className="relative w-full max-w-sm h-full bg-background border-l border-border shadow-[20px_0_60px_-15px_rgba(0,0,0,0.5)] p-8 flex flex-col animate-in slide-in-from-right duration-500 ease-out">
+                            <div className="flex items-center justify-between mb-12 border-b border-border pb-8">
+                                <div className="flex items-center gap-4 text-left">
+                                    <div className="p-3 bg-indigo-500/20 rounded-[1.25rem] ring-1 ring-primary/50">
+                                        <LayoutTemplate className="w-6 h-6 text-primary" />
                                     </div>
-                                    <div className="flex-1 flex flex-col">
-                                        <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground">{d.interfaceLocale || "Interface Locale"}</span>
-                                        <div className="flex flex-wrap gap-2 mt-4 max-h-48 overflow-y-auto custom-scrollbar p-1">
-                                            {LANGUAGES.map((l: any) => (
-                                                <button
-                                                    key={l.code}
-                                                    onClick={() => handleLangToggle(l.code)}
-                                                    className={`text-[9px] font-black px-3 py-2 rounded-lg border transition-all ${lang === l.code ? 'bg-primary border-primary text-primary-foreground' : 'bg-background border-border text-muted-foreground hover:text-foreground'}`}
-                                                >
-                                                    {l.name.toUpperCase()}
-                                                </button>
-                                            ))}
-                                        </div>
+                                    <div>
+                                        <h2 className="text-md font-black uppercase tracking-[0.2em] text-foreground">{d.nodeConsole || "Node Console"}</h2>
+                                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mt-1">{d.version || "Version Stable"} 1.0.0</p>
                                     </div>
                                 </div>
+                                <button onClick={() => setIsMenuOpen(false)} className="p-3 rounded-2xl bg-muted hover:bg-secondary text-muted-foreground hover:text-foreground transition-all border border-border active:scale-95">
+                                    <X className="w-6 h-6" />
+                                </button>
                             </div>
 
-                            <div className="my-10 h-px bg-border" />
+                            <nav className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar text-left font-black">
+                                {role === 'admin' && (
+                                    <>
+                                        <p className="text-[10px] font-black text-red-500 uppercase tracking-[0.3em] mb-4 mt-2 ml-4">{d.systemAccess || "System Access"}</p>
+                                        <Link href={`/${lang}/admin`} className="flex items-center gap-5 p-5 rounded-[1.5rem] bg-red-500/5 hover:bg-red-500/10 active:bg-red-500/15 border border-red-500/10 group transition-all" onClick={() => setIsMenuOpen(false)}>
+                                            <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                                                <Shield className="w-5 h-5" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="font-black uppercase tracking-widest text-[12px] text-red-500 group-hover:text-red-600">{dict?.adminDashboard?.title || "Admin Dashboard"}</span>
+                                                <span className="text-[9px] font-bold text-red-500/50 uppercase tracking-tight">{d.privilegedAccess || "Privileged Access Only"}</span>
+                                            </div>
+                                        </Link>
+                                        <div className="my-6 h-px bg-border" />
+                                    </>
+                                )}
+                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mb-4 mt-2 ml-4">{d.terminalRouting || "Terminal Routing"}</p>
 
-                            <button onClick={handleLogout} className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-red-500/5 active:bg-red-500/10 group transition-all text-left">
-                                <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
-                                    <LogOut className="w-5 h-5" />
+                                <Link href={`/${lang}/neural-hub`} className="flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all" onClick={() => setIsMenuOpen(false)}>
+                                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
+                                        <Zap className="w-5 h-5" />
+                                    </div>
+                                    <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground">{d.neuralHub || "Neural Hub"}</span>
+                                </Link>
+
+                                <Link href={`/${lang}/debate/saved`} className="flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all" onClick={() => setIsMenuOpen(false)}>
+                                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
+                                        <History className="w-5 h-5" />
+                                    </div>
+                                    <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground">{d.archiveVault || "Archive Vault"}</span>
+                                </Link>
+
+                                <div className="my-10 h-px bg-border" />
+                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mb-4 ml-4">{d.resourceManagement || "Resource Management"}</p>
+
+                                <button
+                                    onClick={() => {
+                                        console.log("[Dev] Navigating to Usage");
+                                        setIsMenuOpen(false);
+                                        router.push(`/${lang}/debate/usage`);
+                                    }}
+                                    className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] border border-primary/30 bg-primary/5 hover:bg-primary/10 active:bg-primary/20 group transition-all shadow-xl shadow-primary/5 text-left"
+                                >
+                                    <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                        <Zap className="w-5 h-5 fill-current" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="font-black uppercase tracking-widest text-[12px] text-foreground">{d.liquidityStatus || "Liquidity Status"}</span>
+                                        <span className="text-[9px] font-black text-primary uppercase tracking-tighter mt-0.5">{d.tokenBalance || "Token Balance"}</span>
+                                    </div>
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        console.log("[Dev] Navigating to Buy Tokens");
+                                        setIsMenuOpen(false);
+                                        router.push(`/${lang}/buy-tokens`);
+                                    }}
+                                    className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all text-left"
+                                >
+                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                                        <CreditCard className="w-5 h-5" />
+                                    </div>
+                                    <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground">{d.allocateBudget || "Allocate Budget"}</span>
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        console.log("[Dev] Navigating to Profile Settings");
+                                        setIsMenuOpen(false);
+                                        router.push(`/${lang}/profile/settings`);
+                                    }}
+                                    className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all text-left"
+                                >
+                                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                                        <User className="w-5 h-5" />
+                                    </div>
+                                    <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground">{d.userMatrix || "User Matrix"}</span>
+                                </button>
+
+                                <div className="my-10 h-px bg-border" />
+                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mb-4 ml-4">{d.globalSettings || "Global Matrix Settings"}</p>
+
+                                <button
+                                    onClick={handleThemeToggle}
+                                    className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted active:bg-secondary group transition-all text-left"
+                                >
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${resolvedTheme === 'dark' ? 'bg-amber-500/10 text-amber-500' : 'bg-primary/10 text-primary'} group-hover:scale-110`}>
+                                        {resolvedTheme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                                    </div>
+                                    <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground group-hover:text-foreground leading-none pt-1">
+                                        {resolvedTheme === 'dark' ? (d.solarSpectrum || 'Solar Spectrum') : (d.lunarSpectrum || 'Lunar Spectrum')}
+                                    </span>
+                                </button>
+
+                                <div className="relative group">
+                                    <div className="flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-muted group transition-all">
+                                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                            <Globe className="w-5 h-5" />
+                                        </div>
+                                        <div className="flex-1 flex flex-col">
+                                            <span className="font-black uppercase tracking-widest text-[12px] text-muted-foreground">{d.interfaceLocale || "Interface Locale"}</span>
+                                            <div className="flex flex-wrap gap-2 mt-4 max-h-48 overflow-y-auto custom-scrollbar p-1">
+                                                {LANGUAGES.map((l: any) => (
+                                                    <button
+                                                        key={l.code}
+                                                        onClick={() => handleLangToggle(l.code)}
+                                                        className={`text-[9px] font-black px-3 py-2 rounded-lg border transition-all ${lang === l.code ? 'bg-primary border-primary text-primary-foreground' : 'bg-background border-border text-muted-foreground hover:text-foreground'}`}
+                                                    >
+                                                        {l.name.toUpperCase()}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span className="font-black uppercase tracking-widest text-[12px] text-red-500 group-hover:text-red-600">{d.deauthorize || "Deauthorize"}</span>
-                            </button>
-                        </nav>
 
-                        <div className="mt-12 p-8 bg-muted shadow-inner rounded-[2.5rem] border border-border">
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                                <p className="text-[11px] text-foreground font-black uppercase tracking-[0.2em]">{d.neuralLinkSecure || "Neural Link Secure"}</p>
+                                <div className="my-10 h-px bg-border" />
+
+                                <button onClick={handleLogout} className="w-full flex items-center gap-5 p-5 rounded-[1.5rem] hover:bg-red-500/5 active:bg-red-500/10 group transition-all text-left">
+                                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                                        <LogOut className="w-5 h-5" />
+                                    </div>
+                                    <span className="font-black uppercase tracking-widest text-[12px] text-red-500 group-hover:text-red-600">{d.deauthorize || "Deauthorize"}</span>
+                                </button>
+                            </nav>
+
+                            <div className="mt-12 p-8 bg-muted shadow-inner rounded-[2.5rem] border border-border">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                                    <p className="text-[11px] text-foreground font-black uppercase tracking-[0.2em]">{d.neuralLinkSecure || "Neural Link Secure"}</p>
+                                </div>
+                                <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest leading-relaxed">
+                                    {d.encryptedStream || "End-to-end encrypted deliberation stream."}
+                                </p>
                             </div>
-                            <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest leading-relaxed">
-                                {d.encryptedStream || "End-to-end encrypted deliberation stream."}
-                            </p>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }
