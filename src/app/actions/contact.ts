@@ -16,7 +16,7 @@ const contactSchema = z.object({
 
 export async function submitContactForm(prevState: unknown, formData: FormData) {
     const supabase = await createClient();
-    const headersList = headers();
+    const headersList = await headers();
     const ip = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown';
 
     // 0. Honeypot check (hidden field to trap bots that change IPs)
