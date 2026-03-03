@@ -1534,6 +1534,17 @@ Suggested amount: $${amount}`
                                         {dict?.debate?.openVideo || 'Open'}
                                     </a>
 
+                                    <a
+                                        href={lastVideoAssetUrl}
+                                        download
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border border-border bg-background hover:bg-muted transition-all active:scale-95"
+                                    >
+                                        <FileText className="w-4 h-4" />
+                                        {dict?.debate?.downloadVideo || 'Download Video'}
+                                    </a>
+
                                     {lastVideoSegments.length > 1 && (
                                         <div className="ml-auto text-xs font-black uppercase tracking-wider text-foreground/70">
                                             {dict?.debate?.sceneLabel || 'Scene'} {videoSegmentIndex + 1}/{lastVideoSegments.length}
