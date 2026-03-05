@@ -60,16 +60,22 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
             })
 
             if (error) {
-                // If the error message suggests a configuration or network issue, it might need a reload
-                if (error.message.includes('fetch') || error.message.includes('missing-supabase-url')) {
-                    console.error("Login attempt failed due to config/network issue. Retrying with full reload...");
-                    window.location.reload();
-                    return;
-                }
-                throw error
+                // Return the actual error instead of blindly reloading the page
+                throw error;
             }
 
-            window.location.href = `/${lang}/debate`;
+            // Successfully logged in!
+            toast.success(dict.auth?.signInSuccess || "Successfully logged in!");
+
+            // Critical for Next.js App Router + Supabase SSR:
+            // Force the Next.js router to refresh its Server Components and cookie cache
+            router.refresh();
+
+            // Then allow the browser's cookie jar to persist the token, before navigating
+            setTimeout(() => {
+                window.location.assign(`/${lang}/debate`);
+            }, 300);
+
         } catch (err: unknown) {
             const mappedError = mapAuthError(err, dict);
             setError(mappedError)
