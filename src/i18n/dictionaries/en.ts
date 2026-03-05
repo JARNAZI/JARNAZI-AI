@@ -207,6 +207,7 @@ const en = {
     files: "Files",
     pics: "Pics",
     video: "Video",
+    camera: "Camera",
     audio: "Audio",
     mathPlaceholder: "Enter complex mathematical formula...",
     textPlaceholder: "What shall the Council deliberate today?",

@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database.types';
+import { triggerComposerJob, authenticatedFetch } from '@/lib/cloud-run';
 
 type AdminClient = SupabaseClient<Database>;
 
@@ -54,8 +55,9 @@ async function reserveTokens(admin: AdminClient, userId: string, tokens: number)
 
 async function runVideoComposeFromPending(admin: AdminClient, userId: string, pending: PendingRow) {
   const debateId = String(pending.payload?.debateId ?? '');
+  const assetIds = (pending.payload?.assetIds ?? []) as string[];
 
-  if (!debateId) {
+  if (!debateId || !assetIds.length) {
     return { ok: false, error: 'Invalid pending payload' };
   }
 
@@ -65,29 +67,129 @@ async function runVideoComposeFromPending(admin: AdminClient, userId: string, pe
   }
 
   const jobId = crypto.randomUUID();
+  const runId = crypto.randomUUID();
+  const outputPath = `${userId}/final/${jobId}.mp4`;
 
-  // Create video_job record first
+  // 1. Get storage paths for assets
+  const { data: assets } = await admin
+    .from('generated_assets')
+    .select('id, storage_path')
+    .eq('user_id', userId)
+    .in('id', assetIds);
+
+  const paths = assetIds
+    .map((id: string) => (assets ?? []).find((a: any) => a.id === id)?.storage_path)
+    .filter((p: any) => typeof p === 'string' && p.length > 0);
+
+  if (!paths.length) return { ok: false, error: 'No source files found' };
+
+  // 2. Generate signed URLs
+  const { data: signed } = await admin.storage.from('videos').createSignedUrls(paths, 60 * 60);
+  const inputUrls = (signed ?? []).map((x: any) => x?.signedUrl).filter(Boolean);
+
+  // 3. Create video_job record
   const { error: jErr } = await (admin.from('video_jobs') as any).insert({
     id: jobId,
     user_id: userId,
     debate_id: debateId,
-    status: 'pending'
+    status: 'pending',
+    output_url: outputPath
   });
   if (jErr) return { ok: false, error: jErr.message };
 
-  // Create a job_run to track execution
+  // 4. Create a job_run to track execution with COMPLETE metadata
   const { error: runErr } = await (admin.from('job_runs') as any).insert({
+    id: runId,
     video_job_id: jobId,
     run_type: 'compose',
     status: 'starting',
-    metadata: pending.payload
+    metadata: {
+      ...pending.payload,
+      outputPath,
+      inputUrls
+    }
   });
   if (runErr) return { ok: false, error: runErr.message };
 
-  // Delete pending request as it is now processed (since status col is missing)
+  // 5. Call Cloud Run Job Trigger
+  const jobTriggered = await triggerComposerJob(jobId, runId);
+  if (jobTriggered) {
+    await admin.from('video_jobs').update({ status: 'composing' } as any).eq('id', jobId);
+    await admin.from('job_runs').update({ status: 'running' } as any).eq('id', runId);
+  } else {
+    await admin.from('video_jobs').update({ status: 'failed' } as any).eq('id', jobId);
+    await admin.from('job_runs').update({ status: 'failed', error_message: 'Trigger failed' } as any).eq('id', runId);
+  }
+
+  // Delete pending request
   await (admin.from('pending_requests') as any).delete().eq('id', pending.id);
 
   return { ok: true, jobId };
+}
+
+async function runVideoGenerateFromPending(admin: AdminClient, userId: string, pending: PendingRow) {
+  const debateId = String(pending.payload?.debateId ?? '');
+  if (!debateId) return { ok: false, error: 'Invalid pending payload' };
+
+  if (pending.tokens_required > 0) {
+    const r = await reserveTokens(admin, userId, pending.tokens_required);
+    if (!r.ok) return { ok: false, error: r.error || 'INSUFFICIENT_TOKENS' };
+  }
+
+  // Trigger Edge Function
+  const fnName = process.env.MEDIA_EDGE_FUNCTION || 'media-generate';
+  try {
+    const { error: fnErr } = await admin.functions.invoke(fnName, {
+      body: {
+        kind: 'video_generate',
+        requestType: 'video',
+        user_id: userId,
+        debate_id: debateId,
+        prompt: pending.payload.prompt,
+        durationSec: pending.payload.durationSec,
+        aspect: pending.payload.aspect,
+      },
+    });
+    if (fnErr) console.error('[Pending] Video Gen failed:', fnErr);
+  } catch (e) {
+    console.error('[Pending] Video Gen error:', e);
+  }
+
+  await (admin.from('pending_requests') as any).delete().eq('id', pending.id);
+  return { ok: true };
+}
+
+async function runImageGenerateFromPending(admin: AdminClient, userId: string, pending: PendingRow) {
+  const debateId = String(pending.payload?.debateId ?? '');
+  if (!debateId) return { ok: false, error: 'Invalid pending payload' };
+
+  if (pending.tokens_required > 0) {
+    const r = await reserveTokens(admin, userId, pending.tokens_required);
+    if (!r.ok) return { ok: false, error: r.error || 'INSUFFICIENT_TOKENS' };
+  }
+
+  // Trigger Edge Function
+  const fnName = process.env.MEDIA_EDGE_FUNCTION || 'media-generate';
+  try {
+    const { error: fnErr } = await admin.functions.invoke(fnName, {
+      body: {
+        kind: 'image_generate',
+        requestType: 'image',
+        user_id: userId,
+        debate_id: debateId,
+        prompt: pending.payload.prompt,
+        style: pending.payload.style,
+        aspect: pending.payload.aspect,
+        quality: pending.payload.quality,
+      },
+    });
+    if (fnErr) console.error('[Pending] Image Gen failed:', fnErr);
+  } catch (e) {
+    console.error('[Pending] Image Gen error:', e);
+  }
+
+  await (admin.from('pending_requests') as any).delete().eq('id', pending.id);
+  return { ok: true };
 }
 
 export async function processPendingForUser(userId: string) {
@@ -96,13 +198,24 @@ export async function processPendingForUser(userId: string) {
   if (!pending) return { ok: true, resumed: false };
 
   // Check expiry
-  if (new Date(pending.expires_at) <= new Date()) {
+  const expiresAt = new Date(pending.expires_at);
+  if (expiresAt <= new Date()) {
     await (admin.from('pending_requests') as any).delete().eq('id', pending.id);
     return { ok: true, resumed: false, expired: true };
   }
 
-  if (pending.kind === 'video_compose' || pending.kind === 'video') {
+  if (pending.kind === 'video_compose') {
     const res = await runVideoComposeFromPending(admin, userId, pending);
+    return { ...res, resumed: res.ok };
+  }
+
+  if (pending.kind === 'video') {
+    const res = await runVideoGenerateFromPending(admin, userId, pending);
+    return { ...res, resumed: res.ok };
+  }
+
+  if (pending.kind === 'image') {
+    const res = await runImageGenerateFromPending(admin, userId, pending);
     return { ...res, resumed: res.ok };
   }
 

@@ -176,8 +176,37 @@ export async function POST(req: Request) {
       console.log(`[TokenCheck] Current balance for ${user.id}: ${tokenBalance}`);
 
       if (tokenBalance < requiredTokens) {
-        console.warn(`[TokenCheck] Insufficient tokens. Needed: ${requiredTokens}, Has: ${tokenBalance}`);
-        return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', tokensNeeded: requiredTokens, tokenBalance }, { status: 402 });
+        const missingTokens = requiredTokens - tokenBalance;
+        console.warn(`[TokenCheck] Insufficient tokens. Needed: ${requiredTokens}, Has: ${tokenBalance}, Missing: ${missingTokens}`);
+
+        try {
+          const { data: pendingId, error: pendErr } = await admin.rpc('create_pending_request', {
+            p_user_id: user.id,
+            p_kind: 'video_compose',
+            p_payload: { debateId, assetIds, durationSec: durationSecFromClient, canon: body?.canon },
+            p_required_tokens: requiredTokens,
+            p_missing_tokens: missingTokens,
+            p_ttl_minutes: 15,
+          } as any);
+
+          if (!pendErr && pendingId) {
+            const { data: latest } = await admin.rpc('get_latest_pending', { p_user_id: user.id } as any);
+            const expiresAt = Array.isArray(latest) && latest.length ? (latest[0] as any).expires_at : null;
+
+            return NextResponse.json({
+              error: 'INSUFFICIENT_TOKENS',
+              tokensNeeded: requiredTokens,
+              tokenBalance,
+              missingTokens,
+              pendingId,
+              expiresAt,
+            }, { status: 402 });
+          }
+        } catch (e) {
+          console.error('[PendingRequest] Failed to create:', e);
+        }
+
+        return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', tokensNeeded: requiredTokens, tokenBalance, missingTokens }, { status: 402 });
       }
 
       console.log(`[TokenDebit] Atomically reserving ${requiredTokens} tokens for user ${user.id}`);

@@ -70,6 +70,7 @@ export async function POST(req: Request) {
         user_id: user.id,
         tokens_to_add: String(tokensToAdd),
         amount_usd: String(amount),
+        lang: body?.lang || 'en',
       },
       success_url: returnTo
         ? `${appUrl}${returnTo}${returnTo.includes('?') ? '&' : '?'}purchase=success${pendingId ? `&pendingId=${pendingId}` : ''}`

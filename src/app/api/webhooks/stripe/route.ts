@@ -43,20 +43,23 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
   }
 
-  console.log(`[Stripe Webhook] Received event: ${event.type} (${event.id})`);
+  console.log(`[Stripe Webhook] Received event: ${event.type} (${event.id}), Live: ${event.livemode}`);
+  const eventId = event.id;
 
   if (event.type === 'checkout.session.completed') {
     const session: any = event.data.object;
     const metadata = session.metadata || {};
     const userId = metadata.user_id || metadata.userId;
     const tokensStr = metadata.tokens_to_add || metadata.credits_cents || metadata.tokens;
+    const lang = metadata.lang || 'en';
 
     console.log('[Stripe Webhook] Processing session:', {
       sessionId: session.id,
       userId,
       tokensStr,
       amount: session.amount_total,
-      currency: session.currency
+      currency: session.currency,
+      lang
     });
 
     if (!userId || !tokensStr) {
@@ -69,8 +72,6 @@ export async function POST(req: Request) {
       console.warn('[Stripe Webhook] Invalid tokensToAdd value:', tokensStr);
       return NextResponse.json({ received: true, ignored: true, reason: 'invalid_tokens' });
     }
-
-    const eventId = event.id;
 
     // 1. Idempotency Check
     const { data: existingEvent, error: checkErr } = await supabaseAdmin
@@ -90,7 +91,7 @@ export async function POST(req: Request) {
     }
 
     try {
-      // 2. Initial record (or update status to 'received' if it was ignored/failed)
+      // 2. Initial record
       if (!existingEvent) {
         const { error: insErr } = await supabaseAdmin.from('payment_events').insert({
           provider: 'stripe',
@@ -103,7 +104,6 @@ export async function POST(req: Request) {
         });
         if (insErr) {
           console.error('[Stripe Webhook] Failed to record payment_event:', insErr);
-          // If it's a conflict, maybe someone else is processing it
           if (insErr.code === '23505') return NextResponse.json({ ok: true, conflict: true });
           throw insErr;
         }
@@ -127,7 +127,7 @@ export async function POST(req: Request) {
           .single();
 
         if (profErr || !profile) {
-          throw new Error(`User profile not found: ${profErr?.message || 'unknown'}`);
+          throw new Error(`Profile not found: ${profErr?.message || 'unknown'}`);
         }
 
         const { error: updErr } = await supabaseAdmin
@@ -138,23 +138,25 @@ export async function POST(req: Request) {
           .eq('id', userId);
 
         if (updErr) {
-          console.error('[Stripe Webhook] Manual balance update failed:', updErr);
+          console.error('[Stripe Webhook] Manual balance update failed:', updErr.message);
           throw updErr;
         }
+        console.log('[Stripe Webhook] Manual update successful');
+      } else {
+        console.log('[Stripe Webhook] RPC update successful');
       }
 
       // 4. Ledger Record
-      const { error: ledErr } = await supabaseAdmin.from('token_ledger').insert({
+      await supabaseAdmin.from('token_ledger').insert({
         user_id: userId,
         delta_tokens: tokensToAdd,
-        amount: tokensToAdd, // for compatibility
+        amount: tokensToAdd,
         reason: 'purchase',
         reference: session.id,
         meta: { stripe_event_id: eventId, amount_total: session.amount_total }
       });
-      if (ledErr) console.warn('[Stripe Webhook] Ledger record failed (non-blocking):', ledErr);
 
-      // 5. Success Notification
+      // 5. Notification
       await supabaseAdmin.from('notifications').insert({
         user_id: userId,
         title: 'Purchase Successful',
@@ -163,7 +165,7 @@ export async function POST(req: Request) {
         is_read: false
       });
 
-      // 6. Send Invoice Email
+      // 6. Invoice Email
       let recipientEmail = session.customer_details?.email;
       if (!recipientEmail) {
         const { data: uData } = await supabaseAdmin.auth.admin.getUserById(userId);
@@ -176,34 +178,33 @@ export async function POST(req: Request) {
             style: 'currency',
             currency: session.currency || 'usd',
           });
-          await sendTokenPurchaseInvoice(recipientEmail, amountFormatted, tokensToAdd, 'en', session.id);
-          console.log('[Stripe Webhook] Invoice email sent to:', recipientEmail);
-        } catch (emailErr) {
-          console.warn('[Stripe Webhook] Invoice email failed:', emailErr);
+          console.log(`[Stripe Webhook] Sending invoice to ${recipientEmail} (lang: ${lang})`);
+          await sendTokenPurchaseInvoice(recipientEmail, amountFormatted, tokensToAdd, lang, session.id);
+        } catch (emailErr: any) {
+          console.warn('[Stripe Webhook] Email failed:', emailErr.message);
         }
       }
 
-      // 7. Mark as processed
+      // 7. Success
       await supabaseAdmin.from('payment_events')
         .update({ status: 'processed' })
         .eq('event_id', eventId);
 
-      // 8. Auto-resume pending
+      // 8. Resume
       try {
         await processPendingForUser(userId);
       } catch (e: any) {
         console.warn('[Stripe Webhook] Auto-resume failed:', e.message);
       }
 
-      console.log('[Stripe Webhook] Successfully processed session:', session.id);
       return NextResponse.json({ ok: true });
 
-    } catch (dbErr: any) {
-      console.error('[Stripe Webhook] Critical Database Error:', dbErr.message);
+    } catch (err: any) {
+      console.error('[Stripe Webhook] Processing Error:', err.message);
       await supabaseAdmin.from('payment_events')
         .update({ status: 'failed' })
         .eq('event_id', eventId);
-      return NextResponse.json({ error: dbErr.message }, { status: 500 });
+      return NextResponse.json({ error: err.message }, { status: 500 });
     }
   }
 

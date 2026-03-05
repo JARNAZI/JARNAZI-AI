@@ -165,6 +165,7 @@ const fr = {
     files: "Fichiers",
     pics: "Photos",
     video: "Vidéo",
+    camera: "Caméra",
     audio: "Audio",
     mathPlaceholder: "Entrez une formule mathématique complexe...",
     textPlaceholder: "De quoi le Conseil délibérera-t-il aujourd'hui ?",

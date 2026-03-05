@@ -180,6 +180,17 @@ export default function DebateClient({
 
             (async () => {
                 try {
+                    // Small delay to let webhook finish if we just returned from purchase
+                    if (purchase === 'success') {
+                        await new Promise(r => setTimeout(r, 1500));
+                        // Re-fetch balance to be sure
+                        const { data: { user } } = await supabase.auth.getUser();
+                        if (user) {
+                            const { data: p } = await supabase.from('profiles').select('token_balance').eq('id', user.id).maybeSingle();
+                            if (p) setProfileInfo({ token_balance: Number((p as any).token_balance || 0) });
+                        }
+                    }
+
                     setVideoGenerating(true);
 
                     const basePrompt: string = String(state.prompt ?? '');
