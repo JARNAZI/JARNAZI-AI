@@ -71,17 +71,55 @@ export async function POST(req: Request) {
     const user = userData.user;
 
     // Check Free Trial vs Token Balance
-    const { data: profile } = await supabaseAdmin.from('profiles').select('token_balance, free_trial_used').eq('id', user.id).single();
+    let { data: profile, error: profErr } = await supabaseAdmin.from('profiles').select('token_balance, free_trial_used').eq('id', user.id).maybeSingle();
+
+    // Lazy Profile Creation: If the user just registered and has no profile row yet, create it.
+    if (!profile) {
+      console.log("[Debate API] Profile missing for user", user.id, "- performing lazy creation.");
+      const { data: newProfile, error: createErr } = await supabaseAdmin.from('profiles').insert({
+        id: user.id,
+        email: user.email,
+        full_name: user.user_metadata?.full_name || '',
+        token_balance: 0,
+        free_trial_used: false
+      }).select('token_balance, free_trial_used').single();
+
+      if (!createErr && newProfile) {
+        profile = newProfile;
+      } else {
+        console.error("[Debate API] Lazy profile creation failed:", createErr);
+        // Fallback to a virtual profile
+        profile = { token_balance: 0, free_trial_used: false };
+      }
+    }
 
     // Robustly fetch 'enable_free_trial'
     const { getRobustSetting } = require('@/lib/settings-robust');
-    const enableFreeTrial = await getRobustSetting(supabaseAdmin, 'enable_free_trial', 'false') === 'true';
+    const rawEnableTrial = await getRobustSetting(supabaseAdmin, 'enable_free_trial', 'false');
+    const enableFreeTrial = String(rawEnableTrial).toLowerCase() === 'true';
 
-    const isFreeTrialActive = enableFreeTrial && profile && !profile.free_trial_used;
+    // Free trial is active if:
+    // 1. Setting is globally enabled
+    // 2. User has a profile (we ensured this above)
+    // 3. User HAS NOT explicitly used it yet (free_trial_used !== true)
+    const isFreeTrialActive = enableFreeTrial && profile && profile.free_trial_used !== true;
+
+    console.log("[Debate API] Trial Check:", {
+      userId: user.id,
+      enableFreeTrial,
+      profileExists: !!profile,
+      freeTrialUsed: profile?.free_trial_used,
+      isFreeTrialActive,
+      requestType,
+      balance: profile?.token_balance
+    });
 
     // Reject non-text requests if relying ONLY on free trial
     if (isFreeTrialActive && requestType !== 'text' && Number(profile?.token_balance || 0) <= 0) {
-      return NextResponse.json({ error: 'FREE_TRIAL_TEXT_ONLY', message: 'Free trial is text-only.' }, { status: 403 });
+      return NextResponse.json({
+        error: 'FREE_TRIAL_TEXT_ONLY',
+        message: 'The Council requires an allocation of neural tokens for media generation. Your free trial is valid for text-based deliberations only.'
+      }, { status: 403 });
     }
 
     // 1. Create Debate Record
