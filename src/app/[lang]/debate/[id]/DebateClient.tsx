@@ -722,53 +722,72 @@ export default function DebateClient({
                 const { data: { session } } = await supabase.auth.getSession();
                 const accessToken = session?.access_token;
 
-                const fd = new FormData();
-                fd.append('file', selectedFile);
-
-                const upRes = await fetch('/api/media/upload', {
+                // 1. Get Signed Upload URL from our backend
+                const signRes = await fetch('/api/media/upload', {
                     method: 'POST',
                     headers: {
+                        'Content-Type': 'application/json',
                         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
                     },
-                    body: fd,
+                    body: JSON.stringify({
+                        fileName: selectedFile.name,
+                        fileSize: selectedFile.size,
+                        mimeType: selectedFile.type || 'application/octet-stream',
+                    })
                 });
 
-                if (upRes.ok) {
-                    const up = await upRes.json();
-                    if (up?.signedUrl && up?.path) {
-                        const asset: UploadedAsset = {
-                            bucket: up.bucket,
-                            path: up.path,
-                            signedUrl: up.signedUrl,
-                            kind: up.kind,
-                            mime: up.mime,
-                            filename: up.filename,
-                        };
-                        setLastUploadedAsset(asset);
-                        contentToSend += `\n[ASSET_URL: ${asset.signedUrl}]\n[ASSET_PATH: ${asset.path}]\n[ASSET_KIND: ${asset.kind}]\n[ASSET_NAME: ${selectedFile.name}]`;
-
-                        if (up.tokensDeducted && up.tokensDeducted > 0 && profileInfo) {
-                            setProfileInfo(prev => prev ? { token_balance: Math.max(0, prev.token_balance - up.tokensDeducted) } : prev);
-                        }
-                    } else {
-                        contentToSend += `\n[FILE: ${selectedFile.name}]`;
-                    }
-                } else {
-                    const errorJson = await upRes.json().catch(() => ({}));
-                    if (upRes.status === 402 || errorJson?.error === 'INSUFFICIENT_TOKENS') {
+                if (!signRes.ok) {
+                    const errorJson = await signRes.json().catch(() => ({}));
+                    if (signRes.status === 402 || errorJson?.error === 'INSUFFICIENT_TOKENS') {
                         const missing = Number(errorJson?.missingTokens || 0);
                         toast.error((dict?.notifications?.insufficientTokensForUpload || 'Insufficient tokens for upload.') + (missing > 0 ? ` (Missing: ${missing})` : ''));
                         setUploadingAsset(false);
                         return; // Halt message submission
                     }
-                    if (upRes.status === 403 && errorJson?.error === 'FREE_TRIAL_TEXT_ONLY') {
+                    if (signRes.status === 403 && errorJson?.error === 'FREE_TRIAL_TEXT_ONLY') {
                         toast.error(errorJson.message || dict?.debate?.freeTrialMediaBlocked || 'Free trial is text-only. Buy tokens to upload media.');
                         setUploadingAsset(false);
                         return; // Halt message submission
                     }
-                    toast.error(errorJson?.error || 'Upload failed');
+                    toast.error(errorJson?.error || 'Upload authorization failed');
+                    contentToSend += `\n[FILE: ${selectedFile.name}]`;
+                    setUploadingAsset(false);
+                    return; // Halt message submission
+                }
+
+                const upData = await signRes.json();
+
+                // 2. Upload file directly to Supabase Storage using the browser to bypass Cloudflare limits
+                if (upData.token && upData.path) {
+                    const { error: uploadError } = await supabase.storage
+                        .from(upData.bucket)
+                        .uploadToSignedUrl(upData.path, upData.token, selectedFile);
+
+                    if (uploadError) {
+                        toast.error(`Upload failed: ${uploadError.message}`);
+                        contentToSend += `\n[FILE: ${selectedFile.name}]`;
+                    } else {
+                        // Success!
+                        const asset: UploadedAsset = {
+                            bucket: upData.bucket,
+                            path: upData.path,
+                            signedUrl: upData.signedDownloadUrl || upData.signedUploadUrl, // fallback
+                            kind: upData.kind,
+                            mime: upData.mime,
+                            filename: upData.filename,
+                        };
+                        setLastUploadedAsset(asset);
+                        contentToSend += `\n[ASSET_URL: ${asset.signedUrl}]\n[ASSET_PATH: ${asset.path}]\n[ASSET_KIND: ${asset.kind}]\n[ASSET_NAME: ${selectedFile.name}]`;
+
+                        if (upData.tokensDeducted && upData.tokensDeducted > 0 && profileInfo) {
+                            setProfileInfo(prev => prev ? { token_balance: Math.max(0, prev.token_balance - upData.tokensDeducted) } : prev);
+                        }
+                    }
+                } else {
+                    toast.error('Invalid response from server');
                     contentToSend += `\n[FILE: ${selectedFile.name}]`;
                 }
+
             } catch {
                 toast.error('Upload failed with network error');
                 contentToSend += `\n[FILE: ${selectedFile.name}]`;

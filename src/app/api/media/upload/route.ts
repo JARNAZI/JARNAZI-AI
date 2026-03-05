@@ -35,25 +35,39 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    const form = await req.formData();
-    const file = form.get('file');
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: 'Missing file' }, { status: 400 });
+    const contentType = req.headers.get('content-type') || '';
+    const isJson = contentType.includes('application/json');
+
+    let file: File | null = null;
+    let fileName = '';
+    let fileSize = 0;
+    let mimeType = '';
+
+    if (isJson) {
+      const body = await req.json();
+      fileName = body.fileName;
+      fileSize = body.fileSize;
+      mimeType = body.mimeType;
+      if (!fileName || !fileSize) return NextResponse.json({ error: 'Missing file info' }, { status: 400 });
+    } else {
+      const form = await req.formData();
+      file = form.get('file') as File | null;
+      if (!(file instanceof File)) return NextResponse.json({ error: 'Missing file' }, { status: 400 });
+      fileName = file.name;
+      fileSize = file.size;
+      mimeType = file.type;
     }
 
     const bucket = 'videos'; // reuse existing bucket
-    const kind = inferKindFromMime(file.type || '');
-    const safeName = sanitizeFileName(file.name || 'upload.bin');
+    const kind = inferKindFromMime(mimeType || '');
+    const safeName = sanitizeFileName(fileName || 'upload.bin');
     const path = `user_uploads/${userRes.user.id}/${Date.now()}_${safeName}`;
 
     // --- Token Charging Logic for Uploads ---
-    // Charging tokens per MB. With new scale, $1 = 3000 tokens. 
-    // Let's charge 1000 tokens per 10MB for videos/files, images free
-    const sizeMb = file.size / (1024 * 1024);
+    const sizeMb = fileSize / (1024 * 1024);
     let tokensNeeded = 0;
-
     if (kind !== 'image') {
-      tokensNeeded = Math.max(1000, Math.ceil(sizeMb / 10) * 1000); // 1000 token per 10MB 
+      tokensNeeded = Math.max(1000, Math.ceil(sizeMb / 10) * 1000);
     }
 
     const { data: profile } = await supabase.from('profiles').select('token_balance, free_trial_used').eq('id', userRes.user.id).single();
@@ -84,14 +98,40 @@ export async function POST(req: Request) {
     }
     // ----------------------------------------
 
-    const buf = Buffer.from(await file.arrayBuffer());
+    // IF JSON, generate signed upload URL (Bypass 100MB server payload limit)
+    if (isJson) {
+      const { data: uploadData, error: signErr } = await supabase.storage.from(bucket).createSignedUploadUrl(path);
+
+      if (signErr || !uploadData) {
+        if (tokensNeeded > 0) await supabase.rpc('refund_tokens', { p_user_id: userRes.user.id, p_tokens: tokensNeeded });
+        return NextResponse.json({ error: `Create upload url failed: ${signErr?.message || 'unknown'}` }, { status: 500 });
+      }
+
+      const { data: signedDownload } = await supabase.storage.from(bucket).createSignedUrl(path, 60 * 60 * 24 * 3);
+
+      return NextResponse.json({
+        ok: true,
+        bucket,
+        path,
+        kind,
+        mime: mimeType || 'application/octet-stream',
+        filename: safeName,
+        token: uploadData.token, // Upload token for JS client
+        signedUploadUrl: uploadData.signedUrl,
+        signedDownloadUrl: signedDownload?.signedUrl, // For read access later
+        tokensDeducted: tokensNeeded
+      });
+    }
+
+    // IF FORM DATA (Legacy route for smaller files)
+    const buf = Buffer.from(await file!.arrayBuffer());
 
     const { error: upErr } = await supabase.storage.from(bucket).upload(path, buf, {
-      contentType: file.type || 'application/octet-stream',
+      contentType: mimeType || 'application/octet-stream',
       upsert: false,
     });
 
-    // If upload fails, try to refund tokens (optional, but good practice)
+    // If upload fails, try to refund tokens
     if (upErr) {
       if (tokensNeeded > 0) {
         await supabase.rpc('refund_tokens', { p_user_id: userRes.user.id, p_tokens: tokensNeeded });
@@ -110,7 +150,7 @@ export async function POST(req: Request) {
       bucket,
       path,
       kind,
-      mime: file.type || 'application/octet-stream',
+      mime: mimeType || 'application/octet-stream',
       filename: safeName,
       signedUrl: signed.signedUrl,
       tokensDeducted: tokensNeeded
