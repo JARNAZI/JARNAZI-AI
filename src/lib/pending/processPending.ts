@@ -120,11 +120,11 @@ async function runVideoComposeFromPending(admin: AdminClient, userId: string, pe
   // 5. Call Cloud Run Job Trigger
   const jobTriggered = await triggerComposerJob(jobId, runId);
   if (jobTriggered) {
-    await admin.from('video_jobs').update({ status: 'composing' } as any).eq('id', jobId);
-    await admin.from('job_runs').update({ status: 'running' } as any).eq('id', runId);
+    await (admin.from('video_jobs') as any).update({ status: 'composing' }).eq('id', jobId);
+    await (admin.from('job_runs') as any).update({ status: 'running' }).eq('id', runId);
   } else {
-    await admin.from('video_jobs').update({ status: 'failed' } as any).eq('id', jobId);
-    await admin.from('job_runs').update({ status: 'failed', error_message: 'Trigger failed' } as any).eq('id', runId);
+    await (admin.from('video_jobs') as any).update({ status: 'failed' }).eq('id', jobId);
+    await (admin.from('job_runs') as any).update({ status: 'failed', error_message: 'Trigger failed' }).eq('id', runId);
   }
 
   // Delete pending request
