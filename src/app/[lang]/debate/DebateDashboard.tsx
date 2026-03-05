@@ -306,7 +306,7 @@ export default function DebateDashboard({
                                                 <MediaUploader label={d.camera || "Camera"} icon={Camera} accept="image/*,video/*" capture="environment" onFileSelected={setSelectedFile} />
                                                 <AudioRecorder onRecordingComplete={setRecordedAudio} label={d.audio || "Audio"} />
                                             </>
-                                        ) : (enableFreeTrial && !(profileInfo?.free_trial_used)) ? (
+                                        ) : (enableFreeTrial && profileInfo && profileInfo.free_trial_used !== true) ? (
                                             <div className="flex items-center gap-2 px-3 py-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20 mb-1 w-full">
                                                 <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
                                                 <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">

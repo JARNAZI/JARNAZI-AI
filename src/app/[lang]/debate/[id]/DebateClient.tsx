@@ -644,7 +644,7 @@ export default function DebateClient({
         if (hasTokens) return true;
 
         if (enableFreeTrial) {
-            if (freeTrialUsed) {
+            if (freeTrialUsed === true) {
                 toast.error(dict?.debate?.freeTrialUsedUp || 'عفوًا، الحصة المجانية متاحة لمرة واحدة فقط. يرجى شراء توكن.');
             } else {
                 toast.error(dict?.debate?.freeTrialMediaBlocked || 'الحصة المجانية لا تدعم الوسائط. يرجى شراء توكن.');
@@ -662,7 +662,7 @@ export default function DebateClient({
         const hasTokens = (profileInfo?.token_balance ?? 0) > 0;
         if (hasTokens) return true;
 
-        if (enableFreeTrial && !freeTrialUsed) return true;
+        if (enableFreeTrial && freeTrialUsed !== true) return true;
 
         if (enableFreeTrial && freeTrialUsed) {
             toast.error(dict?.debate?.freeTrialUsedUp || 'عفوًا، الحصة المجانية متاحة لمرة واحدة فقط. يرجى شراء توكن.');
@@ -1303,7 +1303,7 @@ export default function DebateClient({
                                             <MediaUploader label={dict.dashboard?.camera || "Camera"} icon={Camera} accept="image/*,video/*" capture="environment" onFileSelected={setSelectedFile} />
                                             <AudioRecorder onRecordingComplete={setRecordedAudio} label={dict.dashboard?.audio || "Audio"} />
                                         </>
-                                    ) : (enableFreeTrial && !freeTrialUsed) ? (
+                                    ) : (enableFreeTrial && freeTrialUsed !== true) ? (
                                         <div className="flex flex-1 sm:flex-none items-center gap-2 px-3 py-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20">
                                             <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse flex-shrink-0" />
                                             <span className="text-[10px] sm:text-[9px] font-bold text-indigo-500 uppercase tracking-widest whitespace-normal sm:whitespace-nowrap">

@@ -90,7 +90,7 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
 
             if (features.gateway_nowpayments_enabled !== undefined) map.gateway_nowpayments_enabled = String(features.gateway_nowpayments_enabled);
             else if (features.payments_nowpayments_enabled !== undefined) map.gateway_nowpayments_enabled = String(features.payments_nowpayments_enabled);
-            
+
             if (features.stripe_test_mode !== undefined) map.stripe_test_mode = String(features.stripe_test_mode);
           }
         }
@@ -146,7 +146,7 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({ amount: amountNum, lang }),
+        body: JSON.stringify({ amount: amountNum, lang, returnTo: returnUrl }),
       });
 
       const json = await res.json();
@@ -172,7 +172,7 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({ amount: amountNum, lang }),
+        body: JSON.stringify({ amount: amountNum, lang, returnTo: returnUrl }),
       });
 
       const json = await res.json();
