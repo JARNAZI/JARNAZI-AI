@@ -42,7 +42,8 @@ export async function POST(req: Request) {
 
         const tokensToAdd = amountToTokens(amount);
 
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const originHeader = req.headers.get('origin') || req.headers.get('referer');
+        const appUrl = originHeader ? new URL(originHeader).origin : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
 
         // Prefer a stable server-to-server webhook (Supabase Edge Function) if provided.
         // This keeps NOWPayments token granting independent from the web host (Vercel/Cloud Run/etc.).

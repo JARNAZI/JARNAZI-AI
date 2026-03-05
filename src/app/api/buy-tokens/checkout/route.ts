@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   try {
     const isTestMode = (await getSetting('stripe_test_mode', 'false')) === 'true';
     const stripeSecret = isTestMode ? process.env.STRIPE_TEST_SECRET_KEY : (process.env.STRIPE_SECRET_LIVE_KEY || process.env.STRIPE_SECRET_KEY);
-    
+
     if (!stripeSecret) {
       return NextResponse.json({ error: `Stripe is not configured for ${isTestMode ? 'TEST' : 'LIVE'} mode` }, { status: 500 });
     }
@@ -45,7 +45,8 @@ export async function POST(req: Request) {
     const { data: { user }, error: userErr } = await supabase.auth.getUser(accessToken);
     if (userErr || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const originHeader = req.headers.get('origin') || req.headers.get('referer');
+    const appUrl = originHeader ? new URL(originHeader).origin : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
 
     const stripe = new Stripe(stripeSecret, { apiVersion: '2024-06-20' } as any);
 

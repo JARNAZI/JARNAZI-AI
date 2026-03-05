@@ -148,7 +148,27 @@ export default function DebateDashboard({
             }
         };
         fetchDebates();
-    }, [supabase]);
+
+        // Poll for profile if returning from purchase
+        const initialPurchase = searchParams.get('purchase');
+        if (initialPurchase === 'success') {
+            let attempts = 0;
+            const interval = setInterval(async () => {
+                attempts++;
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    const { data: profile } = await supabase.from('profiles').select('token_balance, free_trial_used').eq('id', user.id).single();
+                    if (profile) {
+                        setProfileInfo(prev => ({ ...prev, token_balance: profile.token_balance, free_trial_used: profile.free_trial_used }));
+                        if ((profile.token_balance ?? 0) > 0 || attempts >= 5) {
+                            clearInterval(interval);
+                        }
+                    }
+                }
+            }, 3000);
+            return () => clearInterval(interval);
+        }
+    }, [supabase, searchParams]);
 
     const handleCreate = async () => {
         if (!topicInput.trim() && !selectedFile && !recordedAudio || isLoading) return;

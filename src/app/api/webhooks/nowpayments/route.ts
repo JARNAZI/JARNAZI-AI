@@ -87,12 +87,16 @@ export async function POST(req: Request) {
                     // Send Invoice Email
                     const { data: { user } } = await supabaseAdmin.auth.admin.getUserById(userId);
                     if (user && user.email) {
-                        const amountStr = `${data.price_amount} ${data.pay_currency}`;
-                        await sendTokenPurchaseInvoice(
-                            user.email,
-                            amountStr,
-                            tokensToAdd
-                        );
+                        try {
+                            const amountStr = `${data.price_amount} ${data.pay_currency}`;
+                            await sendTokenPurchaseInvoice(
+                                user.email,
+                                amountStr,
+                                tokensToAdd
+                            );
+                        } catch (emailErr) {
+                            console.error('Invoice email failed (non-critical):', emailErr);
+                        }
                     }
 
                     // Notify user in-app

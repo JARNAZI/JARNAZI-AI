@@ -104,11 +104,15 @@ export async function POST(req: Request) {
         }
 
         if (recipientEmail) {
-          const amountFormatted = (session.amount_total / 100).toLocaleString('en-US', {
-            style: 'currency',
-            currency: session.currency || 'usd',
-          });
-          await sendTokenPurchaseInvoice(recipientEmail, amountFormatted, tokensToAdd, 'en', session.id);
+          try {
+            const amountFormatted = (session.amount_total / 100).toLocaleString('en-US', {
+              style: 'currency',
+              currency: session.currency || 'usd',
+            });
+            await sendTokenPurchaseInvoice(recipientEmail, amountFormatted, tokensToAdd, 'en', session.id);
+          } catch (emailErr) {
+            console.error('Invoice email failed (non-critical):', emailErr);
+          }
         }
 
         // Notify user in-app

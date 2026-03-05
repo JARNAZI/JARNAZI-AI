@@ -25,12 +25,6 @@ export default function SessionBackGuard({
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_OUT') {
         handleRedirect();
-      } else if (!session && event === 'INITIAL_SESSION') {
-        // Double check after a small delay to avoid race conditions during redirects
-        setTimeout(async () => {
-          const { data } = await supabase.auth.getSession();
-          if (!data.session) handleRedirect();
-        }, 1500);
       }
     });
 
