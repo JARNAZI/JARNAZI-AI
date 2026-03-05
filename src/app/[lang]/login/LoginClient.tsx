@@ -60,21 +60,30 @@ export default function LoginClient({ dict, lang, siteKey, supabaseUrl, supabase
             })
 
             if (error) {
-                // Return the actual error instead of blindly reloading the page
+                console.error("[Login] Auth Error Response:", error);
                 throw error;
             }
 
-            // Successfully logged in!
-            toast.success(dict.auth?.signInSuccess || "Successfully logged in!");
+            console.log("[Login] Auth successful, synchronizing session...");
 
-            // Critical for Next.js App Router + Supabase SSR:
-            // Force the Next.js router to refresh its Server Components and cookie cache
+            // 1. Force the client to fetch and hold the session locally
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session) {
+                console.warn("[Login] Session not found immediately after login, retrying check...");
+                await new Promise(r => setTimeout(r, 200));
+                await supabase.auth.getSession();
+            }
+
+            // 2. Refresh the Next.js router to sync server-side cookies
             router.refresh();
 
-            // Then allow the browser's cookie jar to persist the token, before navigating
+            // 3. Give the browser a moment to settle cookies
             setTimeout(() => {
-                window.location.assign(`/${lang}/debate`);
-            }, 300);
+                const target = `/${lang}/debate`;
+                console.log("[Login] Redirecting to:", target);
+                window.location.replace(target);
+            }, 500);
 
         } catch (err: unknown) {
             const mappedError = mapAuthError(err, dict);

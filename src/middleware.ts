@@ -38,6 +38,12 @@ export async function middleware(request: NextRequest) {
   // 1. Update Supabase session (refreshes token if needed)
   const response = await updateSession(request);
 
+  // Debug: Log session presence for investigation
+  const hasSessionCookie = request.cookies.has('sb-access-token') || request.cookies.has('supabase-auth-token');
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`[Middleware] ${request.nextUrl.pathname} - Has Session Cookie: ${hasSessionCookie}`);
+  }
+
   const { pathname } = request.nextUrl;
 
   // 2. Check if there is any supported locale in the pathname
