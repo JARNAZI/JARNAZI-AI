@@ -30,105 +30,145 @@ export async function POST(req: Request) {
         }
         const data = JSON.parse(bodyText);
 
-        if (data.payment_status === 'finished') {
+        if (data.payment_status === 'finished' || data.payment_status === 'partially_paid') {
+            console.log(`[NowPayments Webhook] Processing finished payment: ${data.payment_id}`);
+
             // Grant Tokens
-            // We need to parse custom_id or order_id to get userId and tokens
-            // order_id format: "USERID_TOKENS" ideally
-            const [userId, tokensStr] = (data.order_id || "").split('_');
+            // order_id format: "USERID_TOKENS_TS"
+            const parts = (data.order_id || "").split('_');
+            const userId = parts[0];
+            const tokensStr = parts[1];
 
             if (userId && tokensStr) {
-                const tokensToAdd = parseInt(tokensStr);
-
+                const tokensToAdd = parseInt(tokensStr, 10);
                 const eventId = String(data.payment_id || data.invoice_id || data.order_id || '');
-                if (!eventId) {
-                    return NextResponse.json({ error: 'Missing payment id' }, { status: 400 });
+
+                console.log('[NowPayments Webhook] Data:', { userId, tokensToAdd, eventId, status: data.payment_status });
+
+                if (isNaN(tokensToAdd) || tokensToAdd <= 0) {
+                    console.warn('[NowPayments Webhook] Invalid tokensToAdd:', tokensStr);
+                    return NextResponse.json({ received: true, error: 'invalid_tokens' });
                 }
 
-                // Idempotency: prevent double-grant if NowPayments retries the IPN
+                // Idempotency check
+                const { data: existingEvent } = await supabaseAdmin
+                    .from('payment_events')
+                    .select('status')
+                    .eq('provider', 'nowpayments')
+                    .eq('event_id', eventId)
+                    .maybeSingle();
+
+                if (existingEvent?.status === 'processed') {
+                    console.log('[NowPayments Webhook] Already processed. Skipping.');
+                    return NextResponse.json({ ok: true, duplicate: true });
+                }
+
                 const amountCents = (typeof data.price_amount === 'number' || typeof data.price_amount === 'string')
                     ? Math.round(parseFloat(String(data.price_amount)) * 100)
                     : null;
 
-                const { error: peInsertErr } = await supabaseAdmin.from('payment_events').insert({
-                    provider: 'nowpayments',
-                    event_id: eventId,
-                    user_id: userId,
-                    amount_cents: amountCents,
-                    tokens_added: tokensToAdd,
-                    status: 'received',
-                    raw: data,
-                });
-
-                if (peInsertErr) {
-                    const isDuplicate = (peInsertErr as any).code === '23505' || /duplicate key/i.test(peInsertErr.message || '');
-                    if (isDuplicate) {
-                        return NextResponse.json({ ok: true, duplicate: true });
-                    }
-                    console.error('Failed to record payment event (nowpayments):', peInsertErr);
-                    return NextResponse.json({ error: 'Failed to record payment event' }, { status: 500 });
-                }
-                const { data: profile } = await supabaseAdmin.from('profiles').select('token_balance').eq('id', userId).single();
-
-                if (profile) {
-                    await supabaseAdmin.from('profiles').update({
-                        token_balance: ((profile as any).token_balance || 0) + tokensToAdd
-                    }).eq('id', userId);
-
-                    await supabaseAdmin.from('transactions').insert({
-                        user_id: userId,
-                        amount: data.price_amount,
-                        currency: data.pay_currency,
-                        provider: 'nowpayments',
-                        status: 'completed',
-                        tokens_granted: tokensToAdd,
-                        external_id: data.payment_id
-                    });
-
-                    // Send Invoice Email
-                    const { data: { user } } = await supabaseAdmin.auth.admin.getUserById(userId);
-                    if (user && user.email) {
-                        try {
-                            const amountStr = `${data.price_amount} ${data.pay_currency}`;
-                            await sendTokenPurchaseInvoice(
-                                user.email,
-                                amountStr,
-                                tokensToAdd
-                            );
-                        } catch (emailErr) {
-                            console.error('Invoice email failed (non-critical):', emailErr);
+                try {
+                    // Record / Update event
+                    if (!existingEvent) {
+                        const { error: peErr } = await supabaseAdmin.from('payment_events').insert({
+                            provider: 'nowpayments',
+                            event_id: eventId,
+                            user_id: userId,
+                            amount_cents: amountCents,
+                            tokens_added: tokensToAdd,
+                            status: 'received',
+                            raw: data,
+                        });
+                        if (peErr) {
+                            if (peErr.code === '23505') return NextResponse.json({ ok: true, conflict: true });
+                            throw peErr;
                         }
                     }
 
-                    // Notify user in-app
+                    // Grant tokens
+                    console.log(`[NowPayments Webhook] Granting ${tokensToAdd} tokens to ${userId}`);
+
+                    const { error: rpcErr } = await supabaseAdmin.rpc('refund_tokens', {
+                        p_user_id: userId,
+                        p_tokens: tokensToAdd
+                    });
+
+                    if (rpcErr) {
+                        console.warn('[NowPayments Webhook] RPC failed, fallback to manual update:', rpcErr.message);
+                        const { data: profile, error: profErr } = await supabaseAdmin.from('profiles').select('token_balance').eq('id', userId).single();
+                        if (profErr || !profile) throw new Error(`Profile not found: ${profErr?.message || 'unknown'}`);
+
+                        const { error: updErr } = await supabaseAdmin.from('profiles').update({
+                            token_balance: (Number(profile.token_balance) || 0) + tokensToAdd
+                        }).eq('id', userId);
+
+                        if (updErr) {
+                            console.error('[NowPayments Webhook] Manual update failed:', updErr);
+                            throw updErr;
+                        }
+                    }
+
+                    // Ledger
+                    await supabaseAdmin.from('token_ledger').insert({
+                        user_id: userId,
+                        delta_tokens: tokensToAdd,
+                        amount: tokensToAdd,
+                        reason: 'purchase',
+                        reference: eventId,
+                        meta: { nowpayments_id: data.payment_id, pay_currency: data.pay_currency }
+                    });
+
+                    // Invoice Email
+                    const { data: uData } = await supabaseAdmin.auth.admin.getUserById(userId);
+                    if (uData?.user?.email) {
+                        try {
+                            const amountStr = `${data.price_amount} ${data.price_currency || 'USD'}`;
+                            await sendTokenPurchaseInvoice(uData.user.email, amountStr, tokensToAdd, 'en', eventId);
+                        } catch (emailErr) {
+                            console.warn('[NowPayments Webhook] Email failed:', emailErr);
+                        }
+                    }
+
+                    // Notifications
                     await supabaseAdmin.from('notifications').insert({
                         user_id: userId,
                         title: 'Purchase Successful',
-                        body: `Successfully purchased ${tokensToAdd} tokens.`,
+                        body: `Successfully purchased ${tokensToAdd} tokens via NOWPayments.`,
                         type: 'success',
                         is_read: false
                     });
 
-                    // Mark processed
+                    // Update Event Status
                     await supabaseAdmin.from('payment_events')
                         .update({ status: 'processed' })
                         .eq('provider', 'nowpayments')
                         .eq('event_id', eventId);
 
-                    // Attempt server-side resume of latest pending request (if still valid)
+                    // Resume Pending
                     try {
                         await processPendingForUser(userId);
-                    } catch (e) {
-                        console.error('Failed to auto-resume pending request:', e);
+                    } catch (e: any) {
+                        console.warn('[NowPayments Webhook] Resume pending failed:', e.message);
                     }
 
+                    console.log('[NowPayments Webhook] Successfully processed:', eventId);
+                    return NextResponse.json({ ok: true });
+
+                } catch (err: any) {
+                    console.error('[NowPayments Webhook] Critical Error:', err.message);
+                    await supabaseAdmin.from('payment_events')
+                        .update({ status: 'failed' })
+                        .eq('provider', 'nowpayments')
+                        .eq('event_id', eventId);
+                    return NextResponse.json({ error: err.message }, { status: 500 });
                 }
             }
         }
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({ success: true, processed: false });
 
     } catch (error: unknown) {
-        console.error('NowPayments Webhook Error:', error);
+        console.error('NowPayments Webhook Outer Error:', error);
         return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
     }
 }
