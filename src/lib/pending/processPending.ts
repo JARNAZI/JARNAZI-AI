@@ -77,9 +77,15 @@ async function runVideoComposeFromPending(admin: AdminClient, userId: string, pe
     .eq('user_id', userId)
     .in('id', assetIds);
 
-  const paths = assetIds
-    .map((id: string) => (assets ?? []).find((a: any) => a.id === id)?.storage_path)
-    .filter((p: any) => typeof p === 'string' && p.length > 0);
+  const paths: string[] = [];
+  if (assets) {
+    for (const id of assetIds) {
+      const found = (assets as any[]).find((a: any) => String(a.id) === String(id));
+      if (found?.storage_path) {
+        paths.push(String(found.storage_path));
+      }
+    }
+  }
 
   if (!paths.length) return { ok: false, error: 'No source files found' };
 
