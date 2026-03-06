@@ -67,7 +67,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip all internal paths (_next), API routes, and static files
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)',
+    // Skip all internal paths (_next), API routes, auth callbacks, and static files
+    '/((?!api|auth|_next/static|_next/image|favicon.ico|.*\\..*).*)',
   ],
 };
