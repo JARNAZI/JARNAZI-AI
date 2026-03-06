@@ -112,14 +112,18 @@ export async function POST(req: Request) {
       // 3. Update Balance
       console.log(`[Stripe Webhook] Granting ${tokensToAdd} tokens to user ${userId}`);
 
-      // Try RPC first (Atomic)
+      // Try RPC first (Atomic) - Note: In Jarnazi DB, the RPC might be missing or named differently, so logging is key.
       const { error: rpcErr } = await supabaseAdmin.rpc('refund_tokens', {
         p_user_id: userId,
         p_tokens: tokensToAdd
       });
 
-      if (rpcErr) {
-        console.warn('[Stripe Webhook] RPC refund_tokens failed, trying manual fallback:', rpcErr.message);
+      let updatedBalance = false;
+      if (!rpcErr) {
+        console.log('[Stripe Webhook] RPC refund_tokens successful');
+        updatedBalance = true;
+      } else {
+        console.warn('[Stripe Webhook] RPC refund_tokens failed (might not exist), trying manual fallback:', rpcErr.message);
         const { data: profile, error: profErr } = await supabaseAdmin
           .from('profiles')
           .select('token_balance')
@@ -142,19 +146,21 @@ export async function POST(req: Request) {
           throw updErr;
         }
         console.log('[Stripe Webhook] Manual update successful');
-      } else {
-        console.log('[Stripe Webhook] RPC update successful');
+        updatedBalance = true;
       }
 
       // 4. Ledger Record
-      await supabaseAdmin.from('token_ledger').insert({
+      const { error: ledgerErr } = await supabaseAdmin.from('token_ledger').insert({
         user_id: userId,
         delta_tokens: tokensToAdd,
-        amount: tokensToAdd,
         reason: 'purchase',
         reference: session.id,
         meta: { stripe_event_id: eventId, amount_total: session.amount_total }
       });
+      if (ledgerErr) {
+        console.error('[Stripe Webhook] Failed to insert token_ledger:', ledgerErr.message);
+        // Do not throw to prevent the whole webhook from failing if only ledger fails, but log it explicitly.
+      }
 
       // 5. Notification
       await supabaseAdmin.from('notifications').insert({

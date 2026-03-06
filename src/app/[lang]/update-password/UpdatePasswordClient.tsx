@@ -24,8 +24,27 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
         setLoading(true);
 
         try {
-            const { error } = await supabase.auth.updateUser({ password });
-            if (error) throw error;
+            // First verify if the hash was parsed and a session exists
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+            if (sessionError || !session) {
+                throw new Error("Invalid or expired reset link. Please try again.");
+            }
+
+            // Send password change request to custom API using our token, skipping native Supabase email triggers
+            const response = await fetch('/api/auth/update-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ password })
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Failed to update password');
+            }
 
             setSuccess(true);
             toast.success(dict.updatePasswordPage.toastSuccess);

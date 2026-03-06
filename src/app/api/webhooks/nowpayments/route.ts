@@ -109,14 +109,16 @@ export async function POST(req: Request) {
                     }
 
                     // Ledger
-                    await supabaseAdmin.from('token_ledger').insert({
+                    const { error: ledgerErr } = await supabaseAdmin.from('token_ledger').insert({
                         user_id: userId,
                         delta_tokens: tokensToAdd,
-                        amount: tokensToAdd,
                         reason: 'purchase',
                         reference: eventId,
                         meta: { nowpayments_id: data.payment_id, pay_currency: data.pay_currency }
                     });
+                    if (ledgerErr) {
+                        console.error('[NowPayments Webhook] Ledger insert failed:', ledgerErr.message);
+                    }
 
                     // Invoice Email
                     const { data: uData } = await supabaseAdmin.auth.admin.getUserById(userId);
