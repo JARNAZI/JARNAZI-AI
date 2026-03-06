@@ -61,7 +61,20 @@ export async function POST(req: Request) {
 
         if (error) throw error;
 
-        const recoveryLink = data.properties.action_link;
+        const actionLink = data.properties.action_link;
+        let recoveryLink = actionLink;
+
+        try {
+            // Intercept the internal OTP token so the user never hits the Supabase verify redirect
+            // This prevents all implicit-flow hash fragment errors and PKCE issues.
+            const urlObj = new URL(actionLink);
+            const tokenHash = urlObj.searchParams.get('token');
+            if (tokenHash) {
+                recoveryLink = `${siteUrl}/${lang || 'en'}/update-password?token=${tokenHash}`;
+            }
+        } catch (e) {
+            console.error('[Reset Password] Failed to parse action_link', e);
+        }
 
         await sendPasswordResetEmailLink(email, recoveryLink, lang || 'en');
 

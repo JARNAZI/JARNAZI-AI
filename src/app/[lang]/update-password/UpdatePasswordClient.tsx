@@ -7,9 +7,16 @@ import { Lock, Loader2, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 let eagerToken = '';
-if (typeof window !== 'undefined' && window.location.hash) {
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    eagerToken = hashParams.get('access_token') || '';
+let eagerOtpToken = '';
+if (typeof window !== 'undefined') {
+    if (window.location.hash) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        eagerToken = hashParams.get('access_token') || '';
+    }
+    if (window.location.search) {
+        const searchParams = new URLSearchParams(window.location.search);
+        eagerOtpToken = searchParams.get('token') || '';
+    }
 }
 
 export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabaseAnonKey }: {
@@ -23,16 +30,20 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [savedHashToken, setSavedHashToken] = useState(eagerToken);
+    const [savedOtpToken, setSavedOtpToken] = useState(eagerOtpToken);
 
     useEffect(() => {
         if (!savedHashToken && typeof window !== 'undefined' && window.location.hash) {
             const hashParams = new URLSearchParams(window.location.hash.substring(1));
             const token = hashParams.get('access_token');
-            if (token) {
-                setSavedHashToken(token);
-            }
+            if (token) setSavedHashToken(token);
         }
-    }, [savedHashToken]);
+        if (!savedOtpToken && typeof window !== 'undefined' && window.location.search) {
+            const searchParams = new URLSearchParams(window.location.search);
+            const token = searchParams.get('token');
+            if (token) setSavedOtpToken(token);
+        }
+    }, [savedHashToken, savedOtpToken]);
 
     const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
 
@@ -41,31 +52,35 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
         setLoading(true);
 
         try {
-            // First verify if the hash was parsed and a session exists
-            const { data: { session } } = await supabase.auth.getSession();
-            let accessToken = session?.access_token || '';
+            // Check for modern OTP token or legacy hash token
+            let finalOtpToken = savedOtpToken;
+            let finalAccessToken = savedHashToken;
 
-            // Fallback: use the token we eagerly grabbed on mount, or check current hash
-            if (!accessToken) {
-                accessToken = savedHashToken;
-            }
-            if (!accessToken && typeof window !== 'undefined') {
-                const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                accessToken = hashParams.get('access_token') || '';
+            // Only attempt session load if we need a legacy token and don't have it
+            if (!finalOtpToken && !finalAccessToken) {
+                const { data: { session } } = await supabase.auth.getSession();
+                finalAccessToken = session?.access_token || '';
             }
 
-            if (!accessToken) {
+            if (!finalOtpToken && !finalAccessToken) {
                 throw new Error("Invalid or expired reset link. Please try again.");
             }
 
-            // Send password change request to custom API using our token, skipping native Supabase email triggers
+            const payload: any = { password };
+            if (finalOtpToken) payload.token = finalOtpToken;
+
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json'
+            };
+            if (finalAccessToken && !finalOtpToken) {
+                headers['Authorization'] = `Bearer ${finalAccessToken}`;
+            }
+
+            // Send password change request to custom API
             const response = await fetch('/api/auth/update-password', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                },
-                body: JSON.stringify({ password })
+                headers,
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
