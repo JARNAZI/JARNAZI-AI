@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Lock, Loader2, CheckCircle } from 'lucide-react';
@@ -16,6 +16,17 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [savedHashToken, setSavedHashToken] = useState('');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.hash) {
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const token = hashParams.get('access_token');
+            if (token) {
+                setSavedHashToken(token);
+            }
+        }
+    }, []);
 
     const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
 
@@ -25,9 +36,19 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
 
         try {
             // First verify if the hash was parsed and a session exists
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            const { data: { session } } = await supabase.auth.getSession();
+            let accessToken = session?.access_token || '';
 
-            if (sessionError || !session) {
+            // Fallback: use the token we eagerly grabbed on mount, or check current hash
+            if (!accessToken) {
+                accessToken = savedHashToken;
+            }
+            if (!accessToken && typeof window !== 'undefined') {
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                accessToken = hashParams.get('access_token') || '';
+            }
+
+            if (!accessToken) {
                 throw new Error("Invalid or expired reset link. Please try again.");
             }
 
@@ -36,7 +57,7 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session.access_token}`
+                    'Authorization': `Bearer ${accessToken}`
                 },
                 body: JSON.stringify({ password })
             });
