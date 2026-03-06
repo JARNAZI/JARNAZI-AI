@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 
 let eagerToken = '';
 let eagerOtpToken = '';
+let eagerEmail = '';
 if (typeof window !== 'undefined') {
     if (window.location.hash) {
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -16,6 +17,7 @@ if (typeof window !== 'undefined') {
     if (window.location.search) {
         const searchParams = new URLSearchParams(window.location.search);
         eagerOtpToken = searchParams.get('token') || '';
+        eagerEmail = searchParams.get('email') || '';
     }
 }
 
@@ -31,6 +33,7 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
     const [success, setSuccess] = useState(false);
     const [savedHashToken, setSavedHashToken] = useState(eagerToken);
     const [savedOtpToken, setSavedOtpToken] = useState(eagerOtpToken);
+    const [savedEmail, setSavedEmail] = useState(eagerEmail);
 
     useEffect(() => {
         if (!savedHashToken && typeof window !== 'undefined' && window.location.hash) {
@@ -38,12 +41,14 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
             const token = hashParams.get('access_token');
             if (token) setSavedHashToken(token);
         }
-        if (!savedOtpToken && typeof window !== 'undefined' && window.location.search) {
+        if (typeof window !== 'undefined' && window.location.search) {
             const searchParams = new URLSearchParams(window.location.search);
             const token = searchParams.get('token');
-            if (token) setSavedOtpToken(token);
+            const email = searchParams.get('email');
+            if (token && !savedOtpToken) setSavedOtpToken(token);
+            if (email && !savedEmail) setSavedEmail(email);
         }
-    }, [savedHashToken, savedOtpToken]);
+    }, [savedHashToken, savedOtpToken, savedEmail]);
 
     const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
 
@@ -55,6 +60,7 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
             // Check for modern OTP token or legacy hash token
             let finalOtpToken = savedOtpToken;
             let finalAccessToken = savedHashToken;
+            let finalEmail = savedEmail;
 
             // Only attempt session load if we need a legacy token and don't have it
             if (!finalOtpToken && !finalAccessToken) {
@@ -67,7 +73,10 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
             }
 
             const payload: any = { password };
-            if (finalOtpToken) payload.token = finalOtpToken;
+            if (finalOtpToken) {
+                payload.token = finalOtpToken;
+                payload.email = finalEmail;
+            }
 
             const headers: Record<string, string> = {
                 'Content-Type': 'application/json'
