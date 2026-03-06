@@ -14,9 +14,6 @@ export async function POST(req: Request) {
         if (!authHeader && !token) {
             return NextResponse.json({ error: 'Unauthorized: missing token' }, { status: 401 });
         }
-        if (token && !email) {
-            return NextResponse.json({ error: 'Unauthorized: missing email for OTP token' }, { status: 401 });
-        }
 
         const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
         const anonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -32,10 +29,9 @@ export async function POST(req: Request) {
 
         let targetUserId = null;
 
-        if (token && email) {
+        if (token) {
             // New Method: Verify OTP token_hash directly
             const { data, error: otpError } = await adminClient.auth.verifyOtp({
-                email: email,
                 token_hash: token,
                 type: 'recovery'
             });
