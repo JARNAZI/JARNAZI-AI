@@ -207,6 +207,7 @@ const ar = {
     files: "ملفات",
     pics: "صور",
     video: "فيديو",
+    camera: "كاميرا",
     audio: "صوت",
     mathPlaceholder: "أدخل صيغة رياضية معقدة...",
     textPlaceholder: "ماذا سيناقش المجلس اليوم؟",

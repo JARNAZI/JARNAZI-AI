@@ -147,6 +147,7 @@ const sv = {
     files: "Filer",
     pics: "Bilder",
     video: "Video",
+    camera: "Kamera",
     audio: "Ljud",
     mathPlaceholder: "Ange komplex matematisk formel...",
     textPlaceholder: "Vad ska rådet rådgöra om idag?",

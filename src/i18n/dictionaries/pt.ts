@@ -147,6 +147,7 @@ const pt = {
     files: "Arquivos",
     pics: "Fotos",
     video: "Vídeo",
+    camera: "Câmera",
     audio: "Áudio",
     mathPlaceholder: "Insira fórmula matemática complexa...",
     textPlaceholder: "O que o Conselho deliberará hoje?",

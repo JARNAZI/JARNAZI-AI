@@ -147,6 +147,7 @@ const ja = {
     files: "ファイル",
     pics: "写真",
     video: "動画",
+    camera: "カメラ",
     audio: "音声",
     mathPlaceholder: "複雑な数式を入力...",
     textPlaceholder: "評議会は今日、何を審議しますか？",

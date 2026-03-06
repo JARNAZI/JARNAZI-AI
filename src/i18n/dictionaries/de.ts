@@ -162,6 +162,7 @@ const de = {
     files: "Dateien",
     pics: "Bilder",
     video: "Video",
+    camera: "Kamera",
     audio: "Audio",
     mathPlaceholder: "Geben Sie eine komplexe Formel ein...",
     textPlaceholder: "Worüber soll der Rat heute beraten?",
