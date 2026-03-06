@@ -49,10 +49,13 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
             setSuccess(true);
             toast.success(dict.updatePasswordPage.toastSuccess);
 
-            // Redirect after delay
+            // Clear the local session so they must log in with the new password
+            await supabase.auth.signOut();
+
+            // Force a full redirect after delay to clear any hash fragments
             setTimeout(() => {
-                router.push(`/${lang}/login`);
-            }, 2000);
+                window.location.href = `/${lang}/login`;
+            }, 2500);
         } catch (err: unknown) {
             toast.error((err instanceof Error ? err.message : String(err)));
         } finally {
