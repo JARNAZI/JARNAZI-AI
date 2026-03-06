@@ -47,8 +47,9 @@ export async function POST(req: Request) {
         });
 
         const siteUrl = getBaseUrl(req);
-        // Redirect to the callback so the PKCE code is exchanged for a recovery session
-        const redirectTo = `${siteUrl}/auth/callback?next=/${lang || 'en'}/update-password`;
+        // Redirect directly to the update password page because generateLink(type: 'recovery') 
+        // uses Implicit Flow and appends `#access_token=...`, which Server-side routes won't see.
+        const redirectTo = `${siteUrl}/${lang || 'en'}/update-password`;
 
         const { data, error } = await supabaseAdmin.auth.admin.generateLink({
             type: 'recovery',
