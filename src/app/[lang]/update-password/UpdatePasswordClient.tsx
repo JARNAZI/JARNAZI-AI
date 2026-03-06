@@ -6,6 +6,12 @@ import { createClient } from '@/lib/supabase/client';
 import { Lock, Loader2, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
+let eagerToken = '';
+if (typeof window !== 'undefined' && window.location.hash) {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    eagerToken = hashParams.get('access_token') || '';
+}
+
 export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabaseAnonKey }: {
     lang: string;
     dict: any;
@@ -16,17 +22,17 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [savedHashToken, setSavedHashToken] = useState('');
+    const [savedHashToken, setSavedHashToken] = useState(eagerToken);
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && window.location.hash) {
+        if (!savedHashToken && typeof window !== 'undefined' && window.location.hash) {
             const hashParams = new URLSearchParams(window.location.hash.substring(1));
             const token = hashParams.get('access_token');
             if (token) {
                 setSavedHashToken(token);
             }
         }
-    }, []);
+    }, [savedHashToken]);
 
     const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
 
