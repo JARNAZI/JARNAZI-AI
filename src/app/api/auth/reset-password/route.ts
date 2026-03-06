@@ -4,6 +4,25 @@ import { sendPasswordResetEmailLink } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
+function getBaseUrl(req: Request) {
+    const env = process.env.NEXT_PUBLIC_APP_URL ||
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        process.env.NEXT_PUBLIC_BASE_URL;
+    if (env) return env.replace(/\/$/, '');
+
+    const origin = req.headers.get('origin') || req.headers.get('referer');
+    if (origin) {
+        try {
+            const url = new URL(origin);
+            return `${url.protocol}//${url.host}`;
+        } catch (_) {
+            return origin.replace(/\/$/, '');
+        }
+    }
+
+    return 'https://jarnazi.com';
+}
+
 export async function POST(req: Request) {
     try {
         const { email, lang } = await req.json();
@@ -27,7 +46,7 @@ export async function POST(req: Request) {
             }
         });
 
-        const siteUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://jarnazi.com';
+        const siteUrl = getBaseUrl(req);
         // Redirect directly to the update password page because generateLink(type: 'recovery') 
         // uses Implicit Flow and appends `#access_token=...`, which Server-side routes won't see and could produce a 404
         const redirectTo = `${siteUrl}/${lang || 'en'}/update-password`;
