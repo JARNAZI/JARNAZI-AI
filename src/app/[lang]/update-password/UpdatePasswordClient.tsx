@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 let eagerToken = '';
 let eagerOtpToken = '';
 let eagerEmail = '';
+let eagerMethod = '';
 if (typeof window !== 'undefined') {
     if (window.location.hash) {
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -18,6 +19,7 @@ if (typeof window !== 'undefined') {
         const searchParams = new URLSearchParams(window.location.search);
         eagerOtpToken = searchParams.get('token') || '';
         eagerEmail = searchParams.get('email') || '';
+        eagerMethod = searchParams.get('method') || '';
     }
 }
 
@@ -34,6 +36,7 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
     const [savedHashToken, setSavedHashToken] = useState(eagerToken);
     const [savedOtpToken, setSavedOtpToken] = useState(eagerOtpToken);
     const [savedEmail, setSavedEmail] = useState(eagerEmail);
+    const [savedMethod, setSavedMethod] = useState(eagerMethod);
 
     useEffect(() => {
         if (!savedHashToken && typeof window !== 'undefined' && window.location.hash) {
@@ -45,10 +48,12 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
             const searchParams = new URLSearchParams(window.location.search);
             const token = searchParams.get('token');
             const email = searchParams.get('email');
+            const method = searchParams.get('method');
             if (token && !savedOtpToken) setSavedOtpToken(token);
             if (email && !savedEmail) setSavedEmail(email);
+            if (method && !savedMethod) setSavedMethod(method);
         }
-    }, [savedHashToken, savedOtpToken, savedEmail]);
+    }, [savedHashToken, savedOtpToken, savedEmail, savedMethod]);
 
     const [supabase] = useState(() => createClient({ supabaseUrl, supabaseAnonKey }));
 
@@ -61,6 +66,7 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
             let finalOtpToken = savedOtpToken;
             let finalAccessToken = savedHashToken;
             let finalEmail = savedEmail;
+            let finalMethod = savedMethod;
 
             // Only attempt session load if we need a legacy token and don't have it
             if (!finalOtpToken && !finalAccessToken) {
@@ -76,6 +82,7 @@ export default function UpdatePasswordClient({ lang, dict, supabaseUrl, supabase
             if (finalOtpToken) {
                 payload.token = finalOtpToken;
                 payload.email = finalEmail;
+                payload.method = finalMethod;
             }
 
             const headers: Record<string, string> = {

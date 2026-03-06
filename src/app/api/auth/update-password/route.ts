@@ -5,7 +5,7 @@ export const runtime = 'nodejs';
 
 export async function POST(req: Request) {
     try {
-        const { password, token, email } = await req.json();
+        const { password, token, email, method } = await req.json();
         const authHeader = req.headers.get('Authorization');
 
         if (!password) {
@@ -30,13 +30,22 @@ export async function POST(req: Request) {
         let targetUserId = null;
 
         if (token) {
-            // New Method: Verify OTP token_hash directly
-            const { data, error: otpError } = await adminClient.auth.verifyOtp({
-                token_hash: token,
-                type: 'recovery'
-            });
+            // Check which verification type we are using based on what reset-password sent us
+            let verifyArgs: any = { type: 'recovery' };
+
+            if (method === 'otp' && email) {
+                // Method 1: 6-digit email_otp (requires email and token)
+                verifyArgs.email = email;
+                verifyArgs.token = token;
+            } else {
+                // Method 2: hashed_token (requires token_hash only)
+                verifyArgs.token_hash = token;
+            }
+
+            const { data, error: otpError } = await adminClient.auth.verifyOtp(verifyArgs);
+
             if (otpError || !data?.user) {
-                console.error('[Update Password API] OTP verify error:', otpError?.message);
+                console.error(`[Update Password API] OTP verify error (method=${method}):`, otpError?.message);
                 return NextResponse.json({ error: 'Invalid or expired reset link.' }, { status: 401 });
             }
             targetUserId = data.user.id;
