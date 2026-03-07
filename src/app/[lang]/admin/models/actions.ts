@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createServiceRoleClient } from '@/lib/supabase/server-admin';
 import { revalidatePath } from 'next/cache';
 
 type JsonObject = Record<string, unknown>;
@@ -80,7 +81,8 @@ async function requireAdmin() {
     throw new Error('Unauthorized');
   }
 
-  return supabase;
+  const adminClient = await createServiceRoleClient();
+  return adminClient;
 }
 
 export async function upsertModel(input: unknown) {
@@ -97,7 +99,7 @@ export async function upsertModel(input: unknown) {
 
   if (error) throw error;
 
-  revalidatePath('/admin/models');
+  revalidatePath('/', 'layout');
   return { success: true };
 }
 
@@ -107,6 +109,6 @@ export async function deleteModel(id: string) {
   const { error } = await supabase.from('ai_models').delete().eq('id', id);
   if (error) throw error;
 
-  revalidatePath('/admin/models');
+  revalidatePath('/', 'layout');
   return { success: true };
 }
