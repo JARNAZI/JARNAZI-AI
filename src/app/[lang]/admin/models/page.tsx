@@ -10,7 +10,7 @@ export default async function AdminModelsPage(props: { params: Promise<{ lang: s
   const dict = await getDictionary(lang);
 
   const supabase = await createServiceRoleClient();
-  const { data: models, error } = await supabase.from('ai_models').select('*');
+  const { data: models, error } = await supabase.from('ai_models').select('*').order('priority', { ascending: true });
   console.log("ai_models fetch result:", { modelsLength: models?.length, error });
 
   return (
