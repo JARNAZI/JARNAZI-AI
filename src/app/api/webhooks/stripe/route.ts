@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     // 1. Idempotency Check
     const { data: existingEvent, error: checkErr } = await supabaseAdmin
       .from('payment_events')
-      .select('status')
+      .select('processed')
       .eq('event_id', eventId)
       .maybeSingle();
 
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Database check failed' }, { status: 500 });
     }
 
-    if (existingEvent?.status === 'processed') {
+    if (existingEvent?.processed === true) {
       console.log('[Stripe Webhook] Event already processed. Skipping.');
       return NextResponse.json({ ok: true, duplicate: true });
     }
@@ -96,11 +96,7 @@ export async function POST(req: Request) {
         const { error: insErr } = await supabaseAdmin.from('payment_events').insert({
           provider: 'stripe',
           event_id: eventId,
-          user_id: userId,
-          amount_cents: session.amount_total,
-          tokens_added: tokensToAdd,
-          status: 'received',
-          raw: session,
+          processed: false
         });
         if (insErr) {
           console.error('[Stripe Webhook] Failed to record payment_event:', insErr);
@@ -152,10 +148,8 @@ export async function POST(req: Request) {
       // 4. Ledger Record
       const { error: ledgerErr } = await supabaseAdmin.from('token_ledger').insert({
         user_id: userId,
-        delta_tokens: tokensToAdd,
-        reason: 'purchase',
-        reference: session.id,
-        meta: { stripe_event_id: eventId, amount_total: session.amount_total }
+        amount: tokensToAdd,
+        description: `Stripe purchase session: ${session.id}`
       });
       if (ledgerErr) {
         console.error('[Stripe Webhook] Failed to insert token_ledger:', ledgerErr.message);
@@ -193,7 +187,7 @@ export async function POST(req: Request) {
 
       // 7. Success
       await supabaseAdmin.from('payment_events')
-        .update({ status: 'processed' })
+        .update({ processed: true })
         .eq('event_id', eventId);
 
       // 8. Resume
@@ -208,7 +202,7 @@ export async function POST(req: Request) {
     } catch (err: any) {
       console.error('[Stripe Webhook] Processing Error:', err.message);
       await supabaseAdmin.from('payment_events')
-        .update({ status: 'failed' })
+        .update({ processed: false })
         .eq('event_id', eventId);
       return NextResponse.json({ error: err.message }, { status: 500 });
     }

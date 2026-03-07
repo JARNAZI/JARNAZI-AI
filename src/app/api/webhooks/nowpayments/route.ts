@@ -53,12 +53,12 @@ export async function POST(req: Request) {
                 // Idempotency check
                 const { data: existingEvent } = await supabaseAdmin
                     .from('payment_events')
-                    .select('status')
+                    .select('processed')
                     .eq('provider', 'nowpayments')
                     .eq('event_id', eventId)
                     .maybeSingle();
 
-                if (existingEvent?.status === 'processed') {
+                if (existingEvent?.processed === true) {
                     console.log('[NowPayments Webhook] Already processed. Skipping.');
                     return NextResponse.json({ ok: true, duplicate: true });
                 }
@@ -73,11 +73,7 @@ export async function POST(req: Request) {
                         const { error: peErr } = await supabaseAdmin.from('payment_events').insert({
                             provider: 'nowpayments',
                             event_id: eventId,
-                            user_id: userId,
-                            amount_cents: amountCents,
-                            tokens_added: tokensToAdd,
-                            status: 'received',
-                            raw: data,
+                            processed: false
                         });
                         if (peErr) {
                             if (peErr.code === '23505') return NextResponse.json({ ok: true, conflict: true });
@@ -111,10 +107,8 @@ export async function POST(req: Request) {
                     // Ledger
                     const { error: ledgerErr } = await supabaseAdmin.from('token_ledger').insert({
                         user_id: userId,
-                        delta_tokens: tokensToAdd,
-                        reason: 'purchase',
-                        reference: eventId,
-                        meta: { nowpayments_id: data.payment_id, pay_currency: data.pay_currency }
+                        amount: tokensToAdd,
+                        description: `NOWPayments purchase: ${eventId}`
                     });
                     if (ledgerErr) {
                         console.error('[NowPayments Webhook] Ledger insert failed:', ledgerErr.message);
@@ -142,7 +136,7 @@ export async function POST(req: Request) {
 
                     // Update Event Status
                     await supabaseAdmin.from('payment_events')
-                        .update({ status: 'processed' })
+                        .update({ processed: true })
                         .eq('provider', 'nowpayments')
                         .eq('event_id', eventId);
 
@@ -159,7 +153,7 @@ export async function POST(req: Request) {
                 } catch (err: any) {
                     console.error('[NowPayments Webhook] Critical Error:', err.message);
                     await supabaseAdmin.from('payment_events')
-                        .update({ status: 'failed' })
+                        .update({ processed: false })
                         .eq('provider', 'nowpayments')
                         .eq('event_id', eventId);
                     return NextResponse.json({ error: err.message }, { status: 500 });
