@@ -84,24 +84,16 @@ export async function POST(req: Request) {
                     // Grant tokens
                     console.log(`[NowPayments Webhook] Granting ${tokensToAdd} tokens to ${userId}`);
 
-                    const { error: rpcErr } = await supabaseAdmin.rpc('refund_tokens', {
-                        p_user_id: userId,
-                        p_tokens: tokensToAdd
-                    });
+                    const { data: profile, error: profErr } = await supabaseAdmin.from('profiles').select('token_balance').eq('id', userId).single();
+                    if (profErr || !profile) throw new Error(`Profile not found: ${profErr?.message || 'unknown'}`);
 
-                    if (rpcErr) {
-                        console.warn('[NowPayments Webhook] RPC failed, fallback to manual update:', rpcErr.message);
-                        const { data: profile, error: profErr } = await supabaseAdmin.from('profiles').select('token_balance').eq('id', userId).single();
-                        if (profErr || !profile) throw new Error(`Profile not found: ${profErr?.message || 'unknown'}`);
+                    const { error: updErr } = await supabaseAdmin.from('profiles').update({
+                        token_balance: (Number(profile.token_balance) || 0) + tokensToAdd
+                    }).eq('id', userId);
 
-                        const { error: updErr } = await supabaseAdmin.from('profiles').update({
-                            token_balance: (Number(profile.token_balance) || 0) + tokensToAdd
-                        }).eq('id', userId);
-
-                        if (updErr) {
-                            console.error('[NowPayments Webhook] Manual update failed:', updErr);
-                            throw updErr;
-                        }
+                    if (updErr) {
+                        console.error('[NowPayments Webhook] Manual update failed:', updErr);
+                        throw updErr;
                     }
 
                     // Ledger

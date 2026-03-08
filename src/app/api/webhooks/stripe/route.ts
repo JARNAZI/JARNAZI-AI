@@ -108,42 +108,28 @@ export async function POST(req: Request) {
       // 3. Update Balance
       console.log(`[Stripe Webhook] Granting ${tokensToAdd} tokens to user ${userId}`);
 
-      // Try RPC first (Atomic) - Note: In Jarnazi DB, the RPC might be missing or named differently, so logging is key.
-      const { error: rpcErr } = await supabaseAdmin.rpc('refund_tokens', {
-        p_user_id: userId,
-        p_tokens: tokensToAdd
-      });
+      const { data: profile, error: profErr } = await supabaseAdmin
+        .from('profiles')
+        .select('token_balance')
+        .eq('id', userId)
+        .single();
 
-      let updatedBalance = false;
-      if (!rpcErr) {
-        console.log('[Stripe Webhook] RPC refund_tokens successful');
-        updatedBalance = true;
-      } else {
-        console.warn('[Stripe Webhook] RPC refund_tokens failed (might not exist), trying manual fallback:', rpcErr.message);
-        const { data: profile, error: profErr } = await supabaseAdmin
-          .from('profiles')
-          .select('token_balance')
-          .eq('id', userId)
-          .single();
-
-        if (profErr || !profile) {
-          throw new Error(`Profile not found: ${profErr?.message || 'unknown'}`);
-        }
-
-        const { error: updErr } = await supabaseAdmin
-          .from('profiles')
-          .update({
-            token_balance: (Number(profile.token_balance) || 0) + tokensToAdd
-          })
-          .eq('id', userId);
-
-        if (updErr) {
-          console.error('[Stripe Webhook] Manual balance update failed:', updErr.message);
-          throw updErr;
-        }
-        console.log('[Stripe Webhook] Manual update successful');
-        updatedBalance = true;
+      if (profErr || !profile) {
+        throw new Error(`Profile not found: ${profErr?.message || 'unknown'}`);
       }
+
+      const { error: updErr } = await supabaseAdmin
+        .from('profiles')
+        .update({
+          token_balance: (Number(profile.token_balance) || 0) + tokensToAdd
+        })
+        .eq('id', userId);
+
+      if (updErr) {
+        console.error('[Stripe Webhook] Manual balance update failed:', updErr.message);
+        throw updErr;
+      }
+      console.log('[Stripe Webhook] Balance update successful');
 
       // 4. Ledger Record
       const { error: ledgerErr } = await supabaseAdmin.from('token_ledger').insert({

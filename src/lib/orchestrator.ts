@@ -119,7 +119,16 @@ export class DebateOrchestrator {
                 results.push(result);
             } else {
                 console.error(`[Maestro] Step failed: ${step.role}. Content: ${result.content}`);
-                // If it's a consensus step and it failed, we might want to throw or handle
+                // Insert a system message so the user isn't left in an empty debate if agents fail
+                await this.saveTurn(
+                    debateId,
+                    userId,
+                    'system',
+                    'System Alert',
+                    null,
+                    `[Step Failed: ${step.role}]\nDetails: ${result.content}`,
+                    { failed: true, role_label: step.role }
+                );
             }
         }
 

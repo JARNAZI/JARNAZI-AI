@@ -73,7 +73,8 @@ export async function POST(req: Request) {
       .single();
 
     const { getRobustSetting } = require('@/lib/settings-robust');
-    const enableFreeTrial = await getRobustSetting(supabaseAdmin, 'enable_free_trial', 'false') === 'true';
+    const rawEnableTrial = await getRobustSetting(supabaseAdmin, 'enable_free_trial', 'false');
+    const enableFreeTrial = String(rawEnableTrial).toLowerCase() === 'true';
 
     let isTrialTurn = false;
     if (enableFreeTrial && profile && !profile.free_trial_used) {
