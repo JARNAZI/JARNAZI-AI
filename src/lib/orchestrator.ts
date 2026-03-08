@@ -480,10 +480,16 @@ export class DebateOrchestrator {
         content: string,
         meta: Record<string, unknown> = {}
     ) {
-        // Fallback for missing columns by checking DB result (internal best-effort)
+        // Ensure providerId is a valid UUID, otherwise null it out to avoid Postgres errors
+        let validProviderId = providerId;
+        if (providerId && !providerId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+            console.warn(`[Maestro] Invalid UUID for provider, using null. Provided: ${providerId}`);
+            validProviderId = null;
+        }
+
         const payload: any = {
             debate_id: debateId,
-            ai_provider_id: providerId,
+            ai_provider_id: validProviderId,
             ai_name_snapshot: agentName,
             content,
         };
@@ -493,7 +499,15 @@ export class DebateOrchestrator {
         payload.user_id = userId;
         payload.meta = meta;
 
-        await this.supabase.from('debate_turns').insert(payload);
+        const { error } = await this.supabase.from('debate_turns').insert(payload);
+        if (error) {
+            console.error('[Maestro] CRITICAL ERROR saving turn:', error);
+            // Fallback attempt without provider_id if it was a constraint issue
+            if (payload.ai_provider_id) {
+                payload.ai_provider_id = null;
+                await this.supabase.from('debate_turns').insert(payload);
+            }
+        }
     }
 }
 
