@@ -5,10 +5,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 console.log("Payment Handler Initialized")
 
 // --- MANDATORY KEYS (STRICT REFERENCE) ---
-const STRIPE_SECRET_KEY = Deno.env.get("Stripe_secret_live_key") || Deno.env.get("Stripe_test_secret_key");
-const STRIPE_WEBHOOK_SECRET = Deno.env.get("Stripe_webhook");
-const NOWPAYMENTS_API_KEY = Deno.env.get("Nowpayments_api_key");
-const NOWPAYMENTS_IPN_SECRET = Deno.env.get("Nowpayments_IPN_secret_key");
+const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_LIVE_KEY") || Deno.env.get("STRIPE_TEST_SECRET_KEY");
+const STRIPE_WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET") || Deno.env.get("STRIPE_WEBHOOK") || Deno.env.get("STRIPE_TEST_WEBHOOK_SECRET");
+const NOWPAYMENTS_API_KEY = Deno.env.get("NOWPAYMENTS_API_KEY");
+const NOWPAYMENTS_IPN_SECRET = Deno.env.get("NOWPAYMENTS_IPN_SECRET_KEY");
 
 // Supabase URL/Key for admin updates
 const SUPABASE_URL = Deno.env.get("SUPABASE_DB_URL") // or standard URL
@@ -128,8 +128,8 @@ serve(async (req) => {
 async function fulfillOrder(userId: string, amount: number) {
     if (!userId) return;
 
-    // Calculate tokens (e.g., $1 = 10 tokens)
-    const tokensToAdd = Math.floor(amount * 10);
+    // Calculate tokens (e.g., $1 = 3000 tokens)
+    const tokensToAdd = Math.floor(amount * 3000);
 
     console.log(`Fulfilled order for ${userId}: +${tokensToAdd} tokens`);
 
