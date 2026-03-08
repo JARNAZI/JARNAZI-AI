@@ -21,7 +21,7 @@ export default async function UserDetailsPage(props: { params: Promise<{ lang: s
     const { count: msgCount } = await supabase.from('contact_messages').select('*', { count: 'exact', head: true }).eq('user_id', params.id);
 
     // Fetch recent transactions
-    const { data: transactions } = await supabase.from('transactions')
+    const { data: transactions } = await supabase.from('token_ledger')
         .select('*')
         .eq('user_id', params.id)
         .order('created_at', { ascending: false })
@@ -79,7 +79,7 @@ export default async function UserDetailsPage(props: { params: Promise<{ lang: s
                                 {transactions.map((tx) => (
                                     <div key={tx.id} className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
                                         <div>
-                                            <div className="text-white font-medium">{tx.type}</div>
+                                            <div className="text-white font-medium">{tx.description}</div>
                                             <div className="text-xs text-gray-500">{new Date(tx.created_at).toLocaleDateString()}</div>
                                         </div>
                                         <div className={`text-sm font-mono ${tx.amount > 0 ? 'text-green-400' : 'text-red-400'}`}>

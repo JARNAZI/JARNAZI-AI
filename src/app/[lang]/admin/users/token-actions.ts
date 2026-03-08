@@ -18,20 +18,33 @@ export async function grantTokens(userId: string, tokens: number, reason: string
         .eq('id', user.id)
         .single();
 
-    if (executorProfile?.role !== 'super_admin') {
-        throw new Error('Only Super Admins can grant tokens manually.');
+    if (executorProfile?.role !== 'super_admin' && executorProfile?.role !== 'admin') {
+        throw new Error('Only Admins can grant tokens manually.');
     }
 
     try {
-        // 2. Call Database Function (Atomic Transaction)
-        const { error } = await supabase.rpc('admin_grant_tokens', {
-            target_user_id: userId,
-            token_amount: tokens,
-            grant_reason: reason,
-            admin_id: user.id
+        const { data: currentProfile, error: fetchErr } = await supabase
+            .from('profiles')
+            .select('token_balance')
+            .eq('id', userId)
+            .single();
+
+        if (fetchErr || !currentProfile) throw new Error('User not found');
+
+        const { error: updErr } = await supabase
+            .from('profiles')
+            .update({ token_balance: (currentProfile.token_balance || 0) + tokens })
+            .eq('id', userId);
+
+        if (updErr) throw updErr;
+
+        const { error: ledgerErr } = await supabase.from('token_ledger').insert({
+            user_id: userId,
+            amount: tokens,
+            description: `Admin Grant: ${reason}`
         });
 
-        if (error) throw error;
+        if (ledgerErr) throw ledgerErr;
 
         // 3. Optional Notification
         if (notifyUser) {
@@ -45,7 +58,7 @@ export async function grantTokens(userId: string, tokens: number, reason: string
             }
         }
 
-        revalidatePath(`/admin/users/${userId}`);
+        revalidatePath('/[lang]/admin/users', 'layout');
     } catch (error: unknown) {
         console.error('Grant Token Error:', error);
         throw new Error((error instanceof Error ? error.message : String(error)) || 'Failed to grant tokens');

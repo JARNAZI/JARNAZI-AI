@@ -22,8 +22,8 @@ export async function deleteUser(userId: string) {
 
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
 
-    if (profile?.role !== 'super_admin') {
-        throw new Error('Only Super Admin can delete users');
+    if (profile?.role !== 'admin' && profile?.role !== 'super_admin') {
+        throw new Error('Only Admin or Super Admin can delete users');
     }
 
     // Auth Admin required to delete from auth.users
@@ -33,9 +33,28 @@ export async function deleteUser(userId: string) {
 }
 
 export async function performDeleteUser(userId: string) {
+    const contextClient = await createClient();
+    const { data: { user } } = await contextClient.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { data: profile } = await contextClient.from('profiles').select('role').eq('id', user.id).single();
+
+    if (profile?.role !== 'admin' && profile?.role !== 'super_admin') {
+        throw new Error('Only Admin or Super Admin can delete users');
+    }
+
     const supabase = getServiceRoleClient();
 
-    // 1. Delete from Auth (Cascade should handle profile, debates, etc)
+    // 1. Delete dependent profile data in case ON DELETE CASCADE is missing
+    await supabase.from('generated_assets').delete().eq('user_id', userId);
+    await supabase.from('debates').delete().eq('user_id', userId);
+    await supabase.from('debate_turns').delete().eq('user_id', userId);
+    await supabase.from('contact_messages').delete().eq('user_id', userId);
+    await supabase.from('token_ledger').delete().eq('user_id', userId);
+    await supabase.from('notifications').delete().eq('user_id', userId);
+    await supabase.from('profiles').delete().eq('id', userId);
+
+    // 2. Delete from Auth
     const { error } = await supabase.auth.admin.deleteUser(userId);
 
     if (error) {
@@ -43,11 +62,21 @@ export async function performDeleteUser(userId: string) {
         throw new Error(error.message);
     }
 
-    revalidatePath('/admin/users');
+    revalidatePath('/[lang]/admin/users', 'layout');
     return { success: true };
 }
 
 export async function impersonateUser(userId: string) {
+    const contextClient = await createClient();
+    const { data: { user } } = await contextClient.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { data: requestorProfile } = await contextClient.from('profiles').select('role').eq('id', user.id).single();
+
+    if (requestorProfile?.role !== 'admin' && requestorProfile?.role !== 'super_admin') {
+        throw new Error('Only Admin or Super Admin can impersonate users');
+    }
+
     const supabase = getServiceRoleClient();
 
     // Generate magic link
@@ -69,9 +98,19 @@ export async function impersonateUser(userId: string) {
 
 export async function toggleBanUser(userId: string, isBanned: boolean) {
     const supabase = await createClient();
-    const { error } = await supabase.from('profiles').update({ is_banned: isBanned }).eq('id', userId);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Unauthorized');
+
+    const { data: requestorProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+    if (!['admin', 'super_admin'].includes(requestorProfile?.role)) {
+        throw new Error('Only Admin or Super Admin can ban users');
+    }
+
+    const adminClient = getServiceRoleClient();
+    const { error } = await adminClient.from('profiles').update({ is_banned: isBanned }).eq('id', userId);
     if (error) throw error;
-    revalidatePath(`/admin/users/${userId}`);
+
+    revalidatePath('/[lang]/admin/users', 'layout');
     return { success: true };
 }
 

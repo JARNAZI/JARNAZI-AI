@@ -62,7 +62,7 @@ export async function createSupportStaff(email: string, password: string, name: 
 
     if (updateError) throw updateError;
 
-    revalidatePath('/admin/users');
+    revalidatePath('/[lang]/admin/users', 'layout');
     return { success: true };
 }
 
@@ -82,7 +82,7 @@ export async function promoteToStaff(userId: string) {
         .eq('id', userId);
 
     if (error) throw error;
-    revalidatePath('/admin/users');
+    revalidatePath('/[lang]/admin/users', 'layout');
     return { success: true };
 }
 
@@ -103,6 +103,6 @@ export async function revokeStaffAccess(userId: string) {
         .eq('id', userId);
 
     if (error) throw error;
-    revalidatePath('/admin/users');
+    revalidatePath('/[lang]/admin/users', 'layout');
     return { success: true };
 }
