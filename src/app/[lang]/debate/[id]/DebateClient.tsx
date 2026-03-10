@@ -217,6 +217,8 @@ export default function DebateClient({
                                 prompt: totalSegments > 1 ? `${basePrompt}\n\n[Scene ${sceneNum}/${totalSegments}]` : basePrompt,
                                 durationSec: segSec,
                                 aspect: state.aspect,
+                                canon: state.canon,
+                                provider_preference: state.provider_preference,
                                 confirmed: true,
                             }),
                         });
@@ -239,6 +241,8 @@ export default function DebateClient({
                                         lang,
                                         prompt: basePrompt,
                                         aspect: state.aspect,
+                                        canon: state.canon,
+                                        provider_preference: state.provider_preference,
                                         segments: remainingSegs,
                                         sceneOffset: sceneNum - 1,
                                         totalSegments,
@@ -413,6 +417,8 @@ export default function DebateClient({
     const [pendingVideoPrompt, setPendingVideoPrompt] = useState<string>('');
     const [pendingVideoDurationSec, setPendingVideoDurationSec] = useState<number>(6);
     const [pendingVideoAspect, setPendingVideoAspect] = useState<string>('16:9');
+    const [pendingVideoCanon, setPendingVideoCanon] = useState<any>(null);
+    const [pendingVideoProviderPreference, setPendingVideoProviderPreference] = useState<string | null>(null);
     const [videoGenerating, setVideoGenerating] = useState(false);
     const [lastVideoAssetUrl, setLastVideoAssetUrl] = useState<string | null>(null);
     const [lastVideoSegments, setLastVideoSegments] = useState<string[]>([]);
@@ -610,6 +616,9 @@ export default function DebateClient({
     // Best-effort prompt extractor from the final consensus content
     const extractFinalPrompt = (content: string): string | null => {
         if (!content) return null;
+        const plan = extractVideoPlan(content);
+        if (plan?.prompt) return plan.prompt;
+
         const patterns = [
             /(?:^|\n)\s*(?:FINAL\s+PROMPT|PROMPT\s+FINAL|Prompt\s*:?|Final\s+Prompt\s*:?)[\s\S]*?\n([\s\S]*)$/i,
         ];
@@ -638,6 +647,15 @@ export default function DebateClient({
         return null;
     };
 
+    const extractVideoPlan = (content: string) => {
+        try {
+            const match = content.match(/\[VIDEO_PLAN\]([\s\S]*?)\[\/VIDEO_PLAN\]/i);
+            if (match && match[1]) {
+                return JSON.parse(match[1].trim());
+            }
+        } catch { }
+        return null;
+    };
 
     const shouldAttachLastAssetForEdit = (text: string) => {
         const t = (text || '').toLowerCase();
@@ -994,31 +1012,24 @@ export default function DebateClient({
             const urls: string[] = [];
             const assetIds: string[] = [];
             let totalDeducted = 0;
-
-            // 1. Extract Canon (Characters / Locations) for Continuity
-            let canon = null;
             let canonContext = '';
-            try {
-                const canonRes = await fetch('/api/media/video/canon', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: pendingVideoPrompt })
-                });
-                if (canonRes.ok) {
-                    const canonJson = await canonRes.json();
-                    if (canonJson.canon) {
-                        canon = canonJson.canon;
-                        setLastVideoCanon(canon);
-
-                        const chars = (canon.characters || []).map((c: any) => `${c.name}: ${c.description || ''}`).join(' | ');
-                        const locs = (canon.locations || []).map((l: any) => `${l.name}: ${l.description || ''}`).join(' | ');
-                        if (chars || locs) {
-                            canonContext = `\n[CONTINUITY Canon]\nCharacters: ${chars}\nLocations: ${locs}\n`;
-                        }
+            if (pendingVideoCanon) {
+                setLastVideoCanon(pendingVideoCanon);
+                const chars = (pendingVideoCanon.characters || []).map((c: any) => {
+                    let desc = c.description || '';
+                    if (c.home) desc += `, Home: ${c.home}`;
+                    if (c.work) desc += `, Work: ${c.work}`;
+                    if (c.clothes_by_time) {
+                        const clothesStr = Object.entries(c.clothes_by_time).map(([k, v]) => `${k}:${v}`).join('; ');
+                        desc += `, Clothes by time: [${clothesStr}]`;
                     }
+                    return `${c.name}: ${desc}`;
+                }).join(' | ');
+
+                const locs = (pendingVideoCanon.locations || []).map((l: any) => `${l.name}: ${l.description || ''}`).join(' | ');
+                if (chars || locs) {
+                    canonContext = `\n[CONTINUITY Rule: 100% Visual Consistency]\nCharacters: ${chars}\nLocations: ${locs}\n`;
                 }
-            } catch (e) {
-                console.error('Failed to extract canon', e);
             }
 
             const basePromptWithCanon = canonContext ? `${canonContext}\n${pendingVideoPrompt}` : pendingVideoPrompt;
@@ -1034,6 +1045,8 @@ export default function DebateClient({
                         prompt: segments.length > 1 ? `${basePromptWithCanon}\n\n[Scene ${i + 1}/${segments.length}]` : basePromptWithCanon,
                         durationSec: segSec,
                         aspect: pendingVideoAspect,
+                        canon: pendingVideoCanon,
+                        provider_preference: pendingVideoProviderPreference,
                         confirmed: true,
                         sequenceNumber: i + 1,
                     }),
@@ -1057,12 +1070,13 @@ export default function DebateClient({
                                 lang,
                                 prompt: pendingVideoPrompt,
                                 aspect: pendingVideoAspect,
+                                canon: pendingVideoCanon,
+                                provider_preference: pendingVideoProviderPreference,
                                 segments: remaining,
                                 sceneOffset: i,
                                 totalSegments: segments.length,
                                 urls,
                                 assetIds,
-                                canon,
                                 totalDeducted,
                                 pendingId,
                                 expiresAt,
@@ -1688,7 +1702,10 @@ Suggested amount: $${amount}`
                                                             {consensusRequestType === 'video' && (
                                                                 <button
                                                                     onClick={() => {
+                                                                        const plan = extractVideoPlan(consensusMsg.content);
                                                                         setPendingVideoPrompt(finalPrompt);
+                                                                        setPendingVideoCanon(plan?.canon || null);
+                                                                        setPendingVideoProviderPreference(plan?.provider || null);
                                                                         setPendingVideoDurationSec(6);
                                                                         setIsVideoModalOpen(true);
                                                                     }}

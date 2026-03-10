@@ -197,7 +197,11 @@ export class DebateOrchestrator {
         3. Generating Final Agreement (MANDATORY FINAL STEP):
            - The LAST step of the plan MUST be a 'Consensus' or 'Agreement' step.
            - This step must be assigned to a capable LLM (preferably OpenAI or Anthropic).
-           - Instructions: "Analyze all debate outputs. Identify points of agreement, disagreement, and insights. Produce a final unified output in a structured format ready for display. Use LaTeX for math."
+           - Instructions: "Analyze all debate outputs. Identify points of agreement, disagreement, and insights. Produce a final unified output. IF the user is requesting a long video/movie or visual story, YOU MUST also append a structured JSON block at the very end wrapped in [VIDEO_PLAN] and [/VIDEO_PLAN].
+           The JSON must include:
+           - "provider": The best video AI to use for this scene (e.g., "fal.ai", "runway", "replicate", "vertex", or any other available video provider if you think it fits better). You act as the maestro deciding this based on the required style.
+           - "prompt": The highly detailed visual prompt for the first video segment.
+           - "canon": A list containing "characters" (array of objects with "name", "description", "home", "work", and "clothes_by_time" (object mapping morning/afternoon/evening/night/gym/work to clothing description)), and "locations" (array of objects with "name" and "description"). This "canon" enforces 100% visual consistency!"
 
         Output JSON format:
         {

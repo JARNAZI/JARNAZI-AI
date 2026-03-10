@@ -91,6 +91,8 @@ export async function POST(req: Request) {
     let durationSec: number = Number(body?.durationSec ?? 6);
     const aspect: string = body?.aspect ?? '16:9';
     const sequenceNumber: number | null = body?.sequenceNumber ? Number(body.sequenceNumber) : null;
+    const canon: any = body?.canon ?? null;
+    const provider_preference: string | null = body?.provider_preference ?? null;
 
     if (!Number.isFinite(durationSec) || durationSec <= 0 || durationSec > 600) {
       return NextResponse.json({ error: 'durationSec must be between 1 and 600' }, { status: 400 });
@@ -179,7 +181,14 @@ export async function POST(req: Request) {
     }
 
     const fnName = process.env.MEDIA_EDGE_FUNCTION || 'media-generate';
-    const providers = await getActiveProvidersFor(admin, 'video');
+    let providers = await getActiveProvidersFor(admin, 'video');
+
+    if (provider_preference) {
+      const prefMatch = providers.filter(p => p.name.toLowerCase().includes(provider_preference.toLowerCase()) || p.provider.toLowerCase().includes(provider_preference.toLowerCase()));
+      if (prefMatch.length > 0) {
+        providers = prefMatch;
+      }
+    }
 
     const { data: gen, error: fnErr } = await admin.functions.invoke(fnName, {
       body: {
@@ -190,7 +199,9 @@ export async function POST(req: Request) {
         prompt,
         durationSec,
         aspect,
+        canon,
         providers,
+        provider_preference,
       },
     });
 
