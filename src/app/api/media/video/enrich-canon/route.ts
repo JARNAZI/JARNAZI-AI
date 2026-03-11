@@ -15,6 +15,7 @@ export async function POST(req: Request) {
 
         const body = await req.json();
         const canon = body?.canon;
+        const debateId = body?.debateId;
 
         if (!canon) {
             return NextResponse.json({ error: 'Canon is required' }, { status: 400 });
@@ -72,6 +73,42 @@ export async function POST(req: Request) {
                     console.error('Failed to generate image for location', e);
                 }
             }
+        }
+
+        // Save or update canon to user_canons table
+        try {
+            let seriesName = 'My Epic Series';
+            if (debateId) {
+                const { data: dbData } = await supabase.from('debates').select('topic').eq('id', debateId).maybeSingle();
+                if (dbData?.topic) seriesName = `Series: ${dbData.topic.substring(0, 50)}`;
+            }
+
+            const { data: existingCanon } = await supabase
+                .from('user_canons')
+                .select('id')
+                .eq('user_id', user.id)
+                .eq('series_name', seriesName)
+                .maybeSingle();
+
+            if (existingCanon?.id) {
+                await supabase
+                    .from('user_canons')
+                    .update({
+                        canon_data: canon,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', existingCanon.id);
+            } else {
+                await supabase
+                    .from('user_canons')
+                    .insert({
+                        user_id: user.id,
+                        series_name: seriesName,
+                        canon_data: canon
+                    });
+            }
+        } catch (dbErr) {
+            console.error('[Canon Enrichment] Failed to save to user_canons', dbErr);
         }
 
         return NextResponse.json({ canon });

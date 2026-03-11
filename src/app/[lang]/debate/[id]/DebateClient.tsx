@@ -1020,7 +1020,7 @@ export default function DebateClient({
                     const enrichRes = await fetch('/api/media/video/enrich-canon', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ canon: finalCanon })
+                        body: JSON.stringify({ debateId, canon: finalCanon })
                     });
                     if (enrichRes.ok) {
                         const { canon: enriched } = await enrichRes.json();
