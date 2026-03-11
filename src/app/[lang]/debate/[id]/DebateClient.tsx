@@ -1013,9 +1013,28 @@ export default function DebateClient({
             const assetIds: string[] = [];
             let totalDeducted = 0;
             let canonContext = '';
-            if (pendingVideoCanon) {
-                setLastVideoCanon(pendingVideoCanon);
-                const chars = (pendingVideoCanon.characters || []).map((c: any) => {
+            let finalCanon = pendingVideoCanon;
+
+            if (finalCanon) {
+                try {
+                    const enrichRes = await fetch('/api/media/video/enrich-canon', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ canon: finalCanon })
+                    });
+                    if (enrichRes.ok) {
+                        const { canon: enriched } = await enrichRes.json();
+                        if (enriched) {
+                            finalCanon = enriched;
+                            setPendingVideoCanon(finalCanon);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Failed to enrich canon images', e);
+                }
+
+                setLastVideoCanon(finalCanon);
+                const chars = (finalCanon.characters || []).map((c: any) => {
                     let desc = c.description || '';
                     if (c.home) desc += `, Home: ${c.home}`;
                     if (c.work) desc += `, Work: ${c.work}`;
@@ -1023,10 +1042,16 @@ export default function DebateClient({
                         const clothesStr = Object.entries(c.clothes_by_time).map(([k, v]) => `${k}:${v}`).join('; ');
                         desc += `, Clothes by time: [${clothesStr}]`;
                     }
+                    if (c.image_url) desc += `, Reference Image URL: ${c.image_url}`;
                     return `${c.name}: ${desc}`;
                 }).join(' | ');
 
-                const locs = (pendingVideoCanon.locations || []).map((l: any) => `${l.name}: ${l.description || ''}`).join(' | ');
+                const locs = (finalCanon.locations || []).map((l: any) => {
+                    let desc = l.description || '';
+                    if (l.image_url) desc += `, Reference Image URL: ${l.image_url}`;
+                    return `${l.name}: ${desc}`;
+                }).join(' | ');
+
                 if (chars || locs) {
                     canonContext = `\n[CONTINUITY Rule: 100% Visual Consistency]\nCharacters: ${chars}\nLocations: ${locs}\n`;
                 }
@@ -1045,7 +1070,7 @@ export default function DebateClient({
                         prompt: segments.length > 1 ? `${basePromptWithCanon}\n\n[Scene ${i + 1}/${segments.length}]` : basePromptWithCanon,
                         durationSec: segSec,
                         aspect: pendingVideoAspect,
-                        canon: pendingVideoCanon,
+                        canon: finalCanon,
                         provider_preference: pendingVideoProviderPreference,
                         confirmed: true,
                         sequenceNumber: i + 1,
@@ -1070,7 +1095,7 @@ export default function DebateClient({
                                 lang,
                                 prompt: pendingVideoPrompt,
                                 aspect: pendingVideoAspect,
-                                canon: pendingVideoCanon,
+                                canon: finalCanon,
                                 provider_preference: pendingVideoProviderPreference,
                                 segments: remaining,
                                 sceneOffset: i,

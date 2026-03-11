@@ -64,10 +64,58 @@ If home/work aren't mentioned, omit them or leave null. Provide as much visual d
 
         const data = await response.json();
         const content = data.choices?.[0]?.message?.content || "{}";
-        let canon = {};
+        let canon: any = {};
 
         try {
             canon = JSON.parse(content);
+
+            // Generate visual reference images for temporary memory
+            if (canon.characters && Array.isArray(canon.characters)) {
+                for (const char of canon.characters) {
+                    try {
+                        const imgRes = await fetch('https://api.openai.com/v1/images/generations', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                            body: JSON.stringify({
+                                model: "dall-e-3",
+                                prompt: `A cinematic character design reference sheet for: ${char.name}. Description: ${char.description}`,
+                                n: 1,
+                                size: "1024x1024"
+                            })
+                        });
+                        const imgData = await imgRes.json();
+                        if (imgData?.data?.[0]?.url) {
+                            char.image_url = imgData.data[0].url;
+                        }
+                    } catch (e) {
+                        console.error('Failed to generate image for character', e);
+                    }
+                }
+            }
+
+            if (canon.locations && Array.isArray(canon.locations)) {
+                for (const loc of canon.locations) {
+                    try {
+                        const imgRes = await fetch('https://api.openai.com/v1/images/generations', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                            body: JSON.stringify({
+                                model: "dall-e-3",
+                                prompt: `A cinematic location design background for: ${loc.name}. Description: ${loc.description}. Empty scene, highly detailed.`,
+                                n: 1,
+                                size: "1024x1024"
+                            })
+                        });
+                        const imgData = await imgRes.json();
+                        if (imgData?.data?.[0]?.url) {
+                            loc.image_url = imgData.data[0].url;
+                        }
+                    } catch (e) {
+                        console.error('Failed to generate image for location', e);
+                    }
+                }
+            }
+
         } catch (e) {
             console.error('[Canon Extraction] JSON Parse Error:', e);
             canon = { characters: [], locations: [] };

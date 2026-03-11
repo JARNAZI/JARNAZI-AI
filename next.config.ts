@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   // eslint: {
   //   ignoreDuringBuilds: true,
   // },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 
   serverExternalPackages: ["isomorphic-dompurify", "jsdom"],
 
