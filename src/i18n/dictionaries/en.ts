@@ -566,6 +566,16 @@ const en = {
     cancel: "Cancel",
     send: "Send"
   },
+  buyTokensPage: {
+    backToConsole: "Back to Console",
+    title: "Buy Tokens",
+    subtitle: "Purchase credits to unlock premium tools.",
+    amountLabel: "Amount (USD)",
+    minHelper: "Minimum purchase: ${MIN_PURCHASE_AMOUNT_USD}",
+    youWillReceive: "You will receive",
+    tokens: "Tokens",
+    payAddTokens: "Pay & Add Tokens",
+    stripeDisabled: "Stripe payments are currently disabled.",
     payWithCrypto: "Pay with Crypto"
   },
   invoices: {

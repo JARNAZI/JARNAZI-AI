@@ -564,7 +564,17 @@ const ar = {
     cancel: "إلغاء",
     send: "إرسال"
   },
-    payWithCrypto: "ادفع بالعملات الرقمية"
+  buyTokensPage: {
+    backToConsole: "العودة إلى وحدة التحكم",
+    title: "شراء نقاط",
+    subtitle: "شراء رصيد لفتح الأدوات المميزة.",
+    amountLabel: "المبلغ (USD)",
+    minHelper: "الحد الأدنى للشراء: ${MIN_PURCHASE_AMOUNT_USD}",
+    youWillReceive: "سوف تستلم",
+    tokens: "النقاط",
+    payAddTokens: "الدفع وإضافة النقاط",
+    stripeDisabled: "مدفوعات Stripe معطلة حاليًا.",
+    payWithCrypto: "الدفع بالعملات الرقمية"
   },
   invoices: {
     title: "سجل الفواتير",
