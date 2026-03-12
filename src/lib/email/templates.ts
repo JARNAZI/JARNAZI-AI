@@ -129,9 +129,9 @@ export function renderReceiptEmail(opts: {
     html: baseLayout({
       lang: opts.lang,
       title: t.receiptSubject,
-      intro: t.receiptIntro,
-      buttonText: t.buttonOpen,
-      buttonUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://jarnazi.com',
+      intro: t.receiptIntro + ' ' + t.buttonViewTokens + '.',
+      buttonText: t.buttonViewTokens,
+      buttonUrl: `${(process.env.NEXT_PUBLIC_APP_URL || 'https://jarnazi.com').replace(new RegExp('/$'), '')}/${opts.lang || 'en'}/debate/usage`,
       extraHtml: extra,
     }),
   };
