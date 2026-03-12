@@ -7,12 +7,12 @@ import {
   ArrowLeft, 
   Loader2, 
   Printer, 
-  Download, 
   Fingerprint,
   Calendar,
   User,
   Zap,
   ShieldCheck,
+  CreditCard,
   ExternalLink
 } from 'lucide-react';
 
@@ -92,21 +92,22 @@ export default function InvoiceDetailClient({ id, dict, lang, supabaseUrl, supab
     day: 'numeric'
   });
 
-  const isStripe = tx.description?.toLowerCase().includes('stripe');
-  const isNowPayments = tx.description?.toLowerCase().includes('nowpayments') || tx.description?.toLowerCase().includes('crypto');
+  const description = tx.description?.toLowerCase() || '';
+  const isStripe = description.includes('stripe');
+  const isNowPayments = description.includes('nowpayments') || description.includes('crypto');
   const method = isStripe ? "Credit Card (Stripe)" : (isNowPayments ? "Crypto (NowPayments)" : "Admin Allocation");
 
   return (
     <div className="min-h-screen bg-[#080b11] text-foreground p-4 md:p-12">
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @media print {
-          body * { visibility: hidden; background: white !important; color: black !important; }
-          #printable-invoice, #printable-invoice * { visibility: visible; }
+          body * { visibility: hidden !important; background: white !important; color: black !important; }
+          #printable-invoice, #printable-invoice * { visibility: visible !important; }
           #printable-invoice { 
-            position: absolute; 
-            left: 0; 
-            top: 0; 
-            width: 100%; 
+            position: absolute !important; 
+            left: 0 !important; 
+            top: 0 !important; 
+            width: 100% !important; 
             padding: 40px !important; 
             margin: 0 !important;
             border: none !important;
@@ -114,10 +115,10 @@ export default function InvoiceDetailClient({ id, dict, lang, supabaseUrl, supab
             border-radius: 0 !important;
           }
           .no-print { display: none !important; }
-          #printable-invoice .text-primary { color: black !important; border-bottom: 2px solid #EEE; padding-bottom: 10px; }
+          #printable-invoice .text-primary { color: black !important; border-bottom: 2px solid #EEE !important; padding-bottom: 10px !important; }
           #printable-invoice .bg-card, #printable-invoice .bg-muted { background: transparent !important; border: 1px solid #EEE !important; }
         }
-      `}</style>
+      `}} />
 
       <div className="max-w-4xl mx-auto" dir={isRtl ? 'rtl' : 'ltr'}>
         {/* Navigation / Actions (Hidden on Print) */}

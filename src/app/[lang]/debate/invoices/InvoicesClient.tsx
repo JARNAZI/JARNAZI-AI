@@ -8,10 +8,8 @@ import {
   ArrowLeft, 
   Loader2, 
   Clock, 
-  Download, 
   CreditCard,
-  History,
-  AlertCircle
+  History
 } from 'lucide-react';
 
 export default function InvoicesClient({ dict, lang, supabaseUrl, supabaseAnonKey }: { dict: any; lang: string; supabaseUrl?: string; supabaseAnonKey?: string }) {
@@ -120,9 +118,10 @@ export default function InvoicesClient({ dict, lang, supabaseUrl, supabaseAnonKe
                       day: 'numeric'
                     });
                     
-                    const isStripe = tx.description?.toLowerCase().includes('stripe');
-                    const isNowPayments = tx.description?.toLowerCase().includes('nowpayments') || tx.description?.toLowerCase().includes('crypto');
-                    const isGrant = tx.description?.toLowerCase().includes('grant') || tx.description?.toLowerCase().includes('admin');
+                    const description = tx.description?.toLowerCase() || '';
+                    const isStripe = description.includes('stripe');
+                    const isNowPayments = description.includes('nowpayments') || description.includes('crypto');
+                    const isGrant = description.includes('grant') || description.includes('admin');
 
                     let method = "System";
                     if (isStripe) method = "Stripe";
