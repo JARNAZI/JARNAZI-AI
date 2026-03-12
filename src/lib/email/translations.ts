@@ -36,7 +36,7 @@ const EN: EmailStrings = {
   buttonVerify: 'Verify email',
   buttonReset: 'Reset password',
   buttonOpen: 'Open',
-  buttonViewTokens: 'View Token Balance',
+  buttonViewTokens: 'View Invoice',
   footerNote: 'If you did not request this, you can safely ignore this email.'
 };
 
@@ -56,7 +56,7 @@ const AR: EmailStrings = {
   buttonVerify: 'تأكيد البريد',
   buttonReset: 'إعادة التعيين',
   buttonOpen: 'فتح',
-  buttonViewTokens: 'عرض رصيد التوكنات',
+  buttonViewTokens: 'عرض الفاتورة',
   footerNote: 'إذا لم تطلب هذا الإجراء، يمكنك تجاهل هذا البريد بأمان.'
 };
 

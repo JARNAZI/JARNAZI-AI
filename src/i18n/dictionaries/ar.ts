@@ -564,17 +564,30 @@ const ar = {
     cancel: "إلغاء",
     send: "إرسال"
   },
-  buyTokensPage: {
-    backToConsole: "العودة إلى اللوحة",
-    title: "شراء توكنات",
-    subtitle: "اشحن رصيدك لفتح الأدوات المميزة.",
-    amountLabel: "المبلغ (دولار)",
-    minHelper: "الحد الأدنى للشراء: ${MIN_PURCHASE_AMOUNT_USD}",
-    youWillReceive: "ستحصل على",
-    tokens: "توكن",
-    payAddTokens: "الدفع وإضافة التوكنات",
-    stripeDisabled: "بوابة Stripe معطّلة حاليًا.",
     payWithCrypto: "ادفع بالعملات الرقمية"
+  },
+  invoices: {
+    title: "سجل الفواتير",
+    subtitle: "سجلات المعاملات التاريخية والإيصالات الرسمية.",
+    viewInvoices: "عرض الفواتير",
+    invoiceNumber: "رقم الفاتورة #",
+    date: "التاريخ",
+    amount: "المبلغ",
+    status: "الحالة",
+    tokens: "التوكنات",
+    method: "الطريقة",
+    download: "تنزيل PDF",
+    print: "طباعة الفاتورة",
+    noInvoices: "لم يتم العثور على سجلات معاملات.",
+    processing: "جاري المعالجة",
+    completed: "مكتمل",
+    failed: "فشل",
+    billTo: "فاتورة إلى",
+    issuedBy: "صادر عن",
+    total: "الإجمالي",
+    description: "الوصف",
+    backToUsage: "العودة إلى حالة السيولة",
+    thankYou: "شكراً لاستخدامك إجماع جارنازي (Jarnazi AI)."
   }
 } as const;
 

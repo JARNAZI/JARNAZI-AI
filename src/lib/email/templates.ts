@@ -131,7 +131,7 @@ export function renderReceiptEmail(opts: {
       title: t.receiptSubject,
       intro: t.receiptIntro + ' ' + t.buttonViewTokens + '.',
       buttonText: t.buttonViewTokens,
-      buttonUrl: `${(process.env.NEXT_PUBLIC_APP_URL || 'https://jarnazi.com').replace(new RegExp('/$'), '')}/${opts.lang || 'en'}/debate/usage`,
+      buttonUrl: `${(process.env.NEXT_PUBLIC_APP_URL || 'https://jarnazi.com').replace(new RegExp('/$'), '')}/${opts.lang || 'en'}/debate/invoices`,
       extraHtml: extra,
     }),
   };

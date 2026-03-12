@@ -425,6 +425,30 @@ const pt = {
     stripeDisabled: "Pagamentos via Stripe estão desativados no momento.",
     payWithCrypto: "Pagar com Cripto"
   }
+  ,
+  invoices: {
+    title: "Billing History",
+    subtitle: "Historical transaction records and official receipts.",
+    viewInvoices: "View Invoices",
+    invoiceNumber: "Invoice #",
+    date: "Date",
+    amount: "Amount",
+    status: "Status",
+    tokens: "Tokens",
+    method: "Method",
+    download: "Download PDF",
+    print: "Print Invoice",
+    noInvoices: "No transaction records found.",
+    processing: "Processing",
+    completed: "Completed",
+    failed: "Failed",
+    billTo: "Bill To",
+    issuedBy: "Issued By",
+    total: "Total",
+    description: "Description",
+    backToUsage: "Back to Liquidity",
+    thankYou: "Thank you for using Jarnazi AI Consensus."
+  }
 } as const;
 
 export default pt;

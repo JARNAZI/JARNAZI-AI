@@ -433,6 +433,30 @@ const ja = {
     stripeDisabled: "Stripe決済は現在無効です。",
     payWithCrypto: "仮想通貨で支払う"
   }
+  ,
+  invoices: {
+    title: "Billing History",
+    subtitle: "Historical transaction records and official receipts.",
+    viewInvoices: "View Invoices",
+    invoiceNumber: "Invoice #",
+    date: "Date",
+    amount: "Amount",
+    status: "Status",
+    tokens: "Tokens",
+    method: "Method",
+    download: "Download PDF",
+    print: "Print Invoice",
+    noInvoices: "No transaction records found.",
+    processing: "Processing",
+    completed: "Completed",
+    failed: "Failed",
+    billTo: "Bill To",
+    issuedBy: "Issued By",
+    total: "Total",
+    description: "Description",
+    backToUsage: "Back to Liquidity",
+    thankYou: "Thank you for using Jarnazi AI Consensus."
+  }
 } as const;
 
 export default ja;

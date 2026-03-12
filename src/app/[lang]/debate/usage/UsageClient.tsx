@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { Zap, CreditCard, ArrowLeft, Loader2, ShieldCheck, BarChart3, Clock, TrendingUp } from 'lucide-react';
+import { Zap, CreditCard, ArrowLeft, Loader2, ShieldCheck, BarChart3, Clock, TrendingUp, Receipt } from 'lucide-react';
 
 export default function UsageClient({ dict, lang, supabaseUrl, supabaseAnonKey }: { dict: any; lang: string; supabaseUrl?: string; supabaseAnonKey?: string }) {
   const d = dict?.dashboard || {};
@@ -88,12 +88,21 @@ export default function UsageClient({ dict, lang, supabaseUrl, supabaseAnonKey }
                 {d.availableForCouncil || "Available for council deliberations"}
               </p>
 
-              <button
-                onClick={() => router.push(`/${lang}/buy-tokens`)}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] hover:opacity-90 transition-all shadow-xl"
-              >
-                <CreditCard className="w-3.5 h-3.5" /> {d.reloadCredits || "Reload Credits"}
-              </button>
+              <div className="flex flex-wrap gap-4">
+                <button
+                  onClick={() => router.push(`/${lang}/buy-tokens`)}
+                  className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] hover:opacity-90 transition-all shadow-xl"
+                >
+                  <CreditCard className="w-3.5 h-3.5" /> {d.reloadCredits || "Reload Credits"}
+                </button>
+
+                <button
+                  onClick={() => router.push(`/${lang}/debate/invoices`)}
+                  className="flex items-center gap-2 bg-card border border-border text-foreground px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-muted/50 transition-all shadow-sm"
+                >
+                  <Receipt className="w-3.5 h-3.5 text-primary" /> {dict?.invoices?.viewInvoices || "View Invoices"}
+                </button>
+              </div>
             </div>
           </div>
 
