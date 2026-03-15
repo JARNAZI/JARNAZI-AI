@@ -14,8 +14,7 @@ export function CameraUploader({
     <MediaUploader
       label={label}
       icon={Camera}
-      // Accept only images to ensure camera opens directly
-      accept="image/*"
+      accept="image/*,video/*"
       capture="environment"
       forceCamera={true}
       onFileSelected={onFileSelected}

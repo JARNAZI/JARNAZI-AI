@@ -21,7 +21,7 @@ export function MediaUploader({
   icon: Icon = Upload,
   capture,
   forceCamera,
-}: MediaUploaderProps & { capture?: "environment" | "user" }) {
+}: MediaUploaderProps & { capture?: "environment" | "user" | boolean }) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +41,7 @@ export function MediaUploader({
                 ref={fileInputRef}
                 type="file"
                 accept={accept}
-                {...(forceCamera ? { capture } : {})}
+                capture={forceCamera ? (capture as any) : undefined}
                 className="hidden"
                 onChange={handleFileChange}
             />

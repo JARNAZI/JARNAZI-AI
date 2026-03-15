@@ -20,6 +20,7 @@ import {
 // Dynamic imports for heavy components
 const MediaUploader = dynamic(() => import('@/components/debate/MediaUploader').then(mod => mod.MediaUploader), { ssr: false });
 const FilePreview = dynamic(() => import('@/components/debate/MediaUploader').then(mod => mod.FilePreview), { ssr: false });
+const CameraUploader = dynamic(() => import('@/components/debate/CameraUploader').then(mod => mod.CameraUploader), { ssr: false });
 const AudioRecorder = dynamic(() => import('@/components/debate/AudioRecorder').then(mod => mod.AudioRecorder), { ssr: false });
 const AudioPreview = dynamic(() => import('@/components/debate/AudioRecorder').then(mod => mod.AudioPreview), { ssr: false });
 
@@ -303,7 +304,7 @@ export default function DebateDashboard({
                                                 <MediaUploader label={d.files || "Files"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
                                                 <MediaUploader label={d.pics || "Pics"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
                                                 <MediaUploader label={d.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
-                                                <CameraUploader onFileSelected={setSelectedFile} />
+                                                <CameraUploader label={d.camera || "Camera"} onFileSelected={setSelectedFile} />
                                                 <AudioRecorder onRecordingComplete={setRecordedAudio} label={d.audio || "Audio"} />
                                             </>
                                         ) : (enableFreeTrial && profileInfo && profileInfo.free_trial_used !== true) ? (
