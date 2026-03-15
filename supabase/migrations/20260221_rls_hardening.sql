@@ -31,10 +31,6 @@ $$;
 
 -- 2. HARDEN: public.profiles
 -- User can see their own, Admin sees all
--- Ensure both column names exist for compatibility between different modules
-alter table public.profiles add column if not exists token_balance_cents integer default 0;
-update public.profiles set token_balance_cents = token_balance where token_balance_cents = 0 and token_balance > 0;
-update public.profiles set token_balance = token_balance_cents where token_balance = 0 and token_balance_cents > 0;
 
 drop policy if exists "Users can view own profile" on public.profiles;
 create policy "Profiles select policy"
@@ -57,17 +53,9 @@ begin
   if not public.is_admin(auth.uid()) then
     if (new.role is distinct from old.role) 
        or (new.token_balance is distinct from old.token_balance)
-       or (new.token_balance_cents is distinct from old.token_balance_cents) 
     then
       raise exception 'Unauthorized: Cannot modify role or balance directly.';
     end if;
-  end if;
-  
-  -- Keep columns in sync if one is updated by admin/system
-  if (new.token_balance is distinct from old.token_balance) then
-    new.token_balance_cents = new.token_balance;
-  elsif (new.token_balance_cents is distinct from old.token_balance_cents) then
-    new.token_balance = new.token_balance_cents;
   end if;
   
   return new;

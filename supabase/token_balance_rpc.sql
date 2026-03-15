@@ -15,10 +15,10 @@ begin
   end if;
 
   update public.profiles
-  set token_balance_cents = coalesce(token_balance_cents, 0) - p_tokens
+  set token_balance = coalesce(token_balance, 0) - p_tokens
   where id = p_user_id
-    and coalesce(token_balance_cents, 0) >= p_tokens
-  returning token_balance_cents into new_balance;
+    and coalesce(token_balance, 0) >= p_tokens
+  returning token_balance into new_balance;
 
   if new_balance is null then
     raise exception 'INSUFFICIENT_TOKENS';
@@ -41,9 +41,9 @@ begin
   end if;
 
   update public.profiles
-  set token_balance_cents = coalesce(token_balance_cents, 0) + p_tokens
+  set token_balance = coalesce(token_balance, 0) + p_tokens
   where id = p_user_id
-  returning token_balance_cents into new_balance;
+  returning token_balance into new_balance;
 
   if new_balance is null then
     raise exception 'PROFILE_NOT_FOUND';

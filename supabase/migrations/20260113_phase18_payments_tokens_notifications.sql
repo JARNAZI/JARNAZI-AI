@@ -138,7 +138,7 @@ with check (public.is_admin(auth.uid()));
 -- PROFILES: prevent negative balances
 -- -------------------------
 alter table public.profiles
-  add constraint if not exists token_balance_cents_nonnegative
-  check (token_balance_cents >= 0);
+  add constraint if not exists token_balance_nonnegative
+  check (token_balance >= 0);
 
 commit;

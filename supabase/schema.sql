@@ -101,7 +101,7 @@ create function public.handle_new_user()
 returns trigger as $$
 begin
   insert into public.profiles (id, email, full_name, token_balance)
-  values (new.id, new.email, new.raw_user_meta_data->>'full_name', 1); -- 1 Free token trial
+  values (new.id, new.email, new.raw_user_meta_data->>'full_name', 0); -- Free trial question available via flag
   return new;
 end;
 $$ language plpgsql security definer;

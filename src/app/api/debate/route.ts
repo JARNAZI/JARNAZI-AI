@@ -122,35 +122,10 @@ export async function POST(req: Request) {
       }, { status: 403 });
     }
 
-    // 1. Create Debate Record
-    const { data: debate, error: debErr } = await supabaseAdmin
-      .from('debates')
-      .insert({
-        user_id: user.id,
-        topic,
-        status: 'active',
-        mode: requestType,
-      })
-      .select('*')
-      .single();
-
-    if (debErr || !debate) throw debErr || new Error('Failed to create debate');
-
-    // **FIX**: Save the user's initial prompt as the first message in the debate window
-    await orchestrator.saveTurn(
-      debate.id,
-      user.id,
-      'user',
-      user.user_metadata?.full_name || 'User',
-      null,
-      topic,
-      { request_type: requestType }
-    );
-
-    // 2. Trigger Maestro to Plan the Debate first
+    // 1. Trigger Maestro to Plan the Debate first
     const plan = await orchestrator.planDebate(topic);
 
-    // 3. Token Accounting using dynamic pricing
+    // 2. Token Accounting using dynamic pricing
     const tokenCost = await calculateDynamicTokenCost(supabaseAdmin, plan);
 
     let isFreeTrialTurn = false;
@@ -172,6 +147,37 @@ export async function POST(req: Request) {
         throw e;
       }
     }
+
+    // 3. Create Debate Record
+    const { data: debate, error: debErr } = await supabaseAdmin
+      .from('debates')
+      .insert({
+        user_id: user.id,
+        topic,
+        status: 'active',
+        mode: requestType,
+      })
+      .select('*')
+      .single();
+
+    if (debErr || !debate) {
+      // If we reserved tokens but record failed, refund!
+      if (!isFreeTrialTurn) {
+        await refundTokens(supabaseAdmin, user.id, tokenCost);
+      }
+      throw debErr || new Error('Failed to create debate');
+    }
+
+    // **FIX**: Save the user's initial prompt as the first message in the debate window
+    await orchestrator.saveTurn(
+      debate.id,
+      user.id,
+      'user',
+      user.user_metadata?.full_name || 'User',
+      null,
+      topic,
+      { request_type: requestType }
+    );
 
     // 4. Trigger Maestro (Non-blocking or await depending on requirements)
     // We await here to ensure we can handle errors and refund, local Next.js supports longer timeouts.
