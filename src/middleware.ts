@@ -33,18 +33,65 @@ function getLocale(request: NextRequest): string {
 }
 
 import { updateSession } from '@/lib/supabase/middleware';
+import { createServerClient } from '@supabase/ssr'
 
 export async function middleware(request: NextRequest) {
   // 1. Update Supabase session (refreshes token if needed)
-  const response = await updateSession(request);
-
-  // Debug: Log session presence for investigation
-  const hasSessionCookie = request.cookies.has('sb-access-token') || request.cookies.has('supabase-auth-token');
-  if (process.env.NODE_ENV === 'production') {
-    console.log(`[Middleware] ${request.nextUrl.pathname} - Has Session Cookie: ${hasSessionCookie}`);
-  }
+  let response = await updateSession(request);
 
   const { pathname } = request.nextUrl;
+  const locale = getLocale(request);
+
+  // Define protected routes
+  const protectedRoutes = ['/debate', '/admin', '/profile', '/buy-tokens', '/neural-hub'];
+  const isProtectedRoute = protectedRoutes.some(route => 
+    pathname.startsWith(`/${locale}${route}`) || 
+    pathname === `/${locale}${route}` ||
+    pathname.includes(route) // Fallback for various patterns
+  );
+
+  // Initialize Supabase for session check
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  
+  let user = null;
+  if (supabaseUrl && supabaseAnonKey) {
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          // In middleware, we don't need to set cookies here as updateSession already does it
+        },
+      },
+    });
+
+    const { data } = await supabase.auth.getUser();
+    user = data?.user;
+  }
+
+  // Handle protected routes
+  if (isProtectedRoute) {
+    if (!user) {
+      const loginUrl = new URL(`/${locale}/login`, request.url);
+      loginUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // prevent caching of protected pages
+    response.headers.set('Cache-Control', 'no-store, max-age=0, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+  }
+
+  // Handle auth routes (redirect to debate if already logged in)
+  const authRoutes = ['/login', '/register', '/forgot-password'];
+  const isAuthRoute = authRoutes.some(route => pathname.includes(route));
+  
+  if (isAuthRoute && user) {
+    return NextResponse.redirect(new URL(`/${locale}/debate`, request.url));
+  }
 
   // 2. Check if there is any supported locale in the pathname
   const pathnameHasLocale = locales.some(
@@ -54,7 +101,6 @@ export async function middleware(request: NextRequest) {
   if (pathnameHasLocale) return response;
 
   // 3. Redirect if there is no locale
-  const locale = getLocale(request);
   const redirectUrl = new URL(`/${locale}${pathname}`, request.url);
 
   // Preserve query parameters
