@@ -1,10 +1,25 @@
 import { GoogleAuth } from 'google-auth-library';
 
+// Parse service account JSON from environment variable
+const getVertexConfig = () => {
+    try {
+        const jsonStr = process.env.VERTEX_SERVICE_ACCOUNT_JSON;
+        if (jsonStr) {
+            return JSON.parse(jsonStr);
+        }
+    } catch (err) {
+        console.error("[Auth] Error parsing VERTEX_SERVICE_ACCOUNT_JSON:", err);
+    }
+    return null;
+};
+
+const vertexConfig = getVertexConfig();
+
 const auth = new GoogleAuth({
-    projectId: process.env.VERTEX_PROJECT_ID,
-    credentials: (process.env.VERTEX_CLIENT_EMAIL && process.env.VERTEX_PRIVATE_KEY) ? {
-        client_email: process.env.VERTEX_CLIENT_EMAIL,
-        private_key: process.env.VERTEX_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    projectId: vertexConfig?.project_id,
+    credentials: vertexConfig ? {
+        client_email: vertexConfig.client_email,
+        private_key: vertexConfig.private_key?.replace(/\\n/g, '\n'),
     } : undefined
 });
 
@@ -57,12 +72,12 @@ export async function authenticatedFetch(url: string, options: RequestInit = {})
 export async function triggerComposerJob(jobId: string, runId?: string) {
     console.log(`[CloudRunJob] Initiating trigger for job: jarnazi-composer-job, ID: ${jobId}${runId ? `, RunID: ${runId}` : ''}`);
     try {
-        const project = process.env.VERTEX_PROJECT_ID;
+        const project = vertexConfig?.project_id;
         const region = "europe-west1"; // Required region
         const jobName = "jarnazi-composer-job"; // Required job name
 
         if (!project) {
-            console.warn("[CloudRunJob] Skipping Job Trigger: No VERTEX_PROJECT_ID environment variable found");
+            console.warn("[CloudRunJob] Skipping Job Trigger: No valid VERTEX_SERVICE_ACCOUNT_JSON found");
             return false;
         }
 

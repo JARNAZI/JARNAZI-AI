@@ -10,9 +10,18 @@ interface MediaUploaderProps {
     accept: string;
     label: string;
     icon?: ElementType;
+    /** إذا كانت true → نُجبر المتصفح على فتح الكاميرا مباشرةً */
+    forceCamera?: boolean;
 }
 
-export function MediaUploader({ onFileSelected, accept, label, icon: Icon = Upload, capture }: MediaUploaderProps & { capture?: "environment" | "user" }) {
+export function MediaUploader({
+  onFileSelected,
+  accept,
+  label,
+  icon: Icon = Upload,
+  capture,
+  forceCamera,
+}: MediaUploaderProps & { capture?: "environment" | "user" }) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,7 +41,7 @@ export function MediaUploader({ onFileSelected, accept, label, icon: Icon = Uplo
                 ref={fileInputRef}
                 type="file"
                 accept={accept}
-                capture={capture}
+                {...(forceCamera ? { capture } : {})}
                 className="hidden"
                 onChange={handleFileChange}
             />

@@ -5,16 +5,7 @@
 # -----------------------------------------------------------------------------
 # VERTEX AI (Google Cloud)
 # -----------------------------------------------------------------------------
-VERTEX_AUTH_URI=
-VERTEX_TOKEN_URI=
-VERTEX_PRIVATE_KEY_ID=
-VERTEX_PRIVATE_KEY=
-VERTEX_CLIENT_EMAIL=
-VERTEX_CLIENT_ID=
-VERTEX_AUTH_PROVIDER_X509_CERT_URL=
-VERTEX_CLIENT_X509_CERT_URL=
-VERTEX_UNIVERSE_DOMAIN=
-VERTEX_PROJECT_ID=
+VERTEX_SERVICE_ACCOUNT_JSON= # Entire Service Account JSON content
 
 # -----------------------------------------------------------------------------
 # SUPABASE
