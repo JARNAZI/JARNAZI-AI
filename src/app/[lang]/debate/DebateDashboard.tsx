@@ -504,7 +504,7 @@ export default function DebateDashboard({
                             </div>
 
                             <nav className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar text-left font-black">
-                                {role === 'admin' && (
+                                {(role === 'admin' || role === 'super_admin') && (
                                     <>
                                         <p className="text-[10px] font-black text-red-500 uppercase tracking-[0.3em] mb-4 mt-2 ml-4">{d.systemAccess || "System Access"}</p>
                                         <Link href={`/${lang}/admin`} className="flex items-center gap-5 p-5 rounded-[1.5rem] bg-red-500/5 hover:bg-red-500/10 active:bg-red-500/15 border border-red-500/10 group transition-all" onClick={() => setIsMenuOpen(false)}>

@@ -81,7 +81,7 @@ export function DebateMenu() {
         };
     }, [supabase]);
 
-    const isAdmin = role === 'admin';
+    const isAdmin = role === 'admin' || role === 'super_admin';
 
     return (
         <Dropdown
