@@ -4,8 +4,8 @@ import { useFormState, useFormStatus } from 'react-dom';
 import { submitContactForm } from '@/app/actions/contact';
 import { Loader2, Send } from 'lucide-react';
 import { toast } from 'sonner';
-import { useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { Suspense, useEffect, useRef } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { useDictionary } from '@/i18n/use-dictionary';
 
@@ -33,14 +33,20 @@ function SubmitButton({ label }: { label: string }) {
     );
 }
 
-export default function ContactPage() {
+function ContactForm() {
     const params = useParams();
+    const searchParams = useSearchParams();
     const lang = ((params as any)?.lang as LanguageCode) || DEFAULT_LANGUAGE;
     const dict = useDictionary(lang);
     const t = dict?.contactPage || {};
 
     const [state, formAction] = useFormState(submitContactForm, initialState);
     const formRef = useRef<HTMLFormElement>(null);
+
+    // Get pre-filled values from URL
+    const defaultName = searchParams.get('name') || '';
+    const defaultEmail = searchParams.get('email') || '';
+    const defaultSubject = searchParams.get('subject') || '';
 
     useEffect(() => {
         if (state.success) {
@@ -79,6 +85,7 @@ export default function ContactPage() {
                                 name="name"
                                 type="text"
                                 required
+                                defaultValue={defaultName}
                                 maxLength={25}
                                 placeholder={t.namePh || "Max 25 chars"}
                                 className="w-full bg-background/50 border border-border rounded-lg px-4 py-3 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-muted-foreground/60"
@@ -90,6 +97,7 @@ export default function ContactPage() {
                                 name="subject"
                                 type="text"
                                 required
+                                defaultValue={defaultSubject}
                                 maxLength={20}
                                 placeholder={t.subjectPh || "Max 20 chars"}
                                 className="w-full bg-background/50 border border-border rounded-lg px-4 py-3 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-muted-foreground/60"
@@ -103,6 +111,7 @@ export default function ContactPage() {
                             name="email"
                             type="email"
                             required
+                            defaultValue={defaultEmail}
                             placeholder={t.emailPh || "you@example.com"}
                             className="w-full bg-background/50 border border-border rounded-lg px-4 py-3 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-muted-foreground/60"
                         />
@@ -125,5 +134,13 @@ export default function ContactPage() {
                 </form>
             </div>
         </div>
+    );
+}
+
+export default function ContactPage() {
+    return (
+        <Suspense fallback={null}>
+            <ContactForm />
+        </Suspense>
     );
 }

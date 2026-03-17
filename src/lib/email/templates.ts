@@ -176,6 +176,18 @@ export function renderContactReplyEmail(opts: {
 }) {
   const t = getEmailStrings(opts.lang);
   const direction = (opts.lang || '').toLowerCase().startsWith('ar') ? 'rtl' : 'ltr';
+  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://jarnazi.com').replace(/\/$/, '');
+  const lang = opts.lang || 'en';
+
+  // Build pre-fill URL for contact page
+  const params = new URLSearchParams();
+  if (opts.name) params.set('name', opts.name);
+  if (opts.to) params.set('email', opts.to);
+  if (opts.subject) {
+    const sub = opts.subject.startsWith('Re:') ? opts.subject : `Re: ${opts.subject}`;
+    params.set('subject', sub);
+  }
+  const contactUrl = `${baseUrl}/${lang}/contact?${params.toString()}`;
 
   const extra = `
     <div dir="${direction}" style="margin-top:18px;padding:14px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
@@ -190,8 +202,8 @@ export function renderContactReplyEmail(opts: {
       lang: opts.lang,
       title: t.contactReplySubject,
       intro: t.contactReplyIntro,
-      buttonText: t.buttonOpen,
-      buttonUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://jarnazi.com',
+      buttonText: t.buttonReply,
+      buttonUrl: contactUrl,
       extraHtml: extra,
     }),
   };

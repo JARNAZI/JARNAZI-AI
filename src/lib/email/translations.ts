@@ -16,6 +16,7 @@ export type EmailStrings = {
   buttonVerify: string;
   buttonReset: string;
   buttonOpen: string;
+  buttonReply: string;
   buttonViewTokens: string;
   footerNote: string;
 };
@@ -36,6 +37,7 @@ const EN: EmailStrings = {
   buttonVerify: 'Verify email',
   buttonReset: 'Reset password',
   buttonOpen: 'Open',
+  buttonReply: 'Reply to Message',
   buttonViewTokens: 'View Invoice',
   footerNote: 'If you did not request this, you can safely ignore this email.'
 };
@@ -56,6 +58,7 @@ const AR: EmailStrings = {
   buttonVerify: 'تأكيد البريد',
   buttonReset: 'إعادة التعيين',
   buttonOpen: 'فتح',
+  buttonReply: 'رد على الرسالة',
   buttonViewTokens: 'عرض الفاتورة',
   footerNote: 'إذا لم تطلب هذا الإجراء، يمكنك تجاهل هذا البريد بأمان.'
 };

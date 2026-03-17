@@ -134,7 +134,7 @@ export async function submitContactForm(prevState: unknown, formData: FormData) 
     }
 }
 
-export async function replyToMessage(messageId: string, replyText: string) {
+export async function replyToMessage(messageId: string, replyText: string, lang?: string) {
     const supabase = await createClient();
 
     // Get message details first
@@ -150,7 +150,7 @@ export async function replyToMessage(messageId: string, replyText: string) {
         subject: message.subject || undefined,
         originalMessage: message.message || undefined,
         replyText,
-        // If the app stores preferred language in profile later, we can fetch it here.
+        lang,
     });
 
     // Create admin client to bypass any restrictive RLS triggers

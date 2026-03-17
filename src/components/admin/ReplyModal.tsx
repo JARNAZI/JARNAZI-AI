@@ -25,7 +25,7 @@ export default function ReplyModal({ messageId, recipientName }: ReplyModalProps
         if (!replyText.trim()) return;
         setLoading(true);
         try {
-            await replyToMessage(messageId, replyText);
+            await replyToMessage(messageId, replyText, String(lang));
             toast.success(dict.adminMessages?.replySent ?? 'Reply sent successfully');
             setIsOpen(false);
         } catch (error: unknown) {
