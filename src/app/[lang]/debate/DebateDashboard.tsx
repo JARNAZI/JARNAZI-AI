@@ -304,7 +304,7 @@ export default function DebateDashboard({
                                                 <MediaUploader label={d.files || "Files"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
                                                 <MediaUploader label={d.pics || "Pics"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
                                                 <MediaUploader label={d.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
-                                                <CameraUploader label={d.camera || "Camera"} onFileSelected={setSelectedFile} />
+                                                <CameraUploader label={d.camera || "Camera"} onFileSelected={setSelectedFile} photoLabel={d.pics || "Photo"} videoLabel={d.video || "Video"} />
                                                 <AudioRecorder onRecordingComplete={setRecordedAudio} label={d.audio || "Audio"} />
                                             </>
                                         ) : (enableFreeTrial && profileInfo && profileInfo.free_trial_used !== true) ? (

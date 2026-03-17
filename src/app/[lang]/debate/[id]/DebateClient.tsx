@@ -17,6 +17,7 @@ import { Menu, Send, Image as ImageIcon, Video, FileText, Printer, Copy, ArrowLe
 
 // COMPONENTS
 import { MediaUploader, FilePreview } from '@/components/debate/MediaUploader';
+import { CameraUploader } from '@/components/debate/CameraUploader';
 import { AudioRecorder, AudioPreview } from '@/components/debate/AudioRecorder';
 import NotificationBell from '@/components/notifications/NotificationBell';
 
@@ -1350,7 +1351,7 @@ export default function DebateClient({
                                             <MediaUploader label={dict.dashboard?.files || "File"} icon={FileText} accept="*" onFileSelected={setSelectedFile} />
                                             <MediaUploader label={dict.dashboard?.pics || "Image"} icon={ImageIcon} accept="image/*" onFileSelected={setSelectedFile} />
                                             <MediaUploader label={dict.dashboard?.video || "Video"} icon={Video} accept="video/*" onFileSelected={setSelectedFile} />
-                                            <MediaUploader label={dict.dashboard?.camera || "Camera"} icon={Camera} accept="image/*,video/*" capture="environment" onFileSelected={setSelectedFile} />
+                                            <CameraUploader label={dict.dashboard?.camera || "Camera"} onFileSelected={setSelectedFile} photoLabel={dict.dashboard?.pics || "Photo"} videoLabel={dict.dashboard?.video || "Video"} />
                                             <AudioRecorder onRecordingComplete={setRecordedAudio} label={dict.dashboard?.audio || "Audio"} />
                                         </>
                                     ) : (enableFreeTrial && freeTrialUsed !== true) ? (
