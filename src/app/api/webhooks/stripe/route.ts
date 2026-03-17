@@ -132,6 +132,7 @@ export async function POST(req: Request) {
       console.log('[Stripe Webhook] Balance update successful');
 
       // 4. Ledger Record
+      console.log(`[Stripe Webhook] Recording to ledger for ${userId}: ${tokensToAdd} tokens`);
       const { error: ledgerErr } = await supabaseAdmin.from('token_ledger').insert({
         user_id: userId,
         amount: tokensToAdd,
@@ -140,6 +141,8 @@ export async function POST(req: Request) {
       if (ledgerErr) {
         console.error('[Stripe Webhook] Failed to insert token_ledger:', ledgerErr.message);
         // Do not throw to prevent the whole webhook from failing if only ledger fails, but log it explicitly.
+      } else {
+        console.log('[Stripe Webhook] Ledger record successful');
       }
 
       // 5. Notification

@@ -23,24 +23,39 @@ export default function InvoicesClient({ dict, lang, supabaseUrl, supabaseAnonKe
 
   useEffect(() => {
     const fetchInvoices = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push(`/${lang}/login`);
-        return;
-      }
+      try {
+        const { data: { user }, error: userErr } = await supabase.auth.getUser();
+        
+        if (userErr || !user) {
+          console.warn('[Invoices] User not authenticated, redirecting...', userErr);
+          router.push(`/${lang}/login`);
+          return;
+        }
 
-      // Fetch from token_ledger for positive amounts (purchases/grants)
-      const { data, error } = await supabase
-        .from('token_ledger')
-        .select('*')
-        .eq('user_id', user.id)
-        .gt('amount', 0)
-        .order('created_at', { ascending: false });
+        console.log('[Invoices] Fetching records for user:', user.id);
 
-      if (!error && data) {
-        setTransactions(data);
+        // Fetch from token_ledger for positive amounts (purchases/grants)
+        const { data, error } = await supabase
+          .from('token_ledger')
+          .select('*')
+          .eq('user_id', user.id)
+          .gt('amount', 0)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('[Invoices] Database error fetching ledger:', error);
+          // Try without gt filter as fallback to see if anything exists
+          const { data: anyData } = await supabase.from('token_ledger').select('id').eq('user_id', user.id).limit(1);
+          console.log('[Invoices] Any records exist for user?', !!anyData?.length);
+        } else if (data) {
+          console.log(`[Invoices] Successfully retrieved ${data.length} records`);
+          setTransactions(data);
+        }
+      } catch (err) {
+        console.error('[Invoices] Unexpected error in fetchInvoices:', err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchInvoices();
   }, [supabase, router, lang]);

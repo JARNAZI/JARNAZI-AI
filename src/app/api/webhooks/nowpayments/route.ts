@@ -97,6 +97,7 @@ export async function POST(req: Request) {
                     }
 
                     // Ledger
+                    console.log(`[NowPayments Webhook] Recording to ledger for ${userId}: ${tokensToAdd} tokens`);
                     const { error: ledgerErr } = await supabaseAdmin.from('token_ledger').insert({
                         user_id: userId,
                         amount: tokensToAdd,
@@ -104,6 +105,8 @@ export async function POST(req: Request) {
                     });
                     if (ledgerErr) {
                         console.error('[NowPayments Webhook] Ledger insert failed:', ledgerErr.message);
+                    } else {
+                        console.log('[NowPayments Webhook] Ledger record successful');
                     }
 
                     // Invoice Email
