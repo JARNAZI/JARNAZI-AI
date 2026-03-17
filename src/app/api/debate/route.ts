@@ -129,46 +129,34 @@ export async function POST(req: Request) {
     const tokenCost = await calculateDynamicTokenCost(supabaseAdmin, plan);
 
     let isFreeTrialTurn = false;
+    let tokensInsufficient = false;
 
     // Check if user has no tokens -> Must rely on free trial
     if (Number(profile?.token_balance || 0) < tokenCost) {
       if (isFreeTrialActive && requestType === 'text') {
         isFreeTrialTurn = true;
       } else {
-        return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', tokensNeeded: tokenCost }, { status: 402 });
-      }
-    } else {
-      try {
-        await reserveTokens(supabaseAdmin, user.id, tokenCost);
-      } catch (e: any) {
-        if (e.message?.includes('INSUFFICIENT_TOKENS')) {
-          return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', tokensNeeded: tokenCost }, { status: 402 });
-        }
-        throw e;
+        tokensInsufficient = true;
       }
     }
 
-    // 3. Create Debate Record
+    // 3. Create Debate Record and User Prompt first (so it ALWAYS appears in Consensus Library)
     const { data: debate, error: debErr } = await supabaseAdmin
       .from('debates')
       .insert({
         user_id: user.id,
         topic,
-        status: 'active',
+        status: tokensInsufficient ? 'failed' : 'active',
         mode: requestType,
       })
       .select('*')
       .single();
 
     if (debErr || !debate) {
-      // If we reserved tokens but record failed, refund!
-      if (!isFreeTrialTurn) {
-        await refundTokens(supabaseAdmin, user.id, tokenCost);
-      }
       throw debErr || new Error('Failed to create debate');
     }
 
-    // **FIX**: Save the user's initial prompt as the first message in the debate window
+    // Save the user's initial prompt as the first message in the debate window
     await orchestrator.saveTurn(
       debate.id,
       user.id,
@@ -179,33 +167,57 @@ export async function POST(req: Request) {
       { request_type: requestType }
     );
 
-    // 4. Trigger Maestro (Non-blocking or await depending on requirements)
-    // We await here to ensure we can handle errors and refund, local Next.js supports longer timeouts.
-    try {
-      await orchestrator.runFullDebate(debate.id, user.id, topic, plan);
-
-      if (isFreeTrialTurn) {
-        await supabaseAdmin.from('profiles').update({ free_trial_used: true }).eq('id', user.id);
-      } else {
-        // Update final cost if applicable
-        await supabaseAdmin.from('debates').update({ total_cost_cents: tokenCost }).eq('id', debate.id);
-
-        // Log to Ledger
-        await supabaseAdmin.from('token_ledger').insert({
-          user_id: user.id,
-          amount: -tokenCost,
-          description: `Debate cost for session: ${debate.id}`
-        });
-      }
-
-    } catch (e) {
-      console.error("[API/Debate] Maestro Execution Failed:", e);
-      if (!isFreeTrialTurn) {
-        await refundTokens(supabaseAdmin, user.id, tokenCost);
-      }
-      await supabaseAdmin.from('debates').update({ status: 'failed' }).eq('id', debate.id);
-      throw e;
+    // If tokens are insufficient, return 402 NOW (with debateId so it's known)
+    if (tokensInsufficient) {
+      return NextResponse.json({ 
+        error: 'INSUFFICIENT_TOKENS', 
+        tokensNeeded: tokenCost, 
+        debateId: debate.id 
+      }, { status: 402 });
     }
+
+    // 4. Apply Payments immediately
+    if (!isFreeTrialTurn) {
+      try {
+        await reserveTokens(supabaseAdmin, user.id, tokenCost);
+      } catch (e: any) {
+        await supabaseAdmin.from('debates').update({ status: 'failed' }).eq('id', debate.id);
+        if (e.message?.includes('INSUFFICIENT_TOKENS')) {
+          return NextResponse.json({ error: 'INSUFFICIENT_TOKENS', tokensNeeded: tokenCost, debateId: debate.id }, { status: 402 });
+        }
+        throw e;
+      }
+    } else {
+      // Mark free trial as used IMMEDIATELY so they don't get stuck in a loop
+      await supabaseAdmin.from('profiles').update({ free_trial_used: true }).eq('id', user.id);
+    }
+
+    // 5. Trigger Maestro asynchronously (Non-blocking) so the UI redirects instantly to the Debate Room
+    const runDebateBackground = async () => {
+      try {
+        await orchestrator.runFullDebate(debate.id, user.id, topic, plan);
+
+        if (!isFreeTrialTurn) {
+          // Update final cost
+          await supabaseAdmin.from('debates').update({ total_cost_cents: tokenCost }).eq('id', debate.id);
+          // Log to Ledger
+          await supabaseAdmin.from('token_ledger').insert({
+            user_id: user.id,
+            amount: -tokenCost,
+            description: `Debate cost for session: ${debate.id}`
+          });
+        }
+      } catch (e) {
+        console.error("[API/Debate] Maestro Execution Failed:", e);
+        if (!isFreeTrialTurn) {
+          await refundTokens(supabaseAdmin, user.id, tokenCost);
+        }
+        await supabaseAdmin.from('debates').update({ status: 'failed' }).eq('id', debate.id);
+      }
+    };
+
+    // Fire & Forget
+    runDebateBackground().catch(console.error);
 
     return NextResponse.json({ debateId: debate.id, reservedTokens: tokenCost });
   } catch (err: any) {

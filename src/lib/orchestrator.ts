@@ -565,10 +565,9 @@ export async function calculateDynamicTokenCost(supabaseAdmin: any, plan: TaskPl
     let baseTokens = 0;
     if (totalRealCents > 0) {
         const sellCents = Math.ceil(totalRealCents / 0.75);
-        // We import TOKENS_PER_USD dynamically since we are in a server function, or we can just import it at top.
-        // Wait, I am replacing the block, let's just use the import from top or require it inline.
-        const { TOKENS_PER_USD } = require('./tokens');
-        baseTokens = Math.ceil((sellCents * TOKENS_PER_USD) / 100);
+        // Explicit literal fallback in case of module resolution failure
+        const _TOKENS_PER_USD = 3000;
+        baseTokens = Math.ceil((sellCents * _TOKENS_PER_USD) / 100);
     }
 
     let tokensNeeded = Math.max(1, baseTokens);
@@ -578,7 +577,6 @@ export async function calculateDynamicTokenCost(supabaseAdmin: any, plan: TaskPl
     if (hasMedia) {
         try {
             const { data: kvData } = await supabaseAdmin.from('site_settings').select('value').eq('key', 'debate_media_overhead').maybeSingle();
-            // Assuming default overhead was 2 tokens. Scale to 2000.
             const mediaOverhead = Number(kvData?.value) || 2000;
             tokensNeeded += mediaOverhead;
         } catch (_) { }
