@@ -29,10 +29,10 @@ export default async function AdminLayout({
   profileRole = (data?.role as string | null) || (user.app_metadata?.role as string | null) || null;
 
   const role = profileRole ?? "user";
-  const isAdmin = role === "admin" || role === "super_admin";
-  const isSupport = role === "support";
+  const isSuperAdmin = role === "super_admin";
+  const isMessageAdmin = role === "admin" || role === "support" || role === "super_admin";
 
-  if (!isAdmin && !isSupport) {
+  if (!isMessageAdmin) {
     // Normal users cannot access admin pages
     redirect(`/${lang}/debate`);
   }
@@ -66,7 +66,7 @@ export default async function AdminLayout({
         <nav className="space-y-4">
           <div className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Core</div>
 
-          {!isSupport && (
+          {!isSuperAdmin ? null : (
             <Link
               href={`/${lang}/admin/users`}
               className="block px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
@@ -82,7 +82,7 @@ export default async function AdminLayout({
             Messages
           </Link>
 
-          {!isSupport && (
+          {!isSuperAdmin ? null : (
             <Link
               href={`/${lang}/admin/api-status`}
               className="block px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
@@ -91,7 +91,7 @@ export default async function AdminLayout({
             </Link>
           )}
 
-          {!isSupport && (
+          {!isSuperAdmin ? null : (
             <>
               <div className="text-sm font-medium text-muted-foreground uppercase tracking-wider pt-4">Configuration</div>
 
