@@ -1,0 +1,9 @@
+default_platform(:android)
+
+platform :android do
+  desc "Push a new beta build to Google Play Console"
+  lane :beta do
+    gradle(task: "bundle", build_type: "Release")
+    upload_to_play_store(track: "internal")
+  end
+end

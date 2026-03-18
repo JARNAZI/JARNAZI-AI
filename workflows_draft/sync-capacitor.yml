@@ -1,0 +1,43 @@
+name: Sync Web to App
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'ios/**'
+      - 'android/**'
+      - '.github/workflows/**'
+
+jobs:
+  sync-capacitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Build Web App
+        run: |
+          npm run build
+          # If output is not automatically placed in 'out', you may need to create a static export.
+          # For Next.js App Router, ensure you have appropriate static HTML fallback if not exporting fully.
+
+      - name: Sync Capacitor Native Platforms
+        run: npx cap sync
+
+      - name: Commit and Push Native App Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(capacitor): sync native apps with web build"
+          file_pattern: "ios/ android/"

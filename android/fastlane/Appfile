@@ -1,0 +1,2 @@
+json_key_file("") # Path to the json secret file - e.g. supply_json_key_data from Secrets
+package_name("com.jarnazidebateai.app") # e.g. com.krausefx.app
