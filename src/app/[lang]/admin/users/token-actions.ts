@@ -7,6 +7,8 @@ import { createNotification } from '@/lib/notifications';
 
 export async function grantTokens(userId: string, tokens: number, reason: string, notifyUser: boolean) {
     const supabase = await createClient();
+    const { createServiceRoleClient } = await import('@/lib/supabase/server-admin');
+    const adminClient = await createServiceRoleClient();
 
     // 1. Verify Super Admin Auth
     const { data: { user } } = await supabase.auth.getUser();
@@ -23,7 +25,7 @@ export async function grantTokens(userId: string, tokens: number, reason: string
     }
 
     try {
-        const { data: currentProfile, error: fetchErr } = await supabase
+        const { data: currentProfile, error: fetchErr } = await adminClient
             .from('profiles')
             .select('token_balance')
             .eq('id', userId)
@@ -31,14 +33,14 @@ export async function grantTokens(userId: string, tokens: number, reason: string
 
         if (fetchErr || !currentProfile) throw new Error('User not found');
 
-        const { error: updErr } = await supabase
+        const { error: updErr } = await adminClient
             .from('profiles')
             .update({ token_balance: (currentProfile.token_balance || 0) + tokens })
             .eq('id', userId);
 
         if (updErr) throw updErr;
 
-        const { error: ledgerErr } = await supabase.from('token_ledger').insert({
+        const { error: ledgerErr } = await adminClient.from('token_ledger').insert({
             user_id: userId,
             amount: tokens,
             description: `Admin Grant: ${reason}`
@@ -49,7 +51,7 @@ export async function grantTokens(userId: string, tokens: number, reason: string
         // 3. Optional Notification
         if (notifyUser) {
             // Fetch user email
-            const { data: targetProfile } = await supabase.from('profiles').select('email').eq('id', userId).single();
+            const { data: targetProfile } = await adminClient.from('profiles').select('email').eq('id', userId).single();
             if (targetProfile?.email) {
                 // Email
                 await sendAdminTokenGrant(targetProfile.email, tokens, reason);

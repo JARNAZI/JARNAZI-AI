@@ -16,6 +16,8 @@ const contactSchema = z.object({
 
 export async function submitContactForm(prevState: unknown, formData: FormData) {
     const supabase = await createClient();
+    const { createServiceRoleClient } = await import('@/lib/supabase/server-admin');
+    const adminClient = await createServiceRoleClient();
     const headersList = await headers();
     const ip = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown';
 
@@ -115,7 +117,8 @@ export async function submitContactForm(prevState: unknown, formData: FormData) 
         }
 
         // Insert
-        const { error } = await supabase.from('contact_messages').insert({
+        // Insert using admin client to bypass RLS limits on anonymous guests
+        const { error } = await adminClient.from('contact_messages').insert({
             user_id: user?.id || null, // Optional, allow guests if policy permits
             ip_address: ip,
             ...rawData,
@@ -136,9 +139,11 @@ export async function submitContactForm(prevState: unknown, formData: FormData) 
 
 export async function replyToMessage(messageId: string, replyText: string, lang?: string) {
     const supabase = await createClient();
+    const { createServiceRoleClient } = await import('@/lib/supabase/server-admin');
+    const admin = await createServiceRoleClient();
 
-    // Get message details first
-    const { data: message } = await supabase.from('contact_messages').select('*').eq('id', messageId).single();
+    // Get message details first using admin client to bypass RLS block on selects
+    const { data: message } = await admin.from('contact_messages').select('*').eq('id', messageId).single();
     if (!message) throw new Error('Message not found');
 
     const { data: { user } } = await supabase.auth.getUser();
@@ -153,14 +158,8 @@ export async function replyToMessage(messageId: string, replyText: string, lang?
         lang,
     });
 
-    // Create admin client to bypass any restrictive RLS triggers
-    const { createClient: createAdminClient } = await import('@supabase/supabase-js');
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!url || !key) throw new Error('Missing Supabase keys for reply');
-    const admin = createAdminClient(url, key);
-
+    // No need to manually create the admin client again, we imported it above.
+    
     // Update DB AFTER email was successfully sent
     const { error } = await admin.from('contact_messages').update({
         status: 'replied',
