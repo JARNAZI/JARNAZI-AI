@@ -20,7 +20,7 @@ export async function grantTokens(userId: string, tokens: number, reason: string
         .eq('id', user.id)
         .single();
 
-    if (executorProfile?.role !== 'super_admin' && executorProfile?.role !== 'admin') {
+    if (executorProfile?.role !== 'super_admin' && executorProfile?.role !== 'admin' && user.app_metadata?.role !== 'super_admin' && user.app_metadata?.role !== 'admin') {
         throw new Error('Only Admins can grant tokens manually.');
     }
 

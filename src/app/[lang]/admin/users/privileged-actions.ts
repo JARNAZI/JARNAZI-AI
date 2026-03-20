@@ -21,8 +21,9 @@ export async function deleteUser(userId: string) {
     if (!user) throw new Error('Not authenticated');
 
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+    const role = profile?.role || user.app_metadata?.role;
 
-    if (profile?.role !== 'admin' && profile?.role !== 'super_admin') {
+    if (role !== 'admin' && role !== 'super_admin') {
         throw new Error('Only Admin or Super Admin can delete users');
     }
 
@@ -38,8 +39,9 @@ export async function performDeleteUser(userId: string) {
     if (!user) throw new Error('Not authenticated');
 
     const { data: profile } = await contextClient.from('profiles').select('role').eq('id', user.id).single();
+    const role = profile?.role || user.app_metadata?.role;
 
-    if (profile?.role !== 'admin' && profile?.role !== 'super_admin') {
+    if (role !== 'admin' && role !== 'super_admin') {
         throw new Error('Only Admin or Super Admin can delete users');
     }
 
@@ -73,8 +75,9 @@ export async function impersonateUser(userId: string) {
     if (!user) throw new Error('Not authenticated');
 
     const { data: requestorProfile } = await contextClient.from('profiles').select('role').eq('id', user.id).single();
+    const role = requestorProfile?.role || user.app_metadata?.role;
 
-    if (requestorProfile?.role !== 'admin' && requestorProfile?.role !== 'super_admin') {
+    if (role !== 'admin' && role !== 'super_admin') {
         throw new Error('Only Admin or Super Admin can impersonate users');
     }
 
@@ -103,7 +106,9 @@ export async function toggleBanUser(userId: string, isBanned: boolean) {
     if (!user) throw new Error('Unauthorized');
 
     const { data: requestorProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-    if (!['admin', 'super_admin'].includes(requestorProfile?.role)) {
+    const role = requestorProfile?.role || user.app_metadata?.role;
+
+    if (role !== 'admin' && role !== 'super_admin') {
         throw new Error('Only Admin or Super Admin can ban users');
     }
 

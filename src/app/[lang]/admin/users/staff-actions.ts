@@ -5,10 +5,10 @@ import { createClient as createClientPrimitive } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 
 const getServiceRoleClient = () => {
-    return createClientPrimitive(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) throw new Error("Missing Supabase Service Role Key");
+    return createClientPrimitive(url, key);
 };
 
 export async function createSupportStaff(email: string, password: string, name: string) {
@@ -19,7 +19,8 @@ export async function createSupportStaff(email: string, password: string, name: 
     if (!requestor) throw new Error('Unauthorized');
 
     const { data: requestorProfile } = await supabase.from('profiles').select('role').eq('id', requestor.id).single();
-    if (!['admin', 'super_admin'].includes(requestorProfile?.role)) {
+    const role = requestorProfile?.role || requestor.app_metadata?.role;
+    if (role !== 'admin' && role !== 'super_admin') {
         throw new Error('Unauthorized');
     }
 
@@ -72,7 +73,8 @@ export async function promoteToStaff(userId: string) {
 
     // Verify Requestor
     const { data: requestorProfile } = await supabase.from('profiles').select('role').eq('id', requestor?.id).single();
-    if (!['admin', 'super_admin'].includes(requestorProfile?.role)) throw new Error('Unauthorized');
+    const role = requestorProfile?.role || requestor?.app_metadata?.role;
+    if (role !== 'admin' && role !== 'super_admin') throw new Error('Unauthorized');
 
     const adminClient = getServiceRoleClient();
 
@@ -92,7 +94,8 @@ export async function revokeStaffAccess(userId: string) {
 
     // Verify Requestor
     const { data: requestorProfile } = await supabase.from('profiles').select('role').eq('id', requestor?.id).single();
-    if (!['admin', 'super_admin'].includes(requestorProfile?.role)) throw new Error('Unauthorized');
+    const role = requestorProfile?.role || requestor?.app_metadata?.role;
+    if (role !== 'admin' && role !== 'super_admin') throw new Error('Unauthorized');
 
     const adminClient = getServiceRoleClient();
 
