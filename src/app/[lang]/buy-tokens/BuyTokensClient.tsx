@@ -7,7 +7,13 @@ import { createClient } from '@/lib/supabase/client';
 import { MIN_PURCHASE_AMOUNT_USD, TOKENS_PER_USD, amountToTokens, isValidPurchaseAmount, normalizeAmount } from '@/lib/tokens';
 import { toast } from 'sonner';
 
-export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonKey }: { dict: any; lang: string; supabaseUrl?: string; supabaseAnonKey?: string }) {
+export default function BuyTokensClient({
+  dict, lang, supabaseUrl, supabaseAnonKey,
+  serverStripeEnabled, serverNowpaymentsEnabled, serverStripeTestMode
+}: {
+  dict: any; lang: string; supabaseUrl?: string; supabaseAnonKey?: string;
+  serverStripeEnabled?: boolean; serverNowpaymentsEnabled?: boolean; serverStripeTestMode?: boolean;
+}) {
   const d = { ...(dict?.dashboard || {}), ...(dict?.buyTokensPage || {}) };
   const common = dict?.common || {};
   const router = useRouter();
@@ -48,9 +54,9 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
     }
   }, [searchParams, dict.notifications, router, pathname]);
   const [loading, setLoading] = useState(false);
-  const [stripeEnabled, setStripeEnabled] = useState(true);
-  const [nowpaymentsEnabled, setNowpaymentsEnabled] = useState(false);
-  const [stripeTestMode, setStripeTestMode] = useState(false);
+  const stripeEnabled = serverStripeEnabled ?? true;
+  const nowpaymentsEnabled = serverNowpaymentsEnabled ?? false;
+  const stripeTestMode = serverStripeTestMode ?? false;
 
   const amountNum = useMemo(() => normalizeAmount(amount) ?? 0, [amount]);
 
@@ -58,57 +64,6 @@ export default function BuyTokensClient({ dict, lang, supabaseUrl, supabaseAnonK
     if (!Number.isFinite(amountNum) || amountNum <= 0) return 0;
     return amountToTokens(amountNum);
   }, [amountNum]);
-
-  useEffect(() => {
-    // Read payment gateway toggles from `site_settings`.
-    (async () => {
-      try {
-        // Try KV schema first
-        const { data, error } = await supabase
-          .from('site_settings')
-          .select('key,value')
-          .in('key', ['gateway_stripe_enabled', 'gateway_nowpayments_enabled', 'stripe_test_mode']);
-
-        let map: Record<string, string> = {};
-
-        if (!error && data && data.length > 0) {
-          data.forEach(row => {
-            map[row.key] = String(row.value);
-          });
-        } else {
-          // Fallback: single-row schema with `features` JSONB
-          const { data: rowData, error: rowError } = await supabase
-            .from('site_settings')
-            .select('features')
-            .limit(1)
-            .maybeSingle();
-
-          if (!rowError && rowData?.features) {
-            const features = rowData.features as Record<string, any>;
-            if (features.gateway_stripe_enabled !== undefined) map.gateway_stripe_enabled = String(features.gateway_stripe_enabled);
-            else if (features.payments_stripe_enabled !== undefined) map.gateway_stripe_enabled = String(features.payments_stripe_enabled);
-
-            if (features.gateway_nowpayments_enabled !== undefined) map.gateway_nowpayments_enabled = String(features.gateway_nowpayments_enabled);
-            else if (features.payments_nowpayments_enabled !== undefined) map.gateway_nowpayments_enabled = String(features.payments_nowpayments_enabled);
-
-            if (features.stripe_test_mode !== undefined) map.stripe_test_mode = String(features.stripe_test_mode);
-          }
-        }
-
-        if (map.gateway_stripe_enabled !== undefined) {
-          setStripeEnabled(map.gateway_stripe_enabled === 'true');
-        }
-        if (map.gateway_nowpayments_enabled !== undefined) {
-          setNowpaymentsEnabled(map.gateway_nowpayments_enabled === 'true');
-        }
-        if (map.stripe_test_mode !== undefined) {
-          setStripeTestMode(map.stripe_test_mode === 'true');
-        }
-      } catch (err) {
-        console.error("Failed to load payment settings:", err);
-      }
-    })();
-  }, [supabase]);
 
   const requireAuthOrRedirect = async (): Promise<string | null> => {
     const { data: { session } } = await supabase.auth.getSession();
