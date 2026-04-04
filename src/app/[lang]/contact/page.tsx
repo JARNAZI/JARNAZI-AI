@@ -135,6 +135,8 @@ function ContactForm({ siteKey }: { siteKey?: string }) {
                             className="w-full bg-background/50 border border-border rounded-lg px-4 py-3 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-muted-foreground/60 resize-none"
                         />
                         <p className="text-xs text-muted-foreground text-right">{t.max250 || 'Max 250 characters'}</p>
+                    </div>
+                    
                     <div className="space-y-4">
                         <TurnstileWidget key={turnstileKey} onVerify={setTurnstileToken} siteKey={siteKey} />
                         <input type="hidden" name="turnstileToken" value={turnstileToken} />
