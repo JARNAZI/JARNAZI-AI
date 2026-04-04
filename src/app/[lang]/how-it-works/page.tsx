@@ -30,6 +30,21 @@ export default async function HowItWorksPage(props: { params: Promise<{ lang: st
                     </p>
                 </div>
 
+                {/* Additional Explanation Request */}
+                <div className="bg-primary/5 border border-primary/20 rounded-3xl p-8 mb-16 text-center max-w-3xl mx-auto shadow-lg relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-10"><Brain className="w-24 h-24 text-primary" /></div>
+                    <div className="relative z-10">
+                        <h2 className="text-2xl font-bold mb-3 text-primary">{dict.howItWorks.orchestraTitle || "LLM Orchestra"}</h2>
+                        <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
+                            {dict.howItWorks.orchestraDesc || "The site offers a new concept, which is an LLM orchestra, where AI discusses and provides final answers and solutions in the same place in the same session. We also provide long video and media generation capabilities."}
+                        </p>
+                        <h2 className="text-2xl font-bold mb-3 text-accent">{dict.howItWorks.pricingTitle || "Pay exactly what you want"}</h2>
+                        <p className="text-muted-foreground text-lg leading-relaxed">
+                            {dict.howItWorks.pricingDesc || "We don't offer rigid subscriptions. You decide how much you want to use the site by simply entering your amount during purchase to receive the corresponding tokens."}
+                        </p>
+                    </div>
+                </div>
+
                 {/* Content steps */}
                 <div className="space-y-20 relative before:absolute before:inset-0 before:ml-8 md:before:ml-0 md:before:left-1/2 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent before:z-0">
                     {/* Step 1 */}

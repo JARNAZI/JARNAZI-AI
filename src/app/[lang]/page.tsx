@@ -88,11 +88,15 @@ export default async function Home(props: { params: Promise<{ lang: string }> })
           <div className="flex flex-col gap-2">
             <div className="text-lg font-bold text-foreground tracking-tight">{dict.common.siteName}</div>
             <div className="text-sm text-muted-foreground">
-              © 2024 {dict.common.siteName}. {dict.footer.rights}
+              © {dict.footer.companyName || 'JARNAZI OU'} {dict.footer.rights}
             </div>
           </div>
 
-          <div className="flex items-center gap-8">
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
+            <Link href={`/${lang}/about`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">{dict.footer.about || "About Us"}</Link>
+            <Link href={`/${lang}/pricing`} className="text-sm px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 hover:text-primary transition-all font-medium flex items-center justify-center shadow-sm">
+              {dict.nav?.pricing || "Pricing"}
+            </Link>
             <Link href={`/${lang}/privacy`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">{dict.footer.privacy}</Link>
             <Link href={`/${lang}/terms`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">{dict.footer.terms}</Link>
             <Link href={`/${lang}/contact`} className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">

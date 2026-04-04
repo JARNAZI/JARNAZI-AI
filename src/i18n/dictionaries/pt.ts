@@ -109,6 +109,8 @@ const pt = {
     desc3: "Gere vídeos longos — filmes, séries ou programas de TV — divididos em cenas e compostos em um único MP4 para download."
   },
   footer: {
+    about: "Sobre Nós",
+    companyName: "JARNAZI OU",
     privacy: "Política de Privacidade",
     terms: "Termos de Uso",
     rights: "Todos os direitos reservados."
@@ -124,8 +126,12 @@ const pt = {
     securityCheck: "Por favor, complete a verificação de segurança."
   },
   howItWorks: {
+    orchestraTitle: "Orquestra LLM",
+    orchestraDesc: "O site oferece um novo conceito: uma orquestra LLM onde as IAs debatem e fornecem respostas finais na mesma sessão.",
+    pricingTitle: "Compra de Tokens Personalizada",
+    pricingDesc: "Não oferecemos assinaturas. Você decide o quanto deseja comprar, insere o valor e recebe os tokens correspondentes.",
     title: "Como Funciona",
-    step1Title: "Debate Multiagente",
+    step1Title: "Debate Multi-Agente",
     step1Desc: "Envolva múltiplos modelos de IA em uma deliberação estruturada para obter os resultados mais precisos e criativos.",
     step2Title: "Construção de Consenso",
     step2Desc: "A camada de orquestração avançada sintetiza as saídas dos modelos independentes em um consenso unificado.",
@@ -447,7 +453,31 @@ const pt = {
     total: "Total",
     description: "Descrição",
     backToUsage: "Voltar para Liquidez",
-    thankYou: "Obrigado por usar o Jarnazi AI Consensus."
+    thankYou: "Obrigado por usar Jarnazi AI Consensus."
+  },
+  aboutUsPage: {
+    title: "Sobre Nós",
+    companyInfo: "Informações da Empresa",
+    companyNameLabel: "Nome da Empresa",
+    companyNameValue: "JARNAZI OU",
+    addressLabel: "Endereço",
+    addressValue: "Ahtri 12, 10151, Tallinn Estonia",
+    founderLabel: "Fundador e Desenvolvedor",
+    founderValue: "AMJAD JARNAZI",
+    contactLabel: "Contato",
+    contactValue: "contact@jarnazi.com",
+    descriptionTitle: "Sobre a Plataforma",
+    descriptionValue: "O site oferece um novo conceito de orquestra LLM com a capacidade de gerar vídeos longos, filmes, séries, etc."
+  },
+  pricingInfoPage: {
+    title: "Preços e Faturamento",
+    subtitle: "Você tem controle total sobre seu orçamento com nosso modelo Pay-As-You-Go.",
+    noSubscriptions: "Sem Assinaturas Complexas",
+    noSubscriptionsDesc: "Acreditamos em flexibilidade total. Sem planos mensais.",
+    customAmount: "Escolha o Valor",
+    customAmountDesc: "O valor do token é flexível.",
+    tokensNeverExpire: "Tokens Sem Validade",
+    tokensNeverExpireDesc: "Os tokens que você compra permanecem em seu saldo para sempre."
   }
 } as const;
 

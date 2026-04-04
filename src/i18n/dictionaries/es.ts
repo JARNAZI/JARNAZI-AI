@@ -109,8 +109,10 @@ const es = {
     desc3: "Genera vídeos largos—películas, series o programas de TV—divididos en escenas y compuestos en un solo MP4 descargable."
   },
   footer: {
-    privacy: "Política de Privacidad",
-    terms: "Términos de Uso",
+    about: "Sobre Nosotros",
+    companyName: "JARNAZI OU",
+    privacy: "Política de privacidad",
+    terms: "Términos de uso",
     rights: "Todos los derechos reservados."
   },
   auth: {
@@ -124,9 +126,13 @@ const es = {
     securityCheck: "Por favor complete el control de seguridad."
   },
   howItWorks: {
+    orchestraTitle: "Orquesta LLM",
+    orchestraDesc: "El sitio ofrece un nuevo concepto: una orquesta LLM donde las IA debaten y proporcionan respuestas finales en la misma sesión.",
+    pricingTitle: "Compra de Tokens Personalizada",
+    pricingDesc: "No ofrecemos suscripciones. Tú decides exactamente cuánto comprar introduciendo la cantidad, y recibes los tokens correspondientes.",
     title: "Cómo Funciona",
-    step1Title: "Debate multiagente",
-    step1Desc: "Involucra múltiples modelos de IA en una deliberación estructurada para obtener los resultados más precisos y creativos.",
+    step1Title: "Debate Multi-Agente",
+    step1Desc: "Involucra a múltiples modelos de IA en una deliberación estructurada para obtener los resultados más precisos y creativos.",
     step2Title: "Construcción de consenso",
     step2Desc: "La capa de orquestación avanzada sintetiza las salidas de modelos independientes en un consenso unificado.",
     step3Title: "Generación de activos",
@@ -456,6 +462,30 @@ const es = {
     description: "Descripción",
     backToUsage: "Volver a Liquidez",
     thankYou: "Gracias por usar Jarnazi AI Consensus."
+  },
+  aboutUsPage: {
+    title: "Sobre Nosotros",
+    companyInfo: "Información de la Empresa",
+    companyNameLabel: "Nombre de la Empresa",
+    companyNameValue: "JARNAZI OU",
+    addressLabel: "Dirección",
+    addressValue: "Ahtri 12, 10151, Tallinn Estonia",
+    founderLabel: "Fundador y Desarrollador",
+    founderValue: "AMJAD JARNAZI",
+    contactLabel: "Contacto",
+    contactValue: "contact@jarnazi.com",
+    descriptionTitle: "Sobre la Plataforma",
+    descriptionValue: "El sitio ofrece un nuevo concepto, una orquesta LLM, donde la IA debate y da respuestas finales. Además, proporciona la capacidad de generar videos largos, películas, series, etc."
+  },
+  pricingInfoPage: {
+    title: "Precios y Facturación",
+    subtitle: "Tienes control total sobre tu presupuesto con nuestro modelo Pay-As-You-Go.",
+    noSubscriptions: "Sin Suscripciones Complejas",
+    noSubscriptionsDesc: "Creemos en la flexibilidad total. No estarás atado a un plan mensual.",
+    customAmount: "Elige tu Cantidad",
+    customAmountDesc: "El valor del token es flexible. Simplemente ingresa la cantidad deseada.",
+    tokensNeverExpire: "Tokens Sin Caducidad",
+    tokensNeverExpireDesc: "Los tokens que compras permanecen en tu saldo para siempre."
   }
 } as const;
 

@@ -124,6 +124,8 @@ const de = {
     desc3: "Erstelle lange Videos – Filme, Serien oder TV‑Shows – in Szenen aufgeteilt und zu einer einzigen MP4 zum Download zusammengesetzt."
   },
   footer: {
+    about: "Über uns",
+    companyName: "JARNAZI OU",
     privacy: "Datenschutzrichtlinie",
     terms: "Nutzungsbedingungen",
     rights: "Alle Rechte vorbehalten."
@@ -139,9 +141,13 @@ const de = {
     securityCheck: "Bitte führen Sie die Sicherheitsprüfung durch."
   },
   howItWorks: {
-    title: "Wie es funktioniert",
-    step1Title: "Multi-Agent-Debatte",
-    step1Desc: "Beziehen Sie mehrere KI-Modelle in eine strukturierte Beratung ein, um die genauesten und kreativsten Ergebnisse zu erzielen.",
+    orchestraTitle: "LLM-Orchester",
+    orchestraDesc: "Die Website bietet ein neues Konzept: ein LLM-Orchester, in dem KIs diskutieren und in derselben Sitzung endgültige Antworten liefern.",
+    pricingTitle: "Benutzerdefinierter Token-Kauf",
+    pricingDesc: "Wir bieten keine Abonnements an. Sie entscheiden, wie viel Sie kaufen möchten, geben den Betrag ein und erhalten die entsprechenden Token.",
+    title: "So funktioniert es",
+    step1Title: "Multi-Agenten-Debatte",
+    step1Desc: "Binden Sie mehrere KI-Modelle in eine strukturierte Beratung ein, um die genauesten und kreativsten Ergebnisse zu erzielen.",
     step2Title: "Konsensbildung",
     step2Desc: "Fortschrittliche Orchestrierungsebene synthetisiert unabhngige Modellausgaben zu einem einheitlichen Konsens.",
     step3Title: "Asset-Generierung",
@@ -542,8 +548,32 @@ const de = {
     issuedBy: "Ausgestellt von",
     total: "Gesamtbetrag",
     description: "Beschreibung",
-    backToUsage: "Zurück zum Guthaben",
-    thankYou: "Vielen Dank, dass Sie Jarnazi AI Consensus nutzen."
+    backToUsage: "Zurück zur Liquidität",
+    thankYou: "Vielen Dank für die Nutzung von Jarnazi AI Consensus."
+  },
+  aboutUsPage: {
+    title: "Über uns",
+    companyInfo: "Unternehmensinformationen",
+    companyNameLabel: "Unternehmensname",
+    companyNameValue: "JARNAZI OU",
+    addressLabel: "Adresse",
+    addressValue: "Ahtri 12, 10151, Tallinn Estonia",
+    founderLabel: "Gründer & Entwickler",
+    founderValue: "AMJAD JARNAZI",
+    contactLabel: "Kontakt",
+    contactValue: "contact@jarnazi.com",
+    descriptionTitle: "Über die Plattform",
+    descriptionValue: "Die Website bietet ein neues LLM-Orchesterkonzept mit der Möglichkeit, lange Videos, Filme, Serien usw. zu erstellen."
+  },
+  pricingInfoPage: {
+    title: "Preise und Abrechnung",
+    subtitle: "Mit unserem Pay-As-You-Go-Modell haben Sie die volle Kontrolle.",
+    noSubscriptions: "Keine komplexen Abonnements",
+    noSubscriptionsDesc: "Wir glauben an totale Flexibilität. Keine monatlichen Kosten.",
+    customAmount: "Wählen Sie Ihren Betrag",
+    customAmountDesc: "Geben Sie einfach den gewünschten Betrag ein.",
+    tokensNeverExpire: "Token verfallen nie",
+    tokensNeverExpireDesc: "Die gekauften Token bleiben für immer in Ihrem Guthaben."
   }
 } as const;
 

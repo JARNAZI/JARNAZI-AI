@@ -109,6 +109,8 @@ const sv = {
     desc3: "Generera långa videor — filmer, serier eller TV-program — uppdelade i scener och sammanfogade till en nedladdningsbar MP4."
   },
   footer: {
+    about: "Om Oss",
+    companyName: "JARNAZI OU",
     privacy: "Integritetspolicy",
     terms: "Användarvillkor",
     rights: "Alla rättigheter förbehållna."
@@ -124,9 +126,13 @@ const sv = {
     securityCheck: "Vänligen slutför säkerhetskontrollen."
   },
   howItWorks: {
-    title: "Hur det fungerar",
-    step1Title: "Multi-agent-debatt",
-    step1Desc: "Engagera flera AI-modeller i en strukturerad rådplägning för att nå de mest exakta och kreativa resultaten.",
+    orchestraTitle: "LLM Orkester",
+    orchestraDesc: "Webbplatsen erbjuder ett nytt koncept: en LLM-orkester där AI debatterar och ger slutliga svar i samma session.",
+    pricingTitle: "Anpassade Token Köp",
+    pricingDesc: "Vi erbjuder inga prenumerationer. Du bestämmer exakt hur mycket du vill köpa genom att ange beloppet, och du får motsvarande tokens.",
+    title: "Hur det Fungerar",
+    step1Title: "Multi-Agent Debatt",
+    step1Desc: "Engagera flera AI-modeller i en strukturerad överläggning för att få de mest exakta och kreativa resultaten.",
     step2Title: "Konsensusbyggande",
     step2Desc: "Det avancerade orkestreringslagret sammanställer oberoende modellers utdata till ett enhetligt konsensus.",
     step3Title: "Asset-generering",
@@ -448,6 +454,30 @@ const sv = {
     description: "Beskrivning",
     backToUsage: "Tillbaka till Likviditet",
     thankYou: "Tack för att du använder Jarnazi AI Consensus."
+  },
+  aboutUsPage: {
+    title: "Om Oss",
+    companyInfo: "Företagsinformation",
+    companyNameLabel: "Företagsnamn",
+    companyNameValue: "JARNAZI OU",
+    addressLabel: "Adress",
+    addressValue: "Ahtri 12, 10151, Tallinn Estonia",
+    founderLabel: "Grundare & Utvecklare",
+    founderValue: "AMJAD JARNAZI",
+    contactLabel: "Kontakt",
+    contactValue: "contact@jarnazi.com",
+    descriptionTitle: "Om Plattformen",
+    descriptionValue: "Webbplatsen erbjuder ett nytt LLM-orkesterkoncept med möjligheten att generera långa videor, filmer, serier etc."
+  },
+  pricingInfoPage: {
+    title: "Priser och Fakturering",
+    subtitle: "Du har full kontroll över din budget med vår Pay-As-You-Go.",
+    noSubscriptions: "Inga komplicerade prenumerationer",
+    noSubscriptionsDesc: "Vi tror på flexibilitet.",
+    customAmount: "Välj ditt belopp",
+    customAmountDesc: "Bara ange det belopp du vill ha.",
+    tokensNeverExpire: "Tokens går aldrig ut",
+    tokensNeverExpireDesc: "Ligger kvar i saldot för alltid."
   }
 } as const;
 

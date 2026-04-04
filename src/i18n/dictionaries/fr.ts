@@ -127,8 +127,10 @@ const fr = {
     desc3: "Générez des vidéos longues — films, séries ou programmes TV — divisées en scènes puis composées en un seul MP4 téléchargeable."
   },
   footer: {
-    privacy: "Politique de Confidentialité",
-    terms: "Conditions d'Utilisation",
+    about: "À Propos",
+    companyName: "JARNAZI OU",
+    privacy: "Politique de confidentialité",
+    terms: "Conditions d'utilisation",
     rights: "Tous droits réservés."
   },
   auth: {
@@ -142,6 +144,10 @@ const fr = {
     securityCheck: "Veuillez compléter le contrôle de sécurité."
   },
   howItWorks: {
+    orchestraTitle: "Orchestre LLM",
+    orchestraDesc: "Le site propose un nouveau concept : un orchestre LLM, où l'IA discute et fournit des réponses finales dans la même session.",
+    pricingTitle: "Achat de Jetons sur Mesure",
+    pricingDesc: "Nous n'offrons pas d'abonnements. Vous décidez du montant exact à acheter en l'entrant, et vous recevez les jetons correspondants.",
     title: "Comment ça marche",
     step1Title: "Débat multi-agents",
     step1Desc: "Engagez plusieurs modèles d'IA dans une délibération structurée pour obtenir les résultats les plus précis et créatifs.",
@@ -546,8 +552,32 @@ const fr = {
     issuedBy: "Émis par",
     total: "Total",
     description: "Description",
-    backToUsage: "Retour à la Liquidité",
+    backToUsage: "Retour à la liquidité",
     thankYou: "Merci d'utiliser Jarnazi AI Consensus."
+  },
+  aboutUsPage: {
+    title: "À Propos de Nous",
+    companyInfo: "Informations sur la Société",
+    companyNameLabel: "Nom de la Société",
+    companyNameValue: "JARNAZI OU",
+    addressLabel: "Adresse",
+    addressValue: "Ahtri 12, 10151, Tallinn Estonia",
+    founderLabel: "Fondateur et Développeur",
+    founderValue: "AMJAD JARNAZI",
+    contactLabel: "Contact",
+    contactValue: "contact@jarnazi.com",
+    descriptionTitle: "À Propos de la Plateforme",
+    descriptionValue: "Le site propose un nouveau concept, qui est un orchestre LLM... De plus, le site offre la possibilité de générer de longues vidéos, etc."
+  },
+  pricingInfoPage: {
+    title: "Tarification et facturation",
+    subtitle: "Vous avez un contrôle total sur votre budget grâce à notre modèle de paiement à l'utilisation.",
+    noSubscriptions: "Pas d'abonnements complexes",
+    noSubscriptionsDesc: "Nous croyons en une flexibilité totale. Vous ne serez pas lié à un forfait mensuel.",
+    customAmount: "Choisissez votre montant",
+    customAmountDesc: "La valeur du jeton est flexible. Entrez simplement le montant souhaité.",
+    tokensNeverExpire: "Des jetons sans expiration",
+    tokensNeverExpireDesc: "Les jetons que vous achetez restent dans votre solde pour toujours."
   }
 } as const;
 

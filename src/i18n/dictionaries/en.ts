@@ -135,6 +135,8 @@ const en = {
     desc3: "Generate long videos—films, series, or TV programs—split into scenes and composed into a single downloadable MP4."
   },
   footer: {
+    about: "About Us",
+    companyName: "JARNAZI OU",
     privacy: "Privacy Policy",
     terms: "Terms of Use",
     rights: "All rights reserved."
@@ -184,6 +186,10 @@ const en = {
     }
   },
   howItWorks: {
+    orchestraTitle: "LLM Orchestra",
+    orchestraDesc: "The site offers a new concept: an LLM orchestra where AIs deliberate and provide final answers and solutions all in the same session.",
+    pricingTitle: "Custom Token Purchases",
+    pricingDesc: "We do not offer subscriptions. You decide exactly how much you want to spend. Simply enter the desired amount, and we will give you the corresponding tokens based on the amount entered.",
     title: "How It Works",
     step1Title: "Multi-Agent Debate",
     step1Desc: "Engage multiple AI models in a structured deliberation to get the most accurate and creative results.",
@@ -600,6 +606,30 @@ const en = {
     description: "Description",
     backToUsage: "Back to Liquidity",
     thankYou: "Thank you for using Jarnazi AI Consensus."
+  },
+  aboutUsPage: {
+    title: "About Us",
+    companyInfo: "Company Information",
+    companyNameLabel: "Company Name",
+    companyNameValue: "JARNAZI OU",
+    addressLabel: "Address",
+    addressValue: "Ahtri 12, 10151, Tallinn Estonia",
+    founderLabel: "Founder & Developer",
+    founderValue: "AMJAD JARNAZI",
+    contactLabel: "Contact",
+    contactValue: "contact@jarnazi.com",
+    descriptionTitle: "About the Platform",
+    descriptionValue: "The site offers a new concept, which is an LLM orchestra, where AI discusses and provides final answers and solutions in the same place in the same session. The site also provides a new feature: the ability to generate a long video, movie, series, TV show, etc."
+  },
+  pricingInfoPage: {
+    title: "Pricing & Billing",
+    subtitle: "You have complete control over your budget with our Pay-As-You-Go model.",
+    noSubscriptions: "No Complex Subscriptions",
+    noSubscriptionsDesc: "We believe in total flexibility. You won't be tied to a monthly plan; you only pay what you intend to use.",
+    customAmount: "Choose Your Amount",
+    customAmountDesc: "Token value is flexible. Simply enter the dollar amount you want to spend, and the system will instantly calculate the corresponding tokens you'll receive for debates and media generation.",
+    tokensNeverExpire: "Never Expiring Tokens",
+    tokensNeverExpireDesc: "The tokens you purchase remain in your balance forever until you consume them, making it a smart investment for your future creative projects."
   }
 } as const;
 
