@@ -63,7 +63,7 @@ export async function submitContactForm(prevState: unknown, formData: FormData) 
             if (!tData.success) {
                 return { success: false, error: 'Security sequence failed. Are you a bot?' };
             }
-        } catch (e: any) {
+        } catch (e) {
             return { success: false, error: 'Cloudflare Turnstile verification failed. Try again.' };
         }
     }

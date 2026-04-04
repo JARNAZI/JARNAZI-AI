@@ -43,7 +43,7 @@ export async function POST(req: Request) {
                 if (!tData.success) {
                     throw new Error('Security check sequence failed.');
                 }
-            } catch (e: any) {
+            } catch (e) {
                 return NextResponse.json({ error: 'Security verification failed. Please try again.' }, { status: 400 });
             }
         }
