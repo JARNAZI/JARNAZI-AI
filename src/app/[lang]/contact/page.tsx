@@ -4,7 +4,7 @@ import { useFormState, useFormStatus } from 'react-dom';
 import { submitContactForm } from '@/app/actions/contact';
 import { Loader2, Send } from 'lucide-react';
 import { toast } from 'sonner';
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { useDictionary } from '@/i18n/use-dictionary';
