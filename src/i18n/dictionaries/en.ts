@@ -618,8 +618,12 @@ const en = {
     founderValue: "AMJAD JARNAZI",
     contactLabel: "Contact",
     contactValue: "contact@jarnazi.com",
-    descriptionTitle: "About the Platform",
-    descriptionValue: "The site offers a new concept, which is an LLM orchestra, where AI discusses and provides final answers and solutions in the same place in the same session. The site also provides a new feature: the ability to generate a long video, movie, series, TV show, etc."
+    descriptionTitle: "LLM Orchestra Technology",
+    descriptionValue: "Jarnazi is a cutting-edge platform redefining how we interact with Artificial Intelligence. We provide the world's first 'LLM Orchestra' system, where multiple models work in harmony to edit and produce content with human-like precision, enabling the creation of entire movies, series, and TV episodes at the touch of a button.",
+    missionTitle: "Our Mission",
+    missionValue: "To empower creators and businesses to transform their ideas into professional visuals and text using the latest generative AI, while ensuring speed and high quality.",
+    visionTitle: "Our Vision",
+    visionValue: "To be the world's premier destination for integrated AI-driven digital production, bridging the gap between imagination and reality in content creation."
   },
   pricingInfoPage: {
     title: "Pricing & Billing",

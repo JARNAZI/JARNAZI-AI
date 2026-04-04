@@ -64,7 +64,6 @@ const ja = {
     longVideoGenSuccess: "長いビデオが生成されました。継続的に再生され、3日後に削除されます。",
     videoGenStarted: "ビデオの生成が開始されました。準備ができるとここに表示されます。",
     deletedAfter3DaysInfo: "すべての討論とメディアはプライバシーを保護するため3日間保持された後、自動的に削除されます。"
-
   },
   notifications: {
     welcome: "Jarnaziコンセンサスへようこそ。評議会の準備が整いました。",
@@ -432,8 +431,7 @@ const ja = {
     payAddTokens: "支払ってトークンを追加",
     stripeDisabled: "Stripe決済は現在無効です。",
     payWithCrypto: "仮想通貨で支払う"
-  }
-  ,
+  },
   invoices: {
     title: "支払い履歴",
     subtitle: "過去の取引記録と公式領収書。",
@@ -456,6 +454,34 @@ const ja = {
     description: "説明",
     backToUsage: "残高画面に戻る",
     thankYou: "Jarnazi AI Consensusをご利用いただきありがとうございます。"
+  },
+  aboutUsPage: {
+    title: "私たちについて",
+    companyInfo: "会社情報と今後のビジョン",
+    companyNameLabel: "会社名",
+    companyNameValue: "JARNAZI OU",
+    addressLabel: "所在地",
+    addressValue: "Ahtri 12, 10151, Tallinn Estonia",
+    founderLabel: "創設者・開発者",
+    founderValue: "AMJAD JARNAZI",
+    contactLabel: "お問い合わせ",
+    contactValue: "contact@jarnazi.com",
+    descriptionTitle: "LLMオーケストラ・テクノロジー",
+    descriptionValue: "Jarnaziは、AIとの関わり方を再定義する最先端プラットフォームです。世界初の「LLMオーケストラ」システムを提供し、複数のモデルが調和して人間のような精度でコンテンツを生成・編集します。これにより、ボタン一つで映画やドラマ、テレビ番組の全エピソードを制作することが可能になります。",
+    missionTitle: "私たちの使命",
+    missionValue: "最新の生成AIを活用し、クリエイターや企業がアイデアをプロフェッショナルな映像やテキスト制作へと変換できるよう支援し、スピードと高品質を両立させることです。",
+    visionTitle: "私たちのビジョン",
+    visionValue: "AI主導の統合型デジタル制作において世界最高の目的地となり、コンテンツ制作における想像と現実の架け橋となることです。"
+  },
+  pricingInfoPage: {
+    title: "料金と請求",
+    subtitle: "使用量に応じた（Pay-As-You-Go）モデルにより、予算を完全にコントロールできます。",
+    noSubscriptions: "複雑なサブスクリプションなし",
+    noSubscriptionsDesc: "私たちは完全な柔軟性を信じています。月額プランに縛られることはありません。",
+    customAmount: "金額を自由に選択",
+    customAmountDesc: "トークンの価値は柔軟です。ご希望の金額を入力するだけです。",
+    tokensNeverExpire: "有効期限のないトークン",
+    tokensNeverExpireDesc: "購入したトークンは無期限で残高に保持されます。"
   }
 } as const;
 

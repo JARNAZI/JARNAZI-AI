@@ -566,8 +566,12 @@ const fr = {
     founderValue: "AMJAD JARNAZI",
     contactLabel: "Contact",
     contactValue: "contact@jarnazi.com",
-    descriptionTitle: "À Propos de la Plateforme",
-    descriptionValue: "Le site propose un nouveau concept, qui est un orchestre LLM... De plus, le site offre la possibilité de générer de longues vidéos, etc."
+    descriptionTitle: "Technologie d'Orchestre LLM",
+    descriptionValue: "Jarnazi est une plateforme de pointe redéfinissant notre interaction avec l'IA. Nous proposons le premier système 'Orchestre LLM' au monde, où plusieurs modèles collaborent pour produire du contenu avec une précision humaine, permettant la création de films et séries complets en un clic.",
+    missionTitle: "Notre Mission",
+    missionValue: "Donner aux créateurs et aux entreprises les moyens de transformer leurs idées en productions visuelles et textuelles professionnelles grâce à l'IA générative la plus avancée.",
+    visionTitle: "Notre Vision",
+    visionValue: "Être la destination mondiale de référence pour la production numérique intégrée basée sur l'IA, en comblant le fossé entre l'imagination et la réalité."
   },
   pricingInfoPage: {
     title: "Tarification et facturation",

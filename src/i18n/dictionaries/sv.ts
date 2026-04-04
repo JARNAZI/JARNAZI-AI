@@ -466,8 +466,12 @@ const sv = {
     founderValue: "AMJAD JARNAZI",
     contactLabel: "Kontakt",
     contactValue: "contact@jarnazi.com",
-    descriptionTitle: "Om Plattformen",
-    descriptionValue: "Webbplatsen erbjuder ett nytt LLM-orkesterkoncept med möjligheten att generera långa videor, filmer, serier etc."
+    descriptionTitle: "LLM Orchester Teknologi",
+    descriptionValue: "Jarnazi är en banbrytande plattform som omdefinierar hur vi interagerar med AI. Vi erbjuder världens första 'LLM Orchestra'-system där flera modeller samarbetar för att producera innehåll med mänsklig precision.",
+    missionTitle: "Vårt Uppdrag",
+    missionValue: "Att ge kreatörer och företag verktygen att förvandla sina idéer till professionella visuella och textmässiga produktioner med hjälp av avancerad generativ AI.",
+    visionTitle: "Vår Vision",
+    visionValue: "Att vara världens främsta destination för integrerad AI-driven digital produktion och överbrygga klyftan mellan fantasi och verklighet."
   },
   pricingInfoPage: {
     title: "Priser och Fakturering",

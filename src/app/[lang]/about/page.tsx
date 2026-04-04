@@ -58,6 +58,28 @@ export default async function AboutUsPage(props: { params: Promise<{ lang: strin
                     </div>
                 </div>
 
+                {/* Mission & Vision */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                    <div className="p-8 rounded-3xl bg-primary/5 border border-primary/10">
+                        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                            <span className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">01</span>
+                            {dict.aboutUsPage?.missionTitle || "Our Mission"}
+                        </h2>
+                        <p className="text-muted-foreground leading-relaxed">
+                            {dict.aboutUsPage?.missionValue || "To empower creators and businesses with AI."}
+                        </p>
+                    </div>
+                    <div className="p-8 rounded-3xl bg-accent/5 border border-accent/10">
+                        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                            <span className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center text-accent text-sm font-bold">02</span>
+                            {dict.aboutUsPage?.visionTitle || "Our Vision"}
+                        </h2>
+                        <p className="text-muted-foreground leading-relaxed">
+                            {dict.aboutUsPage?.visionValue || "To be the world's premier destination for AI-driven production."}
+                        </p>
+                    </div>
+                </div>
+
                 {/* About the platform */}
                 <div className="p-10 rounded-3xl glass-card relative overflow-hidden">
                     <div className="absolute -right-20 -top-20 z-0">
@@ -65,8 +87,8 @@ export default async function AboutUsPage(props: { params: Promise<{ lang: strin
                     </div>
                     <div className="relative z-10">
                         <h2 className="text-3xl font-bold mb-6">{dict.aboutUsPage?.descriptionTitle || "About the Platform"}</h2>
-                        <p className="text-xl text-muted-foreground leading-loose">
-                            {dict.aboutUsPage?.descriptionValue || "The site offers a new concept, which is an LLM orchestra, where AI discusses and provides final answers and solutions in the same place in the same session. The site also provides a new feature, which is the ability to generate a long video, movie, series, TV show, etc."}
+                        <p className="text-xl text-muted-foreground leading-relaxed">
+                            {dict.aboutUsPage?.descriptionValue || "The site offers a new concept..."}
                         </p>
                     </div>
                 </div>
