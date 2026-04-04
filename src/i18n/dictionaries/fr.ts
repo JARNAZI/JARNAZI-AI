@@ -314,54 +314,54 @@ const fr = {
   "pricingPage": {
     "investIn": "Investir dans",
     "intelligence": "l'Intelligence",
-    "currentPlan": "Plan Actuel",
+    "currentPack": "Pack Actuel",
     "availableBalance": "Solde Disponible",
     "tokensLabel": "Jetons",
-    "planSuffix": "Plan",
-    "freeTier": "Gratuit",
-    "mostPopular": "Le plus populaire",
+    "packSuffix": "Pack",
+    "freeTier": "Niveau Gratuit",
+    "mostPopular": "Meilleure Valeur",
     "perPack": "/ pack",
-    "descriptionLine1": "Achetez des jetons pour alimenter vos débats IA et la génération de contenu.",
+    "descriptionLine1": "Achetez des jetons برای alimenter vos débats IA et la génération de contenu.",
     "tokensNeverExpire": "Les jetons n'expirent jamais",
-    "descriptionLine2": "et peuvent être rechargés instantanément.",
+    "descriptionLine2": "et vous pouvez recharger votre solde instantanément.",
     "enterpriseTitle": "Solution Entreprise",
     "enterpriseSubtitle": "Achetez une quantité personnalisée de jetons pour votre organisation.",
     "tokenAmount": "Quantité de Jetons",
     "totalPrice": "Prix Total",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Jetons)",
-    "buyNow": "Acheter maintenant",
+    "buyNow": "Acheter le Pack",
     "minimumPurchase": "L'achat minimum est de ${min}.",
     "plans": {
       "starter": {
         "name": "Pack Starter",
-        "description": "Parfait pour les débats occasionnels.",
+        "description": "Idéal pour les débats occasionnels et les tests.",
         "features": [
-          "42,000 Jetons de Consensus",
+          "42 000 Jetons de Consensus",
           "Accès à GPT-4o & Claude 3",
           "Génération d'images basique",
           "Les jetons n'expirent jamais",
-          "Résumés par e-mail"
+          "Présence permanente dans le portefeuille"
         ]
       },
       "producer": {
-        "name": "Plan Producer",
-        "description": "Pour les utilisateurs intensifs.",
+        "name": "Pack Producer",
+        "description": "Pour les utilisateurs intensifs et fréquents.",
         "features": [
-          "155 Jetons de Consensus",
-          "Accès à tous les nœuds neuraux",
+          "150 000 Jetons de Consensus",
+          "Accès à tous les Nœuds Neuraux",
           "Génération d'images HD",
           "Traitement prioritaire",
           "Les jetons n'expirent jamais"
         ]
       },
       "creator": {
-        "name": "Pro Creator",
-        "description": "L'outil ultime pour la création de contenu professionnel.",
+        "name": "Pack Creator Pro",
+        "description": "L'outil ultime pour la création professionnelle.",
         "features": [
-          "1050 Jetons de Consensus",
-          "Accès prioritaire Tier 1",
-          "Génération vidéo 4K",
-          "Support dédié",
+          "990 000 Jetons de Consensus",
+          "Accès Prioritaire Tier 1",
+          "Accès à la production vidéo 4K",
+          "Support dédié prioritaire",
           "Droits d'utilisation commerciale",
           "Les jetons n'expirent jamais"
         ]
@@ -575,13 +575,13 @@ const fr = {
   },
   pricingInfoPage: {
     title: "Tarification et facturation",
-    subtitle: "Vous avez un contrôle total sur votre budget grâce à notre modèle de paiement à l'utilisation.",
-    noSubscriptions: "Pas d'abonnements complexes",
-    noSubscriptionsDesc: "Nous croyons en une flexibilité totale. Vous ne serez pas lié à un forfait mensuel.",
-    customAmount: "Choisissez votre montant",
-    customAmountDesc: "La valeur du jeton est flexible. Entrez simplement le montant souhaité.",
-    tokensNeverExpire: "Des jetons sans expiration",
-    tokensNeverExpireDesc: "Les jetons que vous achetez restent dans votre solde pour toujours."
+    subtitle: "Vous avez un contrôle total sur votre budget grâce à notre modèle de paiement à l'utilisation. Nous croyons en une flexibilité totale et au rejet des contraintes mensuelles.",
+    noSubscriptions: "Adieu les abonnements complexes",
+    noSubscriptionsDesc: "Nous ne croyons pas aux engagements mensuels qui vident votre portefeuille. Avec nous, vous n'achetez des jetons que lorsque vous en avez réellement besoin, ce qui fait de Jarnazi le choix le plus rentable pour les créateurs et les entreprises.",
+    customAmount: "Flexibilité totale d'achat",
+    customAmountDesc: "La valeur du jeton est flexible et simple. Entrez le montant en dollars que vous souhaitez investir, et le système calculera instantanément les jetons correspondants ajoutés à votre solde.",
+    tokensNeverExpire: "Des jetons qui n'expirent jamais",
+    tokensNeverExpireDesc: "Les jetons que vous achetez restent dans votre portefeuille pour toujours. Utilisez-les aujourd'hui, demain ou dans un an : votre carburant créatif sera toujours là quand vous en aurez besoin."
   }
 } as const;
 

@@ -308,58 +308,58 @@ const de = {
     "displayNamePlaceholder": "Jarnazi Nutzer"
   },
   "pricingPage": {
-    "investIn": "Investiere in",
-    "intelligence": "Intelligenz",
-    "currentPlan": "Aktueller Plan",
+    "investIn": "In die Intelligenz",
+    "intelligence": "investieren",
+    "currentPack": "Aktuelles Paket",
     "availableBalance": "Verfügbares Guthaben",
-    "tokensLabel": "Tokens",
-    "planSuffix": "Plan",
-    "freeTier": "Kostenlos",
-    "mostPopular": "Am beliebtesten",
+    "tokensLabel": "Token",
+    "packSuffix": "Paket",
+    "freeTier": "Kostenlose Stufe",
+    "mostPopular": "Bestes Angebot",
     "perPack": "/ Paket",
-    "descriptionLine1": "Kaufe Tokens für KI-Debatten und Content-Erstellung.",
-    "tokensNeverExpire": "Tokens verfallen nie",
-    "descriptionLine2": "und können sofort aufgeladen werden.",
-    "enterpriseTitle": "Enterprise-Lösung",
-    "enterpriseSubtitle": "Kaufe eine benutzerdefinierte Token-Menge für dein Unternehmen.",
-    "tokenAmount": "Token-Anzahl",
+    "descriptionLine1": "Kaufen Sie Token, um Ihre KI-Debatten und die Generierung von Inhalten voranzutreiben.",
+    "tokensNeverExpire": "Token laufen nie ab",
+    "descriptionLine2": "und Sie können Ihr Guthaben sofort aufladen.",
+    "enterpriseTitle": "Individuelle Enterprise-Lösung",
+    "enterpriseSubtitle": "Erwerben Sie eine maßgeschneiderte Menge an Token für Ihr Unternehmen.",
+    "tokenAmount": "Token-Menge",
     "totalPrice": "Gesamtpreis",
-    "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
-    "buyNow": "Jetzt kaufen",
-    "minimumPurchase": "Mindestkauf ist ${min}.",
+    "enterpriseCustomLabel": "Enterprise Custom ({tokens} Token)",
+    "buyNow": "Paket kaufen",
+    "minimumPurchase": "Der Mindestkaufbetrag beträgt ${min}.",
     "plans": {
       "starter": {
         "name": "Starter-Paket",
-        "description": "Perfekt für gelegentliche Debatten und Anfragen.",
+        "description": "Ideal für gelegentliche Debatten und Experimente.",
         "features": [
-          "42.000 Konsens-Tokens",
-          "Zugang zu GPT-4o & Claude 3",
-          "Einfache Bildgenerierung",
-          "Tokens verfallen nie",
-          "E-Mail-Zusammenfassungen"
+          "42.000 Konsens-Token",
+          "Zugriff auf GPT-4o & Claude 3",
+          "Grundlegende Bildgenerierung",
+          "Token laufen nie ab",
+          "Dauerhafte Wallet-Präsenz"
         ]
       },
       "producer": {
-        "name": "Producer-Plan",
-        "description": "Für Power-User mit häufiger KI-Kollaboration.",
+        "name": "Producer-Paket",
+        "description": "Für regelmäßige Power-User.",
         "features": [
-          "155 Konsens-Tokens",
-          "Zugang zu allen Neural Nodes",
-          "Hochauflösende Bildgenerierung",
+          "150.000 Konsens-Token",
+          "Zugriff auf alle Neural Nodes",
+          "HD-Bildgenerierung",
           "Priorisierte Verarbeitung",
-          "Tokens verfallen nie"
+          "Token laufen nie ab"
         ]
       },
       "creator": {
-        "name": "Pro Creator",
-        "description": "Ultimatives Toolkit für professionelle Content-Erstellung.",
+        "name": "Creator Pro Paket",
+        "description": "Das ultimative Toolkit für professionelle Erstellung.",
         "features": [
-          "1050 Konsens-Tokens",
-          "Top-Priorität (Tier 1)",
-          "4K-Video-Generierung",
-          "Dedizierter Support",
+          "990.000 Konsens-Token",
+          "Tier-1-Prioritätszugriff",
+          "4K-Videoproduktionszugang",
+          "Engagierter Prioritätssupport",
           "Kommerzielle Nutzungsrechte",
-          "Tokens verfallen nie"
+          "Token laufen nie ab"
         ]
       }
     }
@@ -570,14 +570,14 @@ const de = {
     visionValue: "Das weltweit führende Ziel für KI-gestützte integrierte digitale Produktion zu sein und die Lücke zwischen Fantasie und Realität zu schließen."
   },
   pricingInfoPage: {
-    title: "Preise und Abrechnung",
-    subtitle: "Mit unserem Pay-As-You-Go-Modell haben Sie die volle Kontrolle.",
-    noSubscriptions: "Keine komplexen Abonnements",
-    noSubscriptionsDesc: "Wir glauben an totale Flexibilität. Keine monatlichen Kosten.",
-    customAmount: "Wählen Sie Ihren Betrag",
-    customAmountDesc: "Geben Sie einfach den gewünschten Betrag ein.",
-    tokensNeverExpire: "Token verfallen nie",
-    tokensNeverExpireDesc: "Die gekauften Token bleiben für immer in Ihrem Guthaben."
+    title: "Preise & Abrechnung",
+    subtitle: "Sie haben die volle Kontrolle über Ihr Budget mit unserem Pay-As-You-Go-Modell. Wir glauben an absolute Flexibilität und lehnen monatliche Bindungen ab.",
+    noSubscriptions: "Abschied von komplexen Abonnements",
+    noSubscriptionsDesc: "Wir glauben nicht an monatliche Verpflichtungen, die Ihren Geldbeutel belasten. Bei uns kaufen Sie Token nur dann, wenn Sie sie tatsächlich benötigen. Das macht Jarnazi zur klügsten und kosteneffizientesten Wahl für Kreative und Unternehmen.",
+    customAmount: "Volle Kaufflexibilität",
+    customAmountDesc: "Der Token-Wert ist flexibel und einfach. Geben Sie den Dollarbetrag ein, den Sie investieren möchten, und das System berechnet sofort die Token, die Ihrem Guthaben hinzugefügt werden.",
+    tokensNeverExpire: "Token, die nie ablaufen",
+    tokensNeverExpireDesc: "Die von Ihnen erworbenen Token bleiben für immer in Ihrem Wallet. Nutzen Sie sie heute, morgen oder in einem Jahr – Ihr kreativer Treibstoff ist immer da, wenn Sie ihn brauchen."
   }
 } as const;
 

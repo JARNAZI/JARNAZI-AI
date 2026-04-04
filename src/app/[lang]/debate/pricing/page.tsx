@@ -61,7 +61,7 @@ export default function PricingPage(props: { params: Promise<{ lang: string }> }
               </div>
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
-                  {t.currentPlan}
+                  {t.currentPack || t.currentPlan}
                 </p>
                 <p className="text-xl font-bold text-foreground">
                   {t.tokensLabel}
@@ -123,10 +123,10 @@ export default function PricingPage(props: { params: Promise<{ lang: string }> }
                 <span className="text-muted-foreground">{t.perPack}</span>
               </div>
               <div className="mt-2 inline-block px-3 py-1 rounded bg-card/60 border border-border text-emerald-400 text-sm font-medium">
-                {plan.tokens} {t.tokensLabel}
+                {plan.tokens.toLocaleString()} {t.tokensLabel}
               </div>
               <div className="mt-2 text-xs text-muted-foreground">
-                {(t.minimumPurchase ?? `Minimum purchase is $${MIN_PURCHASE_AMOUNT_USD}.`).replace('${min}', String(MIN_PURCHASE_AMOUNT_USD))}
+                {(t.minimumPurchase || "Minimum purchase is ${min}.").replace("${min}", String(MIN_PURCHASE_AMOUNT_USD))}
               </div>
             </div>
 

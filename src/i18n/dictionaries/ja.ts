@@ -237,56 +237,58 @@ const ja = {
     "displayNamePlaceholder": "Jarnaziユーザー"
   },
   "pricingPage": {
-    "investIn": "投資対象",
-    "intelligence": "インテリジェンス",
-    "currentPlan": "現在のプラン",
+    "investIn": "インテリジェンスへの",
+    "intelligence": "投資",
+    "currentPack": "現在のパック",
     "availableBalance": "利用可能残高",
     "tokensLabel": "トークン",
-    "planSuffix": "プラン",
-    "freeTier": "無料",
-    "mostPopular": "一番人気",
+    "packSuffix": "パック",
+    "freeTier": "無料枠",
+    "mostPopular": "おすすめ",
     "perPack": "/ パック",
-    "descriptionLine1": "AIディベートやコンテンツ生成に使用するトークンを購入します。",
+    "descriptionLine1": "AIディベートやコンテンツ生成を可能にするトークンを購入しましょう。",
     "tokensNeverExpire": "トークンに有効期限はありません",
-    "descriptionLine2": "いつでもすぐにチャージ可能です。",
-    "enterpriseTitle": "法人向けソリューション",
-    "enterpriseSubtitle": "組織向けにカスタム量のトークンを購入します。",
+    "descriptionLine2": "いつでもすぐに残高をチャージできます。",
+    "enterpriseTitle": "カスタム・エンタープライズ",
+    "enterpriseSubtitle": "組織向けに最適化された量のトークンを購入できます。",
     "tokenAmount": "トークン量",
     "totalPrice": "合計金額",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} トークン)",
+    "buyNow": "パックを購入",
+    "minimumPurchase": "最小購入額は ${min} です。",
     "plans": {
       "starter": {
         "name": "スターターパック",
-        "description": "カジュアルなディベートや時々の質問に最適です。",
+        "description": "カジュアルなディベートや実験に最適です。",
         "features": [
           "42,000 コンセンサス・トークン",
           "GPT-4o & Claude 3 へのアクセス",
           "基本的な画像生成",
-          "有効期限なし",
-          "メール要約"
+          "トークンに有効期限なし",
+          "ウォレット内永続保持"
         ]
       },
       "producer": {
-        "name": "プロデューサープラン",
-        "description": "頻繁にAIを使用するパワーユーザー向け。",
+        "name": "プロデューサーパック",
+        "description": "頻繁にAIを利用するパワーユーザー向け。",
         "features": [
-          "155 コンセンサス・トークン",
+          "150,000 コンセンサス・トークン",
           "すべてのニューラルノードへのアクセス",
-          "高解像度画像生成",
-          "優先処理",
-          "有効期限なし"
+          "HD高画質画像生成",
+          "優先処理（プライオリティ）",
+          "トークンに有効期限なし"
         ]
       },
       "creator": {
-        "name": "プロ・クリエイター",
-        "description": "プロフェッショナルな生成のための究極のツールキット。",
+        "name": "クリエイター・プロパック",
+        "description": "プロフェッショナルな制作のための究極のツールキット。",
         "features": [
-          "1050 コンセンサス・トークン",
-          "最優先アクセス (Tier 1)",
-          "4K動画生成",
-          "専用サポート",
+          "990,000 コンセンサス・トークン",
+          "ティア1最優先アクセス",
+          "4K動画制作へのアクセス",
+          "専用優先サポート",
           "商用利用権",
-          "有効期限なし"
+          "トークンに有効期限なし"
         ]
       }
     }
@@ -475,13 +477,13 @@ const ja = {
   },
   pricingInfoPage: {
     title: "料金と請求",
-    subtitle: "使用量に応じた（Pay-As-You-Go）モデルにより、予算を完全にコントロールできます。",
-    noSubscriptions: "複雑なサブスクリプションなし",
-    noSubscriptionsDesc: "私たちは完全な柔軟性を信じています。月額プランに縛られることはありません。",
-    customAmount: "金額を自由に選択",
-    customAmountDesc: "トークンの価値は柔軟です。ご希望の金額を入力するだけです。",
+    subtitle: "従量課金（Pay-As-You-Go）モデルにより、予算を完全にコントロールできます。私たちは完全な柔軟性を信じ、月々の縛りを排除しました。",
+    noSubscriptions: "複雑なサブスクリプションとの別れ",
+    noSubscriptionsDesc: "お財布を圧迫するような月額制の縛りは推奨しません。必要な時だけトークンを購入できるため、Jarnaziはクリエイターや企業にとって最もスマートでコスト効率の高い選択肢となります。",
+    customAmount: "自由な購入プラン",
+    customAmountDesc: "トークンの価値は柔軟でシンプルです。投資したいドル額を入力するだけで、システムが即座に残高に追加されるトークンを算出します。",
     tokensNeverExpire: "有効期限のないトークン",
-    tokensNeverExpireDesc: "購入したトークンは無期限で残高に保持されます。"
+    tokensNeverExpireDesc: "購入したトークンはウォレットに永久に保持されます。今日、明日、あるいは一年後でも、あなたのクリエイティブな燃料は必要な時にいつでもそこにあります。"
   }
 } as const;
 

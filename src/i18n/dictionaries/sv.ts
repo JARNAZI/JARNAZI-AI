@@ -238,54 +238,56 @@ const sv = {
   "pricingPage": {
     "investIn": "Investera i",
     "intelligence": "Intelligens",
-    "currentPlan": "Aktuell plan",
-    "availableBalance": "Tillgängligt saldo",
+    "currentPack": "Aktuellt Paket",
+    "availableBalance": "Tillgängligt Saldo",
     "tokensLabel": "Tokens",
-    "planSuffix": "Plan",
-    "freeTier": "Gratis",
-    "mostPopular": "Populärast",
+    "packSuffix": "Paket",
+    "freeTier": "Gratis Nivå",
+    "mostPopular": "Mest Prisvärt",
     "perPack": "/ paket",
     "descriptionLine1": "Köp tokens för att driva dina AI-debatter och innehållsskapande.",
-    "tokensNeverExpire": "Tokens går aldrig ut",
-    "descriptionLine2": "och du kan fylla på dem omedelbart.",
-    "enterpriseTitle": "Företagslösning",
-    "enterpriseSubtitle": "Köp en anpassad mängd tokens för din organisation.",
-    "tokenAmount": "Antal tokens",
+    "tokensNeverExpire": "Tokens löper aldrig ut",
+    "descriptionLine2": "och du kan fylla på ditt saldo direkt.",
+    "enterpriseTitle": "Anpassad Enterprise-lösning",
+    "enterpriseSubtitle": "Köp en skräddarsydd mängd tokens för din organisation.",
+    "tokenAmount": "Tokenmängd",
     "totalPrice": "Totalpris",
-    "enterpriseCustomLabel": "Enterprise Custom ({tokens} tokens)",
+    "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
+    "buyNow": "Köp Paket",
+    "minimumPurchase": "Minsta köp är ${min}.",
     "plans": {
       "starter": {
         "name": "Starter-paket",
-        "description": "Perfekt för tillfälliga debatter.",
+        "description": "Perfekt för tillfälliga debatter och experiment.",
         "features": [
-          "42,000 Konsensus-tokens",
+          "42 000 Konsensus-tokens",
           "Tillgång till GPT-4o & Claude 3",
-          "Enkel bildgenerering",
-          "Tokens går aldrig ut",
-          "E-post sammanfattningar"
+          "Grundläggande bildgenerering",
+          "Tokens löper aldrig ut",
+          "Permanent plånboksnärvaro"
         ]
       },
       "producer": {
-        "name": "Producer-plan",
-        "description": "För flitiga användare.",
+        "name": "Producer-paket",
+        "description": "För högfrekventa power-användare.",
         "features": [
-          "155 Konsensus-tokens",
-          "Tillgång till alla neurala noder",
-          "Högupplöst bildgenerering",
+          "150 000 Konsensus-tokens",
+          "Tillgång till alla Neural Nodes",
+          "HD-bildgenerering",
           "Prioriterad bearbetning",
-          "Tokens går aldrig ut"
+          "Tokens löper aldrig ut"
         ]
       },
       "creator": {
-        "name": "Pro Creator",
+        "name": "Creator Pro-paket",
         "description": "Det ultimata verktyget för professionellt skapande.",
         "features": [
-          "1050 Konsensus-tokens",
-          "Prioriterad tillgång (Tier 1)",
-          "4K-videogenerering",
-          "Dedikerad support",
+          "990 000 Konsensus-tokens",
+          "Tier 1-prioriterad åtkomst",
+          "Tillgång till 4K-videoproduktion",
+          "Dedikerad prioriterad support",
           "Kommersiella användarrättigheter",
-          "Tokens går aldrig ut"
+          "Tokens löper aldrig ut"
         ]
       }
     }
@@ -475,13 +477,13 @@ const sv = {
   },
   pricingInfoPage: {
     title: "Priser och Fakturering",
-    subtitle: "Du har full kontroll över din budget med vår Pay-As-You-Go.",
-    noSubscriptions: "Inga komplicerade prenumerationer",
-    noSubscriptionsDesc: "Vi tror på flexibilitet.",
-    customAmount: "Välj ditt belopp",
-    customAmountDesc: "Bara ange det belopp du vill ha.",
-    tokensNeverExpire: "Tokens går aldrig ut",
-    tokensNeverExpireDesc: "Ligger kvar i saldot för alltid."
+    subtitle: "Du har total kontroll över din budget med vår Pay-As-You-Go-modell. Vi tror på fullständig flexibilitet och att avvisa månatliga begränsningar.",
+    noSubscriptions: "Hejdå till komplexa abonnemang",
+    noSubscriptionsDesc: "Vi tror inte på månatliga åtaganden som tömmer din plånbok. Hos oss köper du bara tokens när du faktiskt behöver dem, vilket gör Jarnazi till det smartaste och mest kostnadseffektiva valet för kreatörer och företag.",
+    customAmount: "Full köpflexibilitet",
+    customAmountDesc: "Tokenvärdet är flexibelt och enkelt. Ange dollarbeloppet du vill investera, så beräknar systemet omedelbart de tokens som läggs till i ditt saldo.",
+    tokensNeverExpire: "Tokens som aldrig går ut",
+    tokensNeverExpireDesc: "Tokens du köper stannar i din plånbok för alltid. Använd dem idag, imorgon eller om ett år – ditt kreativa bränsle finns alltid där när du behöver det."
   }
 } as const;
 

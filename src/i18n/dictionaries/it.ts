@@ -236,56 +236,58 @@ const it = {
     "displayNamePlaceholder": "Utente Jarnazi"
   },
   "pricingPage": {
-    "investIn": "Investi in",
+    "investIn": "Investi nell'",
     "intelligence": "Intelligenza",
-    "currentPlan": "Piano Attuale",
+    "currentPack": "Pacchetto Attuale",
     "availableBalance": "Saldo Disponibile",
-    "tokensLabel": "Gettoni",
-    "planSuffix": "Piano",
-    "freeTier": "Gratis",
-    "mostPopular": "Più popolare",
-    "perPack": "/ pack",
-    "descriptionLine1": "Acquista gettoni per alimentare i tuoi dibattiti AI e la generazione di contenuti.",
-    "tokensNeverExpire": "I gettoni non scadono mai",
-    "descriptionLine2": "e puoi ricaricarli istantaneamente.",
-    "enterpriseTitle": "Soluzione Enterprise",
-    "enterpriseSubtitle": "Acquista una quantità personalizzata di gettoni per la tua organizzazione.",
-    "tokenAmount": "Quantità Gettoni",
+    "tokensLabel": "Token",
+    "packSuffix": "Pacchetto",
+    "freeTier": "Livello Gratuito",
+    "mostPopular": "Miglior Valore",
+    "perPack": "/ pacchetto",
+    "descriptionLine1": "Acquista token per alimentare i tuoi dibattiti AI e la generazione di contenuti.",
+    "tokensNeverExpire": "I token non scadono mai",
+    "descriptionLine2": "e puoi ricaricare il tuo saldo istantaneamente.",
+    "enterpriseTitle": "Soluzione Enterprise Custom",
+    "enterpriseSubtitle": "Acquista una quantità di token su misura per la tua organizzazione.",
+    "tokenAmount": "Quantità di Token",
     "totalPrice": "Prezzo Totale",
-    "enterpriseCustomLabel": "Enterprise Custom ({tokens} Gettoni)",
+    "enterpriseCustomLabel": "Enterprise Custom ({tokens} Token)",
+    "buyNow": "Acquista Pacchetto",
+    "minimumPurchase": "L'acquisto minimo è di ${min}.",
     "plans": {
       "starter": {
-        "name": "Pack Starter",
-        "description": "Perfetto per dibattiti occasionali.",
+        "name": "Pacchetto Starter",
+        "description": "Perfetto per dibattiti occasionali e test.",
         "features": [
-          "42,000 Gettoni Consenso",
+          "42.000 Token di Consenso",
           "Accesso a GPT-4o & Claude 3",
-          "Generazione immagini base",
-          "I gettoni non scadono mai",
-          "Riepiloghi email"
+          "Generazione di immagini base",
+          "I token non scadono mai",
+          "Presenza permanente nel wallet"
         ]
       },
       "producer": {
-        "name": "Piano Producer",
-        "description": "Per utenti intensivi.",
+        "name": "Pacchetto Producer",
+        "description": "Per utenti frequenti e appassionati.",
         "features": [
-          "155 Gettoni Consenso",
-          "Accesso a tutti i nodi neurali",
-          "Generazione immagini HD",
+          "150.000 Token di Consenso",
+          "Accesso a tutti i Nodi Neurali",
+          "Generazione di immagini HD",
           "Elaborazione prioritaria",
-          "I gettoni non scadono mai"
+          "I token non scadono mai"
         ]
       },
       "creator": {
-        "name": "Pro Creator",
-        "description": "Il toolkit definitivo per la creazione di contenuti professionali.",
+        "name": "Pacchetto Creator Pro",
+        "description": "Il toolkit definitivo per la creazione professionale.",
         "features": [
-          "1050 Gettoni Consenso",
-          "Accesso prioritario Tier 1",
-          "Generazione video 4K",
-          "Supporto dedicato",
-          "Diritti di uso commerciale",
-          "I gettoni non scadono mai"
+          "990.000 Token di Consenso",
+          "Accesso Prioritario Livello 1",
+          "Accesso alla produzione video 4K",
+          "Supporto dedicato prioritario",
+          "Diritti d'uso commerciale",
+          "I token non scadono mai"
         ]
       }
     }
@@ -475,13 +477,13 @@ const it = {
   },
   pricingInfoPage: {
     title: "Prezzi e Fatturazione",
-    subtitle: "Hai il controllo totale sul tuo budget con il nostro modello Pay-As-You-Go.",
-    noSubscriptions: "Nessun Abbonamento Complesso",
-    noSubscriptionsDesc: "Crediamo nella totale flessibilità. Nessun costo mensile fisso.",
-    customAmount: "Scegli l'Importo",
-    customAmountDesc: "Basta inserire l'importo desiderato per i token.",
-    tokensNeverExpire: "Token Senza Scadenza",
-    tokensNeverExpireDesc: "I token acquistati rimarranno nel tuo saldo per sempre."
+    subtitle: "Hai il controllo totale sul tuo budget grazie al nostro modello Pay-As-You-Go. Crediamo nella flessibilità totale e rifiutiamo i vincoli mensili.",
+    noSubscriptions: "Addio agli abbonamenti complessi",
+    noSubscriptionsDesc: "Non crediamo negli impegni mensili che gravano sul tuo portafoglio. Con noi, acquisti i token solo quando ne hai effettivamente bisogno, rendendo Jarnazi la scelta più intelligente e conveniente per creativi e aziende.",
+    customAmount: "Massima flessibilità d'acquisto",
+    customAmountDesc: "Il valore dei token è flessibile e semplice. Inserisci l'importo in dollari che desideri investire e il sistema calcolerà istantaneamente i token aggiunti al tuo saldo.",
+    tokensNeverExpire: "Token che non scadono mai",
+    tokensNeverExpireDesc: "I token acquistati rimangono nel tuo wallet per sempre. Usali oggi, domani o tra un anno: il tuo carburante creativo sarà sempre lì quando ne avrai bisogno."
   }
 } as const;
 

@@ -359,56 +359,56 @@ const en = {
   "pricingPage": {
     "investIn": "Invest in",
     "intelligence": "Intelligence",
-    "currentPlan": "Current Plan",
+    "currentPack": "Current Pack",
     "availableBalance": "Available Balance",
     "tokensLabel": "Tokens",
-    "planSuffix": "Plan",
-    "freeTier": "Free",
-    "mostPopular": "Most Popular",
+    "packSuffix": "Pack",
+    "freeTier": "Free Tier",
+    "mostPopular": "Best Value",
     "perPack": "/ pack",
-    "descriptionLine1": "Purchase tokens to fuel your AI debates and content generation.",
-    "tokensNeverExpire": "Tokens never expire",
-    "descriptionLine2": "and can be topped up instantly.",
-    "enterpriseTitle": "Enterprise Solution",
-    "enterpriseSubtitle": "Purchase a custom amount of tokens for your organization.",
+    "descriptionLine1": "Purchase tokens to power your AI debates and content generation.",
+    "tokensNeverExpire": "Tokens Never Expire",
+    "descriptionLine2": "and you can refill your balance instantly.",
+    "enterpriseTitle": "Enterprise Custom",
+    "enterpriseSubtitle": "Purchase a tailor-made quantity of tokens for your organization.",
     "tokenAmount": "Token Amount",
     "totalPrice": "Total Price",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
-    "buyNow": "Buy Now",
-    "minimumPurchase": "Minimum purchase is ${min}.",
+    "buyNow": "Purchase Pack",
+    "minimumPurchase": "The minimum purchase is ${min}.",
     "plans": {
       "starter": {
         "name": "Starter Pack",
-        "description": "Perfect for casual debates and occasional queries.",
+        "description": "Perfect for casual debates and experiments.",
         "features": [
           "42,000 Consensus Tokens",
           "Access to GPT-4o & Claude 3",
-          "Basic Image Generation",
-          "Tokens Never Expire",
-          "Email Summaries"
+          "Basic image generation",
+          "Tokens never expire",
+          "Permanent Wallet Presence"
         ]
       },
       "producer": {
-        "name": "Producer Plan",
-        "description": "For power users requiring frequent AI collaboration.",
+        "name": "Producer Pack",
+        "description": "For high-frequency power users.",
         "features": [
-          "155 Consensus Tokens",
-          "Access to All Neural Nodes",
-          "High-Res Image Generation",
-          "Priority Processing",
-          "Tokens Never Expire"
+          "155,000 Consensus Tokens",
+          "Access to all Neural Nodes",
+          "HD quality image generation",
+          "Priority processing",
+          "Tokens never expire"
         ]
       },
       "creator": {
-        "name": "Pro Creator",
-        "description": "Ultimate toolkit for professional content generation.",
+        "name": "Creator Pro Pack",
+        "description": "The ultimate toolkit for professional generation.",
         "features": [
-          "1050 Consensus Tokens",
-          "Top-Tier Priority Access (Tier 1)",
-          "4K Video Generation",
-          "Dedicated Support Channel",
-          "Commercial Usage Rights",
-          "Tokens Never Expire"
+          "1,050,000 Consensus Tokens",
+          "Tier 1 Priority Access",
+          "4K video production access",
+          "Dedicated priority support",
+          "Commercial usage rights",
+          "Tokens never expire"
         ]
       }
     }
@@ -627,13 +627,13 @@ const en = {
   },
   pricingInfoPage: {
     title: "Pricing & Billing",
-    subtitle: "You have complete control over your budget with our Pay-As-You-Go model.",
-    noSubscriptions: "No Complex Subscriptions",
-    noSubscriptionsDesc: "We believe in total flexibility. You won't be tied to a monthly plan; you only pay what you intend to use.",
-    customAmount: "Choose Your Amount",
-    customAmountDesc: "Token value is flexible. Simply enter the dollar amount you want to spend, and the system will instantly calculate the corresponding tokens you'll receive for debates and media generation.",
+    subtitle: "You have complete control over your budget with our Pay-As-You-Go model. We believe in total flexibility and dismissing monthly constraints.",
+    noSubscriptions: "Good-bye to Complex Subscriptions",
+    noSubscriptionsDesc: "We don't believe in monthly commitments that drain your wallet. With us, you buy tokens only when you actually need them, making Jarnazi the smartest, most cost-effective choice for creators and businesses.",
+    customAmount: "Full Purchase Flexibility",
+    customAmountDesc: "Token value is flexible and simple. Enter the dollar amount you want to invest, and the system will instantly calculate the corresponding tokens added to your balance.",
     tokensNeverExpire: "Never Expiring Tokens",
-    tokensNeverExpireDesc: "The tokens you purchase remain in your balance forever until you consume them, making it a smart investment for your future creative projects."
+    tokensNeverExpireDesc: "The tokens you purchase stay in your wallet forever. Use them today, tomorrow, or in a year—your creative fuel will always be there when you need it."
   }
 } as const;
 

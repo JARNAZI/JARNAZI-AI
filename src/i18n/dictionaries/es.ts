@@ -244,54 +244,56 @@ const es = {
     "displayNamePlaceholder": "Usuario Jarnazi"
   },
   "pricingPage": {
-    "investIn": "Invierte en",
+    "investIn": "Invertir en",
     "intelligence": "Inteligencia",
-    "currentPlan": "Plan actual",
-    "availableBalance": "Saldo disponible",
+    "currentPack": "Paquete Actual",
+    "availableBalance": "Saldo Disponible",
     "tokensLabel": "Tokens",
-    "planSuffix": "Plan",
-    "freeTier": "Gratis",
-    "mostPopular": "Más popular",
+    "packSuffix": "Paquete",
+    "freeTier": "Nivel Gratuito",
+    "mostPopular": "Mejor Valor",
     "perPack": "/ paquete",
     "descriptionLine1": "Compra tokens para impulsar debates de IA y generación de contenido.",
     "tokensNeverExpire": "Los tokens no caducan",
     "descriptionLine2": "y puedes recargarlos al instante.",
-    "enterpriseTitle": "Solución empresarial",
-    "enterpriseSubtitle": "Compra una cantidad personalizada de tokens para tu organización.",
-    "tokenAmount": "Cantidad de tokens",
-    "totalPrice": "Precio total",
+    "enterpriseTitle": "Empresa Personalizada",
+    "enterpriseSubtitle": "Compra una cantidad de tokens a medida para tu organización.",
+    "tokenAmount": "Cantidad de Tokens",
+    "totalPrice": "Precio Total",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
+    "buyNow": "Comprar Paquete",
+    "minimumPurchase": "La compra mínima es de ${min}.",
     "plans": {
       "starter": {
         "name": "Paquete Starter",
-        "description": "Perfecto para debates casuales y consultas ocasionales.",
+        "description": "Perfecto para debates casuales y experimentos.",
         "features": [
-          "42,000 tokens de consenso",
+          "42,000 Tokens de Consenso",
           "Acceso a GPT-4o & Claude 3",
-          "Generación de imágenes básica",
+          "Generación básica de imágenes",
           "Los tokens no caducan",
-          "Resúmenes por email"
+          "Presencia permanente en cartera"
         ]
       },
       "producer": {
-        "name": "Plan Producer",
-        "description": "Para usuarios avanzados con colaboración frecuente.",
+        "name": "Paquete Producer",
+        "description": "Para usuarios avanzados de alta frecuencia.",
         "features": [
-          "155 tokens de consenso",
-          "Acceso a todos los nodos",
-          "Imágenes en alta resolución",
+          "150,000 Tokens de Consenso",
+          "Acceso a todos los Nodos Neurales",
+          "Imágenes en calidad HD",
           "Procesamiento prioritario",
           "Los tokens no caducan"
         ]
       },
       "creator": {
-        "name": "Pro Creator",
-        "description": "Kit definitivo para creación profesional.",
+        "name": "Paquete Creator Pro",
+        "description": "El kit definitivo para creación profesional.",
         "features": [
-          "1050 tokens de consenso",
-          "Acceso prioritario (Tier 1)",
-          "Generación de video 4K",
-          "Soporte dedicado",
+          "990,000 Tokens de Consenso",
+          "Acceso Prioritario Nivel 1",
+          "Acceso a producción de video 4K",
+          "Soporte prioritario dedicado",
           "Derechos de uso comercial",
           "Los tokens no caducan"
         ]
@@ -483,13 +485,13 @@ const es = {
   },
   pricingInfoPage: {
     title: "Precios y Facturación",
-    subtitle: "Tienes control total sobre tu presupuesto con nuestro modelo Pay-As-You-Go.",
-    noSubscriptions: "Sin Suscripciones Complejas",
-    noSubscriptionsDesc: "Creemos en la flexibilidad total. No estarás atado a un plan mensual.",
-    customAmount: "Elige tu Cantidad",
-    customAmountDesc: "El valor del token es flexible. Simplemente ingresa la cantidad deseada.",
-    tokensNeverExpire: "Tokens Sin Caducidad",
-    tokensNeverExpireDesc: "Los tokens que compras permanecen en tu saldo para siempre."
+    subtitle: "Tienes control total sobre tu presupuesto con nuestro modelo Pay-As-You-Go. Creemos en la flexibilidad total y en rechazar las limitaciones mensuales.",
+    noSubscriptions: "Adiós a las Suscripciones Complejas",
+    noSubscriptionsDesc: "No creemos en compromisos mensuales que agotan tu cartera. Con nosotros, compras tokens solo cuando realmente los necesitas, lo que convierte a Jarnazi en la opción más inteligente y rentable para creadores y empresas.",
+    customAmount: "Flexibilidad Total de Compra",
+    customAmountDesc: "El valor del token es flexible y simple. Ingresa la cantidad en dólares que deseas invertir y el sistema calculará instantáneamente los tokens agregados a tu saldo.",
+    tokensNeverExpire: "Tokens que Nunca Caducan",
+    tokensNeverExpireDesc: "Los tokens que compras permanecen en tu cartera para siempre. Úsalos hoy, mañana o en un año: tu combustible creativo siempre estará allí cuando lo necesites."
   }
 } as const;
 
