@@ -56,9 +56,6 @@ export default function Navbar({ lang, dict }: NavbarProps) {
                 <div className="hidden md:flex items-center gap-4">
                     <LangSwitcher />
                     <ThemeToggle />
-                    <Link href={`/${lang}/pricing`} className="text-sm font-bold text-primary hover:text-primary/80 transition-colors px-3 py-2">
-                        {dict.nav?.pricing || (lang === 'ar' ? 'الأسعار' : 'Pricing')}
-                    </Link>
                     <Link href={`/${lang}/login`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2">
                         {dict.common.login}
                     </Link>
@@ -88,14 +85,6 @@ export default function Navbar({ lang, dict }: NavbarProps) {
                         </div>
 
                         <hr className="w-full border-border/50" />
-
-                        <Link
-                            href={`/${lang}/pricing`}
-                            onClick={toggleMenu}
-                            className="w-full text-center text-lg font-bold text-primary hover:text-primary/80 transition-colors py-4 border border-primary/20 rounded-xl bg-primary/5 hover:bg-primary/10"
-                        >
-                            {dict.nav?.pricing || (lang === 'ar' ? 'الأسعار' : 'Pricing')}
-                        </Link>
 
                         <Link
                             href={`/${lang}/login`}
