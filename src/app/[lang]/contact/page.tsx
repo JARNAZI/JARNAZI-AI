@@ -8,19 +8,20 @@ import { Suspense, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { useDictionary } from '@/i18n/use-dictionary';
+import TurnstileWidget from '@/components/turnstile-widget';
 
 const initialState = {
     success: false,
     error: undefined,
 };
 
-function SubmitButton({ label }: { label: string }) {
+function SubmitButton({ label, disabled }: { label: string, disabled?: boolean }) {
     const { pending } = useFormStatus();
 
     return (
         <button
             type="submit"
-            disabled={pending}
+            disabled={pending || disabled}
             className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-lg transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
             {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : (
@@ -33,7 +34,7 @@ function SubmitButton({ label }: { label: string }) {
     );
 }
 
-function ContactForm() {
+function ContactForm({ siteKey }: { siteKey?: string }) {
     const params = useParams();
     const searchParams = useSearchParams();
     const lang = ((params as any)?.lang as LanguageCode) || DEFAULT_LANGUAGE;
@@ -42,6 +43,8 @@ function ContactForm() {
 
     const [state, formAction] = useFormState(submitContactForm, initialState);
     const formRef = useRef<HTMLFormElement>(null);
+    const [turnstileToken, setTurnstileToken] = useState("");
+    const [turnstileKey, setTurnstileKey] = useState(0);
 
     // Get pre-filled values from URL
     const defaultName = searchParams.get('name') || '';
@@ -52,8 +55,12 @@ function ContactForm() {
         if (state.success) {
             toast.success(t.sentToast || 'Message sent successfully! We will get back to you shortly.');
             formRef.current?.reset();
-        } else if (state.error) {
+            setTurnstileToken("");
+            setTurnstileKey(prev => prev + 1);
+        } else if (state.error && state.error !== '') {
             toast.error(state.error);
+            setTurnstileToken("");
+            setTurnstileKey(prev => prev + 1);
         }
     }, [state]);
 
@@ -128,9 +135,12 @@ function ContactForm() {
                             className="w-full bg-background/50 border border-border rounded-lg px-4 py-3 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-muted-foreground/60 resize-none"
                         />
                         <p className="text-xs text-muted-foreground text-right">{t.max250 || 'Max 250 characters'}</p>
+                    <div className="space-y-4">
+                        <TurnstileWidget key={turnstileKey} onVerify={setTurnstileToken} siteKey={siteKey} />
+                        <input type="hidden" name="turnstileToken" value={turnstileToken} />
                     </div>
 
-                    <SubmitButton label={t.send || 'Send Message'} />
+                    <SubmitButton label={t.send || 'Send Message'} disabled={!turnstileToken} />
                 </form>
             </div>
         </div>
@@ -138,9 +148,11 @@ function ContactForm() {
 }
 
 export default function ContactPage() {
+    const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+    
     return (
         <Suspense fallback={null}>
-            <ContactForm />
+            <ContactForm siteKey={siteKey} />
         </Suspense>
     );
 }

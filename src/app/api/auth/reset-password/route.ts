@@ -25,7 +25,28 @@ function getBaseUrl(req: Request) {
 
 export async function POST(req: Request) {
     try {
-        const { email, lang } = await req.json();
+        const { email, lang, turnstileToken } = await req.json();
+
+        // Verify Turnstile
+        const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+        if (turnstileSecret) {
+            if (!turnstileToken) {
+                return NextResponse.json({ error: 'Security check (Turnstile) missing or empty' }, { status: 400 });
+            }
+            try {
+                const tRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `secret=${turnstileSecret}&response=${turnstileToken}`
+                });
+                const tData = await tRes.json();
+                if (!tData.success) {
+                    throw new Error('Security check sequence failed.');
+                }
+            } catch (e: any) {
+                return NextResponse.json({ error: 'Security verification failed. Please try again.' }, { status: 400 });
+            }
+        }
 
         const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
         const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

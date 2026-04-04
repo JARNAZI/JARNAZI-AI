@@ -4,21 +4,32 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Mail, Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import TurnstileWidget from '@/components/turnstile-widget';
 
 interface ForgotPasswordClientProps {
     lang: string;
     dict: any;
     supabaseUrl?: string;
+    supabaseUrl?: string;
     supabaseAnonKey?: string;
+    siteKey?: string;
 }
 
-export default function ForgotPasswordClient({ lang, dict, supabaseUrl, supabaseAnonKey }: ForgotPasswordClientProps) {
+export default function ForgotPasswordClient({ lang, dict, supabaseUrl, supabaseAnonKey, siteKey }: ForgotPasswordClientProps) {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [turnstileToken, setTurnstileToken] = useState("");
+    const [turnstileKey, setTurnstileKey] = useState(0);
 
     const handleReset = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!turnstileToken) {
+            toast.error(dict.auth.securityCheck || "Please complete the security check.");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -27,7 +38,8 @@ export default function ForgotPasswordClient({ lang, dict, supabaseUrl, supabase
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email,
-                    lang
+                    lang,
+                    turnstileToken
                 })
             });
 
@@ -40,6 +52,8 @@ export default function ForgotPasswordClient({ lang, dict, supabaseUrl, supabase
             toast.success(dict.auth.forgotPasswordSuccess);
         } catch (err: unknown) {
             toast.error((err instanceof Error ? err.message : String(err)));
+            setTurnstileToken("");
+            setTurnstileKey(prev => prev + 1);
         } finally {
             setLoading(false);
         }
@@ -86,9 +100,11 @@ export default function ForgotPasswordClient({ lang, dict, supabaseUrl, supabase
                             </div>
                         </div>
 
+                        <TurnstileWidget key={turnstileKey} onVerify={setTurnstileToken} siteKey={siteKey} />
+
                         <button
                             type="submit"
-                            disabled={loading}
+                            disabled={loading || !turnstileToken}
                             className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-lg transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : dict.auth.sendResetLink}

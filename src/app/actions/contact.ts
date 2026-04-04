@@ -46,6 +46,27 @@ export async function submitContactForm(prevState: unknown, formData: FormData) 
         subject: formData.get('subject') as string,
         message: formData.get('message') as string,
     };
+    const turnstileToken = formData.get('turnstileToken') as string;
+
+    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+    if (turnstileSecret) {
+        if (!turnstileToken) {
+            return { success: false, error: 'Security check missing or empty.' };
+        }
+        try {
+            const tRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `secret=${turnstileSecret}&response=${turnstileToken}`
+            });
+            const tData = await tRes.json();
+            if (!tData.success) {
+                return { success: false, error: 'Security sequence failed. Are you a bot?' };
+            }
+        } catch (e: any) {
+            return { success: false, error: 'Cloudflare Turnstile verification failed. Try again.' };
+        }
+    }
 
     const validation = contactSchema.safeParse(rawData);
     if (!validation.success) {
