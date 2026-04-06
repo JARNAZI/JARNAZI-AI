@@ -94,7 +94,7 @@ const sv = {
   },
   sidebar: {
     newSession: "Ny session",
-    plans: "Planer",
+    buyTokens: "Köp Tokens",
     settings: "Inställningar",
     signOut: "Logga ut",
     jarnazi: "JARNAZI",
@@ -186,15 +186,18 @@ const sv = {
     neuralLinkSecure: "Neural länk säker",
     encryptedStream: "End-to-end krypterad rådplägningsström.",
     heroTitlePrefix: "Bygg",
-    openMenu: "Öppna meny",
-    enterAmount: "Ange belopp (min ${min})",
-    tokensReceive: "Du kommer att få",
-    payWithStripe: "Betala med Stripe",
-    payWithCrypto: "Betala med krypto",
+    buyTokens: "Köp Tokens",
+    enterAmount: "Ange valfritt belopp (min {min})",
+    tokensReceive: "Ditt nya saldo blir",
+    payWithStripe: "Betala & Fyll på Saldo",
+    payWithCrypto: "Betala med Krypto (NOWPayments)",
+    insufficientTokensPrefill: "Vi har förifyllt ett belopp för att täcka de tokens som behövs för din session.",
+    stripeDisabled: "Stripe-betalningar är för närvarande inaktiverade.",
+    invalidAmount: "Ogiltigt belopp. Minimum är {min}.",
     signInFirst: "Vänligen logga in först",
-    checkoutFailed: "Betalning misslyckades",
-    underConstruction: "Denna modul är för närvarande under konstruktion.",
-    returnToConsole: "Tillbaka till konsolen"
+    checkoutFailed: "Betalningen misslyckades, försök igen.",
+    underConstruction: "Denna modul är för närvarande under utveckling. Neural Hub kommer att fungera som det centrala orkestreringsskiktet.",
+    returnToConsole: "Tillbaka till Dashboard"
   },
   contactPage: {
     "title": "Kontakta oss",
@@ -230,12 +233,7 @@ const sv = {
     "security": "Säkerhet",
     "changePassword": "Byt lösenord",
     "dangerZone": "Farozon",
-    "dangerText": "När du väl tagit bort ditt konto finns ingen återvändo.",
-    "deleteAccount": "Ta bort konto",
-    "emailPlaceholder": "user@example.com",
-    "displayNamePlaceholder": "Jarnazi-användare"
-  },
-  "pricingPage": {
+    "dangerText": "När du väl tagit bort ditt konto finns ingen återvän  "pricingPage": {
     "investIn": "Investera i",
     "intelligence": "Intelligens",
     "currentPack": "Aktuellt Paket",
@@ -245,46 +243,30 @@ const sv = {
     "freeTier": "Gratis Nivå",
     "mostPopular": "Mest Prisvärt",
     "perPack": "/ paket",
-    "descriptionLine1": "Köp tokens för att driva dina AI-debatter och innehållsskapande.",
-    "tokensNeverExpire": "Tokens löper aldrig ut",
-    "descriptionLine2": "och du kan fylla på ditt saldo direkt.",
-    "enterpriseTitle": "Anpassad Enterprise-lösning",
+    "descriptionLine1": "Köp tokens för att låta LLM-orkestern generera ditt innehåll.",
+    "tokensNeverExpire": "Tokens stannar hos dig för alltid och går aldrig ut",
+    "descriptionLine2": "och du kan fylla på ditt saldo när som helst.",
+    "enterpriseTitle": "Anpassade Enterprise-lösningar",
     "enterpriseSubtitle": "Köp en skräddarsydd mängd tokens för din organisation.",
     "tokenAmount": "Tokenmängd",
     "totalPrice": "Totalpris",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
-    "buyNow": "Köp Paket",
-    "minimumPurchase": "Minsta köp är ${min}.",
+    "buyNow": "Köp Nu",
+    "minimumPurchase": "Minsta köp är {min}.",
     "plans": {
       "starter": {
-        "name": "Starter-paket",
-        "description": "Perfekt för tillfälliga debatter och experiment.",
+        "name": "Snabb Token-påfyllning",
+        "description": "Perfekt för omedelbara experiment och debatter.",
         "features": [
-          "42 000 Konsensus-tokens",
-          "Tillgång till GPT-4o & Claude 3",
-          "Grundläggande bildgenerering",
-          "Tokens löper aldrig ut",
-          "Permanent plånboksnärvaro"
+          "Flexibel balanskontroll",
+          "Tillgång till alla Neurala Noder",
+          "Produktionskvalitet i bioklass",
+          "Tokens går aldrig ut",
+          "Smart budgethantering"
         ]
-      },
-      "producer": {
-        "name": "Producer-paket",
-        "description": "För högfrekventa power-användare.",
-        "features": [
-          "150 000 Konsensus-tokens",
-          "Tillgång till alla Neural Nodes",
-          "HD-bildgenerering",
-          "Prioriterad bearbetning",
-          "Tokens löper aldrig ut"
-        ]
-      },
-      "creator": {
-        "name": "Creator Pro-paket",
-        "description": "Det ultimata verktyget för professionellt skapande.",
-        "features": [
-          "990 000 Konsensus-tokens",
-          "Tier 1-prioriterad åtkomst",
-          "Tillgång till 4K-videoproduktion",
+      }
+    }
+  },ll 4K-videoproduktion",
           "Dedikerad prioriterad support",
           "Kommersiella användarrättigheter",
           "Tokens löper aldrig ut"
@@ -422,16 +404,16 @@ const sv = {
     send: "Skicka"
   },
   buyTokensPage: {
-    backToConsole: "Tillbaka till konsolen",
-    title: "Köp tokens",
-    subtitle: "Köp krediter för att låsa upp premiumverktyg.",
+    backToConsole: "Tillbaka till Dashboard",
+    title: "Köp Tokens",
+    subtitle: "Orkestrera din vision med nya tokens direkt i ditt saldo.",
     amountLabel: "Belopp (USD)",
     minHelper: "Minsta köp: ${MIN_PURCHASE_AMOUNT_USD}",
-    youWillReceive: "Du kommer att få",
+    youWillReceive: "Ditt nya saldo blir",
     tokens: "Tokens",
-    payAddTokens: "Betala & lägg till tokens",
-    stripeDisabled: "Stripe-betalningar är för närvarande inaktiverate.",
-    payWithCrypto: "Betala med krypto"
+    payAddTokens: "Betala & Fyll på Saldo",
+    stripeDisabled: "Stripe-betalningar är för närvarande inaktiverade.",
+    payWithCrypto: "Betala med Krypto (NOWPayments)"
   }
   ,
   invoices: {
@@ -477,13 +459,13 @@ const sv = {
   },
   pricingInfoPage: {
     title: "Priser och Fakturering",
-    subtitle: "Du har total kontroll över din budget med vår Pay-As-You-Go-modell. Vi tror på fullständig flexibilitet och att avvisa månatliga begränsningar.",
-    noSubscriptions: "Hejdå till komplexa abonnemang",
-    noSubscriptionsDesc: "Vi tror inte på månatliga åtaganden som tömmer din plånbok. Hos oss köper du bara tokens när du faktiskt behöver dem, vilket gör Jarnazi till det smartaste och mest kostnadseffektiva valet för kreatörer och företag.",
-    customAmount: "Full köpflexibilitet",
-    customAmountDesc: "Tokenvärdet är flexibelt och enkelt. Ange dollarbeloppet du vill investera, så beräknar systemet omedelbart de tokens som läggs till i ditt saldo.",
-    tokensNeverExpire: "Tokens som aldrig går ut",
-    tokensNeverExpireDesc: "Tokens du köper stannar i din plånbok för alltid. Använd dem idag, imorgon eller om ett år – ditt kreativa bränsle finns alltid där när du behöver det."
+    subtitle: "Total frihet att hantera din produktionsbudget via vår Pay-As-You-Go-modell. Vi stödjer kreatörer utan månatliga begränsningar.",
+    noSubscriptions: "Hejdå till Abonnemang och Engagemang",
+    noSubscriptionsDesc: "På Jarnazi tror vi inte på månatliga modeller som tömmer din plånbok i onödan. Köp tokens bara när du vill producera, och behåll dem i ditt saldo så länge du vill. Detta är smart ekonomi för innehållsskapare.",
+    customAmount: "Absolut Köpflexibilitet",
+    customAmountDesc: "Vårt system är extremt enkelt och flexibelt. Ange valfritt belopp från 14$ och uppåt, så konverterar systemet omedelbart din investering till tokens som läggs till i ditt saldo för omedelbar rådplägning eller produktion.",
+    tokensNeverExpire: "Ditt Saldo är Permanent",
+    tokensNeverExpireDesc: "De tokens du köper idag stannar i din 'Digitala Plånbok' för alltid. Använd dem idag, imorgon eller om ett år; ditt kreativa bränsle väntar alltid på dig när du behöver det."
   }
 } as const;
 

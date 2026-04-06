@@ -186,15 +186,18 @@ const it = {
     neuralLinkSecure: "Link Neurale Sicuro",
     encryptedStream: "Flusso di deliberazione crittografato end-to-end.",
     heroTitlePrefix: "Architettare",
-    openMenu: "Apri Menu",
-    enterAmount: "Inserisci importo (min ${min})",
-    tokensReceive: "Riceverai",
-    payWithStripe: "Paga con Stripe",
-    payWithCrypto: "Paga con Crypto",
-    signInFirst: "Accedi prima",
-    checkoutFailed: "Pagamento fallito",
-    underConstruction: "Modulo in costruzione.",
-    returnToConsole: "Indietro alla Console"
+    buyTokens: "Acquista Token",
+    enterAmount: "Inserisci qualsiasi importo (min {min})",
+    tokensReceive: "Il tuo nuovo saldo sarà di",
+    payWithStripe: "Paga e Ricarica Saldo",
+    payWithCrypto: "Paga con Cripto (NOWPayments)",
+    insufficientTokensPrefill: "Abbiamo pre-compilato un importo per coprire i token necessari per la tua sessione.",
+    stripeDisabled: "I pagamenti Stripe sono attualmente disabilitati.",
+    invalidAmount: "Importo non valido. Il minimo è {min}.",
+    signInFirst: "Per favore, accedi prima",
+    checkoutFailed: "Pagamento fallito, per favore riprova.",
+    underConstruction: "Questo modulo è attualmente in fase di sviluppo. Neural Hub servirà come livello di orchestrazione centrale.",
+    returnToConsole: "Torna alla Dashboard"
   },
   contactPage: {
     "title": "Contattaci",
@@ -245,49 +248,26 @@ const it = {
     "freeTier": "Livello Gratuito",
     "mostPopular": "Miglior Valore",
     "perPack": "/ pacchetto",
-    "descriptionLine1": "Acquista token per alimentare i tuoi dibattiti AI e la generazione di contenuti.",
-    "tokensNeverExpire": "I token non scadono mai",
-    "descriptionLine2": "e puoi ricaricare il tuo saldo istantaneamente.",
-    "enterpriseTitle": "Soluzione Enterprise Custom",
+    "descriptionLine1": "Acquista token per consentire all'Orchestra LLM di generare i tuoi contenuti.",
+    "tokensNeverExpire": "I token rimangono con te per sempre e non scadono mai",
+    "descriptionLine2": "e puoi ricaricare il tuo saldo in qualsiasi momento.",
+    "enterpriseTitle": "Soluzioni Enterprise Custom",
     "enterpriseSubtitle": "Acquista una quantità di token su misura per la tua organizzazione.",
     "tokenAmount": "Quantità di Token",
     "totalPrice": "Prezzo Totale",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Token)",
-    "buyNow": "Acquista Pacchetto",
-    "minimumPurchase": "L'acquisto minimo è di ${min}.",
+    "buyNow": "Acquista Ora",
+    "minimumPurchase": "L'acquisto minimo è di {min}.",
     "plans": {
       "starter": {
-        "name": "Pacchetto Starter",
-        "description": "Perfetto per dibattiti occasionali e test.",
+        "name": "Ricarica Rapida Token",
+        "description": "Perfetto per esperimenti e dibattiti immediati.",
         "features": [
-          "42.000 Token di Consenso",
-          "Accesso a GPT-4o & Claude 3",
-          "Generazione di immagini base",
-          "I token non scadono mai",
-          "Presenza permanente nel wallet"
-        ]
-      },
-      "producer": {
-        "name": "Pacchetto Producer",
-        "description": "Per utenti frequenti e appassionati.",
-        "features": [
-          "150.000 Token di Consenso",
+          "Controllo flessibile del saldo",
           "Accesso a tutti i Nodi Neurali",
-          "Generazione di immagini HD",
-          "Elaborazione prioritaria",
-          "I token non scadono mai"
-        ]
-      },
-      "creator": {
-        "name": "Pacchetto Creator Pro",
-        "description": "Il toolkit definitivo per la creazione professionale.",
-        "features": [
-          "990.000 Token di Consenso",
-          "Accesso Prioritario Livello 1",
-          "Accesso alla produzione video 4K",
-          "Supporto dedicato prioritario",
-          "Diritti d'uso commerciale",
-          "I token non scadono mai"
+          "Qualità di produzione cinematografica",
+          "I token non scadono mai",
+          "Gestione intelligente del budget"
         ]
       }
     }
@@ -385,7 +365,8 @@ const it = {
     deleteConfirm: "Scrivi \"DELETE\" per confermare.",
     userDeleted: "Utente eliminato",
     settings: "Impostazioni",
-    delete: "Elimina"
+    delete: "Elimina",
+    buyTokens: "Acquista Token"
   },
   adminModels: {
     title: "Registro Modelli",

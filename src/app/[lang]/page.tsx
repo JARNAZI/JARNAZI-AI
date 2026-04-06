@@ -94,7 +94,7 @@ export default async function Home(props: { params: Promise<{ lang: string }> })
 
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
             <Link href={`/${lang}/about`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">{dict.footer.about || "About Us"}</Link>
-            <Link href={`/${lang}/pricing`} className="text-sm px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 hover:text-primary transition-all font-medium flex items-center justify-center shadow-sm">
+            <Link href={`/${lang}/pricing`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               {dict.nav?.pricing || "Pricing"}
             </Link>
             <Link href={`/${lang}/privacy`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">{dict.footer.privacy}</Link>

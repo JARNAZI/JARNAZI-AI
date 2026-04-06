@@ -302,17 +302,17 @@ const en = {
     privacyDesc: "Your data is encrypted at rest and in transit. Jarnazi AI does not share your identity with third-party providers. All deliberation logs are anonymized unless explicitly shared.",
     identityVerified: "Identity is verified via Supabase Auth",
     buyTokens: "Buy Tokens",
-    enterAmount: "Enter an amount (min ${min})",
-    tokensReceive: "You will receive",
-    payWithStripe: "Pay & Add Tokens",
-    payWithCrypto: "Pay with Crypto",
-    insufficientTokensPrefill: "We prefilled the amount to cover your missing tokens.",
+    enterAmount: "Enter any amount (min {min})",
+    tokensReceive: "Your new balance will be",
+    payWithStripe: "Pay & Recharge Balance",
+    payWithCrypto: "Pay with Crypto (NOWPayments)",
+    insufficientTokensPrefill: "We've prefilled an amount to cover the tokens needed for your session.",
     stripeDisabled: "Stripe payments are currently disabled.",
-    invalidAmount: "Invalid amount. Minimum is ${min}.",
+    invalidAmount: "Invalid amount. Minimum is {min}.",
     signInFirst: "Please sign in first",
-    checkoutFailed: "Checkout failed",
-    underConstruction: "This module is currently under construction. The Neural Hub will serve as the central orchestration layer for advanced multi-agent workflows.",
-    returnToConsole: "Return to Console"
+    checkoutFailed: "Checkout failed, please try again.",
+    underConstruction: "This module is currently under development. Neural Hub will serve as the central orchestration layer.",
+    returnToConsole: "Return to Dashboard"
   },
   contactPage: {
     "title": "Contact Us",
@@ -366,49 +366,26 @@ const en = {
     "freeTier": "Free Tier",
     "mostPopular": "Best Value",
     "perPack": "/ pack",
-    "descriptionLine1": "Purchase tokens to power your AI debates and content generation.",
-    "tokensNeverExpire": "Tokens Never Expire",
-    "descriptionLine2": "and you can refill your balance instantly.",
-    "enterpriseTitle": "Enterprise Custom",
-    "enterpriseSubtitle": "Purchase a tailor-made quantity of tokens for your organization.",
-    "tokenAmount": "Token Amount",
+    "descriptionLine1": "Purchase tokens to empower the LLM Orchestra to generate your content.",
+    "tokensNeverExpire": "Tokens stay with you forever and never expire",
+    "descriptionLine2": "and you can recharge your balance at any time.",
+    "enterpriseTitle": "Custom Enterprise Solutions",
+    "enterpriseSubtitle": "Purchase a tailor-made amount of tokens for your organization.",
+    "tokenAmount": "Token Quantity",
     "totalPrice": "Total Price",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
-    "buyNow": "Purchase Pack",
-    "minimumPurchase": "The minimum purchase is ${min}.",
+    "buyNow": "Buy Now",
+    "minimumPurchase": "Minimum purchase is {min}.",
     "plans": {
       "starter": {
-        "name": "Starter Pack",
-        "description": "Perfect for casual debates and experiments.",
+        "name": "Quick Token Top-up",
+        "description": "Perfect for immediate experiments and debates.",
         "features": [
-          "42,000 Consensus Tokens",
-          "Access to GPT-4o & Claude 3",
-          "Basic image generation",
-          "Tokens never expire",
-          "Permanent Wallet Presence"
-        ]
-      },
-      "producer": {
-        "name": "Producer Pack",
-        "description": "For high-frequency power users.",
-        "features": [
-          "155,000 Consensus Tokens",
+          "Flexible balance control",
           "Access to all Neural Nodes",
-          "HD quality image generation",
-          "Priority processing",
-          "Tokens never expire"
-        ]
-      },
-      "creator": {
-        "name": "Creator Pro Pack",
-        "description": "The ultimate toolkit for professional generation.",
-        "features": [
-          "1,050,000 Consensus Tokens",
-          "Tier 1 Priority Access",
-          "4K video production access",
-          "Dedicated priority support",
-          "Commercial usage rights",
-          "Tokens never expire"
+          "Cinema-grade production quality",
+          "Tokens never expire",
+          "Smart budget management"
         ]
       }
     }
@@ -534,7 +511,8 @@ const en = {
     deleteConfirm: "Type \"DELETE\" to confirm deleting {email} forever.",
     userDeleted: "User deleted",
     settings: "Settings",
-    delete: "Delete"
+    delete: "Delete",
+    buyTokens: "Buy Tokens"
   },
 
   adminModels: {
@@ -627,13 +605,13 @@ const en = {
   },
   pricingInfoPage: {
     title: "Pricing & Billing",
-    subtitle: "You have complete control over your budget with our Pay-As-You-Go model. We believe in total flexibility and dismissing monthly constraints.",
-    noSubscriptions: "Good-bye to Complex Subscriptions",
-    noSubscriptionsDesc: "We don't believe in monthly commitments that drain your wallet. With us, you buy tokens only when you actually need them, making Jarnazi the smartest, most cost-effective choice for creators and businesses.",
-    customAmount: "Full Purchase Flexibility",
-    customAmountDesc: "Token value is flexible and simple. Enter the dollar amount you want to invest, and the system will instantly calculate the corresponding tokens added to your balance.",
-    tokensNeverExpire: "Never Expiring Tokens",
-    tokensNeverExpireDesc: "The tokens you purchase stay in your wallet forever. Use them today, tomorrow, or in a year—your creative fuel will always be there when you need it."
+    subtitle: "Complete freedom to manage your production budget via our Pay-As-You-Go model. We support creators with no monthly constraints.",
+    noSubscriptions: "Goodbye to Subscriptions & Commitments",
+    noSubscriptionsDesc: "At Jarnazi, we don't believe in monthly models that unnecessarily drain your wallet. Buy tokens only when you want to produce, and keep them in your balance for as long as you wish. This is smart economy for content creators.",
+    customAmount: "Absolute Purchase Flexibility",
+    customAmountDesc: "Our system is extremely easy and flexible. Enter any amount starting from $14, and the system will instantly convert your investment into tokens added to your balance for immediate deliberation or production.",
+    tokensNeverExpire: "Your Balance is Permanent",
+    tokensNeverExpireDesc: "The tokens you purchase today stay in your 'Digital Wallet' forever. Use them today, tomorrow, or in a year; your creative fuel will always be waiting for you whenever you need it."
   }
 } as const;
 

@@ -93,7 +93,7 @@ const ja = {
   },
   sidebar: {
     newSession: "新しいセッション",
-    plans: "プラン",
+    buyTokens: "トークンを購入",
     settings: "設定",
     signOut: "ログアウト",
     jarnazi: "JARNAZI",
@@ -188,14 +188,18 @@ const ja = {
     concurrentDebates: "並列ディベート数",
     active: "アクティブ",
     unlimited: "無制限",
-    enterAmount: "金額を入力 (最小 ${min})",
-    tokensReceive: "受け取るトークン",
-    payWithStripe: "Stripeで支払う",
-    payWithCrypto: "仮想通貨で支払う",
+    buyTokens: "トークンを購入",
+    enterAmount: "任意の金額を入力 (最小 {min})",
+    tokensReceive: "新しいトークン残高は",
+    payWithStripe: "支払って残高をチャージ",
+    payWithCrypto: "仮想通貨で支払う (NOWPayments)",
+    insufficientTokensPrefill: "セッションに必要なトークンをカバーするための金額を事前入力しました。",
+    stripeDisabled: "Stripe決済は現在無効です。",
+    invalidAmount: "無効な金額です。最小額は {min} です。",
     signInFirst: "最初にログインしてください",
-    checkoutFailed: "決済に失敗しました",
-    underConstruction: "このモジュールは現在建設中です。",
-    returnToConsole: "コンソールに戻る"
+    checkoutFailed: "決済に失敗しました。もう一度お試しください。",
+    underConstruction: "このモジュールは現在開発中です。Neural Hubが中央オーケストレーション層として機能します。",
+    returnToConsole: "ダッシュボードに戻る"
   },
   contactPage: {
     "title": "お問い合わせ",
@@ -246,49 +250,26 @@ const ja = {
     "freeTier": "無料枠",
     "mostPopular": "おすすめ",
     "perPack": "/ パック",
-    "descriptionLine1": "AIディベートやコンテンツ生成を可能にするトークンを購入しましょう。",
-    "tokensNeverExpire": "トークンに有効期限はありません",
-    "descriptionLine2": "いつでもすぐに残高をチャージできます。",
-    "enterpriseTitle": "カスタム・エンタープライズ",
+    "descriptionLine1": "LLMオーケストラがコンテンツを生成できるように、トークンを購入しましょう。",
+    "tokensNeverExpire": "トークンに有効期限はなく、永久に保持されます",
+    "descriptionLine2": "いつでも好きな時に残高をチャージできます。",
+    "enterpriseTitle": "カスタム・エンタープライズ・ソリューション",
     "enterpriseSubtitle": "組織向けに最適化された量のトークンを購入できます。",
     "tokenAmount": "トークン量",
     "totalPrice": "合計金額",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} トークン)",
-    "buyNow": "パックを購入",
-    "minimumPurchase": "最小購入額は ${min} です。",
+    "buyNow": "今すぐ購入",
+    "minimumPurchase": "最小購入額は {min} です。",
     "plans": {
       "starter": {
-        "name": "スターターパック",
-        "description": "カジュアルなディベートや実験に最適です。",
+        "name": "クイック・トークンチャージ",
+        "description": "即時の実験やディベートに最適です。",
         "features": [
-          "42,000 コンセンサス・トークン",
-          "GPT-4o & Claude 3 へのアクセス",
-          "基本的な画像生成",
-          "トークンに有効期限なし",
-          "ウォレット内永続保持"
-        ]
-      },
-      "producer": {
-        "name": "プロデューサーパック",
-        "description": "頻繁にAIを利用するパワーユーザー向け。",
-        "features": [
-          "150,000 コンセンサス・トークン",
+          "柔軟な残高コントロール",
           "すべてのニューラルノードへのアクセス",
-          "HD高画質画像生成",
-          "優先処理（プライオリティ）",
-          "トークンに有効期限なし"
-        ]
-      },
-      "creator": {
-        "name": "クリエイター・プロパック",
-        "description": "プロフェッショナルな制作のための究極のツールキット。",
-        "features": [
-          "990,000 コンセンサス・トークン",
-          "ティア1最優先アクセス",
-          "4K動画制作へのアクセス",
-          "専用優先サポート",
-          "商用利用権",
-          "トークンに有効期限なし"
+          "映画級の制作クオリティ",
+          "トークン有効期限なし",
+          "スマートな予算管理"
         ]
       }
     }
@@ -423,16 +404,16 @@ const ja = {
     send: "送信"
   },
   buyTokensPage: {
-    backToConsole: "コンソールに戻る",
+    backToConsole: "ダッシュボードに戻る",
     title: "トークン購入",
-    subtitle: "プレミアムツールをアンロックするためのクレジットを購入します。",
+    subtitle: "あなたのビジョンを実現するために、新しいトークンを残高に追加します。",
     amountLabel: "金額 (USD)",
     minHelper: "最小購入額: ${MIN_PURCHASE_AMOUNT_USD}",
-    youWillReceive: "受け取り内容",
+    youWillReceive: "新しいトークン残高は",
     tokens: "トークン",
-    payAddTokens: "支払ってトークンを追加",
+    payAddTokens: "支払って残高をチャージ",
     stripeDisabled: "Stripe決済は現在無効です。",
-    payWithCrypto: "仮想通貨で支払う"
+    payWithCrypto: "仮想通貨で支払う (NOWPayments)"
   },
   invoices: {
     title: "支払い履歴",
@@ -477,13 +458,13 @@ const ja = {
   },
   pricingInfoPage: {
     title: "料金と請求",
-    subtitle: "従量課金（Pay-As-You-Go）モデルにより、予算を完全にコントロールできます。私たちは完全な柔軟性を信じ、月々の縛りを排除しました。",
-    noSubscriptions: "複雑なサブスクリプションとの別れ",
-    noSubscriptionsDesc: "お財布を圧迫するような月額制の縛りは推奨しません。必要な時だけトークンを購入できるため、Jarnaziはクリエイターや企業にとって最もスマートでコスト効率の高い選択肢となります。",
-    customAmount: "自由な購入プラン",
-    customAmountDesc: "トークンの価値は柔軟でシンプルです。投資したいドル額を入力するだけで、システムが即座に残高に追加されるトークンを算出します。",
-    tokensNeverExpire: "有効期限のないトークン",
-    tokensNeverExpireDesc: "購入したトークンはウォレットに永久に保持されます。今日、明日、あるいは一年後でも、あなたのクリエイティブな燃料は必要な時にいつでもそこにあります。"
+    subtitle: "従量課金（Pay-As-You-Go）モデルにより、制作予算を完全に自由自在に管理できます。私たちは月々の縛りなくクリエイターを支援します。",
+    noSubscriptions: "サブスクリプションと縛りからの解放",
+    noSubscriptionsDesc: "Jarnaziでは、お財布を不必要に圧迫するような月額制モデルは採用していません。制作したい時だけトークンを購入し、好きなだけ残高に保持できます。これはコンテンツクリエイターのためのスマートな経済学です。",
+    customAmount: "究極の購入柔軟性",
+    customAmountDesc: "私たちのシステムは非常にシンプルで柔軟です。14ドル以上の任意の金額を入力するだけで、システムが即座に投資額をトークンに変換し、すぐに審議や制作を開始できます。",
+    tokensNeverExpire: "残高は永久保持",
+    tokensNeverExpireDesc: "今日購入したトークンは、あなたの「デジタルウォレット」に永久に保持されます。今日使っても、明日使っても、あるいは一年後でも。あなたのクリエイティブな燃料は、必要な時にいつでもあなたを待っています。"
   }
 } as const;
 

@@ -7,6 +7,7 @@ const fr = {
     logout: "Déconnexion",
     dashboard: "Tableau de bord",
     settings: "Paramètres",
+    buyTokens: "Acheter des Jetons",
     profile: "Profil",
     loading: "Chargement...",
     error: "Une erreur est survenue",
@@ -116,7 +117,8 @@ const fr = {
     settings: "Paramètres",
     signOut: "Déconnexion",
     jarnazi: "JARNAZI",
-    consensus: "CONSENSUS"
+    consensus: "CONSENSUS",
+    buyTokens: "Acheter des Jetons"
   },
   features: {
     title1: "Débat multi-agents",
@@ -258,19 +260,19 @@ const fr = {
     privacyDesc: "Vos données sont cryptées au repos et en transit. Jarnazi AI ne partage pas votre identité avec des fournisseurs tiers. Tous les journaux de délibération sont anonymisés sauf s'ils sont explicitement partagés.",
     identityVerified: "L'identité est vérifiée via Supabase Auth",
     buyTokens: "Acheter des Jetons",
-    insufficientTokensPrefill: "Nous avons pré-rempli le montant pour couvrir vos jetons manquants.",
+    insufficientTokensPrefill: "Nous avons pré-rempli un montant pour couvrir les jetons nécessaires à votre session.",
     stripeDisabled: "Les paiements Stripe sont actuellement désactivés.",
     systemAccess: "Accès Système",
-    privilegedAccess: "Accès Privilégié Uniquement",
-    enterAmount: "Entrez un montant (min ${min})",
-    tokensReceive: "Vous recevrez",
-    payWithStripe: "Payer avec Stripe",
-    payWithCrypto: "Payer par Crypto",
-    invalidAmount: "Montant invalide. Le minimum est de ${min}.",
+    privilegedAccess: "Accès Privilégié",
+    enterAmount: "Saisissez n'importe quel montant (min {min})",
+    tokensReceive: "Votre nouveau solde sera de",
+    payWithStripe: "Payer et Recharger le Solde",
+    payWithCrypto: "Payer en Crypto (NOWPayments)",
+    invalidAmount: "Montant invalide. Le minimum est de {min}.",
     signInFirst: "Veuillez vous connecter d'abord",
-    checkoutFailed: "Échec du paiement",
-    underConstruction: "Ce module est actuellement en construction.",
-    returnToConsole: "Retour à la Console"
+    checkoutFailed: "Le paiement a échoué, veuillez réessayer.",
+    underConstruction: "Ce module est en cours de développement. Neural Hub servira de couche d'orchestration centrale.",
+    returnToConsole: "Retour au Tableau de Bord"
   },
   contactPage: {
     "title": "Contactez-nous",
@@ -321,26 +323,26 @@ const fr = {
     "freeTier": "Niveau Gratuit",
     "mostPopular": "Meilleure Valeur",
     "perPack": "/ pack",
-    "descriptionLine1": "Achetez des jetons برای alimenter vos débats IA et la génération de contenu.",
-    "tokensNeverExpire": "Les jetons n'expirent jamais",
-    "descriptionLine2": "et vous pouvez recharger votre solde instantanément.",
-    "enterpriseTitle": "Solution Entreprise",
-    "enterpriseSubtitle": "Achetez une quantité personnalisée de jetons pour votre organisation.",
+    "descriptionLine1": "Achetez des jetons pour permettre à l'Orchestre LLM de générer votre contenu.",
+    "tokensNeverExpire": "Les jetons restent avec vous pour toujours et n'expirent jamais",
+    "descriptionLine2": "et vous pouvez recharger votre solde à tout moment.",
+    "enterpriseTitle": "Solutions Entreprise Personnalisées",
+    "enterpriseSubtitle": "Achetez une quantité de jetons sur mesure pour votre organisation.",
     "tokenAmount": "Quantité de Jetons",
     "totalPrice": "Prix Total",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Jetons)",
-    "buyNow": "Acheter le Pack",
-    "minimumPurchase": "L'achat minimum est de ${min}.",
+    "buyNow": "Acheter Maintenant",
+    "minimumPurchase": "L'achat minimum est de {min}.",
     "plans": {
       "starter": {
-        "name": "Pack Starter",
-        "description": "Idéal pour les débats occasionnels et les tests.",
+        "name": "Recharge Rapide de Jetons",
+        "description": "Parfait pour les expériences et débats immédiats.",
         "features": [
-          "42 000 Jetons de Consensus",
-          "Accès à GPT-4o & Claude 3",
-          "Génération d'images basique",
+          "Contrôle flexible du solde",
+          "Accès à tous les Neural Nodes",
+          "Qualité de production cinéma",
           "Les jetons n'expirent jamais",
-          "Présence permanente dans le portefeuille"
+          "Gestion intelligente du budget"
         ]
       },
       "producer": {
@@ -574,14 +576,14 @@ const fr = {
     visionValue: "Être la destination mondiale de référence pour la production numérique intégrée basée sur l'IA, en comblant le fossé entre l'imagination et la réalité."
   },
   pricingInfoPage: {
-    title: "Tarification et facturation",
-    subtitle: "Vous avez un contrôle total sur votre budget grâce à notre modèle de paiement à l'utilisation. Nous croyons en une flexibilité totale et au rejet des contraintes mensuelles.",
-    noSubscriptions: "Adieu les abonnements complexes",
-    noSubscriptionsDesc: "Nous ne croyons pas aux engagements mensuels qui vident votre portefeuille. Avec nous, vous n'achetez des jetons que lorsque vous en avez réellement besoin, ce qui fait de Jarnazi le choix le plus rentable pour les créateurs et les entreprises.",
-    customAmount: "Flexibilité totale d'achat",
-    customAmountDesc: "La valeur du jeton est flexible et simple. Entrez le montant en dollars que vous souhaitez investir, et le système calculera instantanément les jetons correspondants ajoutés à votre solde.",
-    tokensNeverExpire: "Des jetons qui n'expirent jamais",
-    tokensNeverExpireDesc: "Les jetons que vous achetez restent dans votre portefeuille pour toujours. Utilisez-les aujourd'hui, demain ou dans un an : votre carburant créatif sera toujours là quand vous en aurez besoin."
+    title: "Tarifs et Facturation",
+    subtitle: "Liberté totale de gérer votre budget de production via notre modèle Pay-As-You-Go. Nous soutenons les créateurs sans contraintes mensuelles.",
+    noSubscriptions: "Adieu aux Abonnements et Engagements",
+    noSubscriptionsDesc: "Chez Jarnazi, nous ne croyons pas aux modèles mensuels qui vident inutilement votre portefeuille. Achetez des jetons uniquement quand vous voulez produire, et gardez-les dans votre solde aussi longtemps que vous le souhaitez. C'est l'économie intelligente pour les créateurs de contenu.",
+    customAmount: "Flexibilité d'Achat Absolue",
+    customAmountDesc: "Notre système est extrêmement simple et flexible. Saisissez n'importe quel montant à partir de 14$, et le système convertira instantanément votre investissement en jetons ajoutés à votre solde pour une délibération ou production immédiate.",
+    tokensNeverExpire: "Votre Solde est Permanent",
+    tokensNeverExpireDesc: "Les jetons que vous achetez aujourd'hui restent dans votre 'Portefeuille Numérique' pour toujours. Utilisez-les aujourd'hui, demain ou dans un an ; votre carburant créatif vous attendra toujours quand vous en aurez besoin."
   }
 } as const;
 

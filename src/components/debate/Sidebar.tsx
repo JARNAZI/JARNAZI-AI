@@ -93,9 +93,9 @@ export default function Sidebar({ lang, dict, supabaseUrl, supabaseAnonKey }: Si
                 <div>
                     <h4 className="px-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] mb-4">Control Panel</h4>
                     <nav className="space-y-1">
-                        <Link href={`/${lang}/debate/pricing`} className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.03] transition-all text-sm font-medium">
+                        <Link href={`/${lang}/buy-tokens`} className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.03] transition-all text-sm font-medium">
                             <CreditCard className="w-4 h-4" />
-                            {dict.sidebar.plans}
+                            {dict.sidebar.buyTokens || "Buy Tokens"}
                         </Link>
                         <Link href={`/${lang}/debate/settings`} className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.03] transition-all text-sm font-medium">
                             <Settings className="w-4 h-4" />

@@ -186,15 +186,19 @@ const pt = {
     neuralLinkSecure: "Link Neural Seguro",
     encryptedStream: "Fluxo de deliberação criptografado de ponta a ponta.",
     heroTitlePrefix: "Arquitetura",
+    buyTokens: "Comprar Tokens",
+    enterAmount: "Insira qualquer valor (mín {min})",
+    tokensReceive: "O seu novo saldo será de",
+    payWithStripe: "Pagar e Recarregar Saldo",
+    payWithCrypto: "Pagar com Cripto (NOWPayments)",
+    insufficientTokensPrefill: "Pré-preenchemos um valor para cobrir os tokens necessários para a sua sessão.",
+    stripeDisabled: "Os pagamentos com Stripe estão atualmente desativados.",
+    invalidAmount: "Valor inválido. O mínimo é {min}.",
     openMenu: "Abrir Menu",
-    enterAmount: "Insira valor (mín. ${min})",
-    tokensReceive: "Você receberá",
-    payWithStripe: "Pagar com Stripe",
-    payWithCrypto: "Pagar com Cripto",
-    signInFirst: "Por favor, faça login primeiro",
-    checkoutFailed: "Falha na finalização da compra",
-    underConstruction: "Este módulo está em construção.",
-    returnToConsole: "Voltar ao Console"
+    signInFirst: "Por favor, inicie sessão primeiro",
+    checkoutFailed: "O pagamento falhou, por favor tente novamente.",
+    underConstruction: "Este módulo está atualmente em desenvolvimento. O Neural Hub servirá como camada de orquestração central.",
+    returnToConsole: "Voltar ao Painel"
   },
   contactPage: {
     "title": "Contate-nos",
@@ -245,26 +249,26 @@ const pt = {
     "freeTier": "Nível Gratuito",
     "mostPopular": "Melhor Valor",
     "perPack": "/ pacote",
-    "descriptionLine1": "Compre tokens para alimentar seus debates de IA e geração de conteúdo.",
-    "tokensNeverExpire": "Os tokens nunca expiram",
-    "descriptionLine2": "e você pode recarregar seu saldo instantaneamente.",
-    "enterpriseTitle": "Solução Enterprise Custom",
-    "enterpriseSubtitle": "Compre uma quantidade de tokens sob medida para sua organização.",
+    "descriptionLine1": "Compre tokens para permitir que a Orquestra LLM gere o seu conteúdo.",
+    "tokensNeverExpire": "Os tokens ficam consigo para sempre e nunca expiram",
+    "descriptionLine2": "e pode recarregar o seu saldo a qualquer momento.",
+    "enterpriseTitle": "Soluções Enterprise Personalizadas",
+    "enterpriseSubtitle": "Compre uma quantidade de tokens à medida para a sua organização.",
     "tokenAmount": "Quantidade de Tokens",
     "totalPrice": "Preço Total",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
-    "buyNow": "Comprar Pacote",
-    "minimumPurchase": "A compra mínima é de ${min}.",
+    "buyNow": "Comprar Agora",
+    "minimumPurchase": "A compra mínima é de {min}.",
     "plans": {
       "starter": {
-        "name": "Pacote Starter",
-        "description": "Perfeito para debates ocasionais e testes.",
+        "name": "Recarga Rápida de Tokens",
+        "description": "Perfeito para experiências e debates imediatos.",
         "features": [
-          "42.000 Tokens de Consenso",
-          "Acesso ao GPT-4o & Claude 3",
-          "Geração de imagem básica",
+          "Controlo de saldo flexível",
+          "Acesso a todos os Neural Nodes",
+          "Qualidade de produção cinema",
           "Os tokens nunca expiram",
-          "Presença permanente na carteira"
+          "Gestão inteligente de orçamento"
         ]
       },
       "producer": {
@@ -384,7 +388,8 @@ const pt = {
     cancel: "Cancelar",
     deleteConfirm: "Digite \"DELETE\" para confirmar.",
     userDeleted: "Usuário excluído",
-    settings: "Configurações",
+    settings: "Definições",
+    buyTokens: "Comprar Tokens",
     delete: "Excluir"
   },
   adminModels: {

@@ -254,19 +254,20 @@ const de = {
     privacySecurity: "Datenschutz & Sicherheit",
     privacyDesc: "Ihre Daten sind im Ruhezustand und bei der Übertragung verschlüsselt. Jarnazi AI gibt Ihre Identität nicht an Drittanbieter weiter. Alle Beratungsprotokolle werden anonymisiert, sofern sie nicht explizit geteilt werden.",
     identityVerified: "Identität wird via Supabase Auth verifiziert",
-    buyTokens: "Tokens kaufen",
-    insufficientTokensPrefill: "Wir haben den Betrag vorausgefüllt, um Ihre fehlenden Tokens zu decken.",
+    buyTokens: "Token kaufen",
+    insufficientTokensPrefill: "Wir haben einen Betrag vorausgefüllt, um die für Ihre Sitzung erforderlichen Token zu decken.",
     stripeDisabled: "Stripe-Zahlungen sind derzeit deaktiviert.",
     systemAccess: "Systemzugriff",
     privilegedAccess: "Nur privilegierter Zugriff",
-    enterAmount: "Betrag eingeben (min ${min})",
-    tokensReceive: "Sie erhalten",
-    payWithStripe: "Mit Stripe bezahlen",
-    payWithCrypto: "Mit Crypto bezahlen",
-    signInFirst: "Bitte loggen Sie sich zuerst ein",
-    checkoutFailed: "Checkout fehlgeschlagen",
-    underConstruction: "Dieses Modul befindet sich derzeit im Aufbau.",
-    returnToConsole: "Zurück zur Konsole"
+    enterAmount: "Beliebigen Betrag eingeben (Min. {min})",
+    tokensReceive: "Ihr neues Guthaben beträgt",
+    payWithStripe: "Bezahlen & Guthaben aufladen",
+    payWithCrypto: "Mit Krypto bezahlen (NOWPayments)",
+    invalidAmount: "Ungültiger Betrag. Das Minimum ist {min}.",
+    signInFirst: "Bitte melden Sie sich zuerst an",
+    checkoutFailed: "Checkout fehlgeschlagen, bitte versuchen Sie es erneut.",
+    underConstruction: "Dieses Modul befindet sich derzeit in der Entwicklung. Neural Hub wird als zentrale Orchestrierungsschicht dienen.",
+    returnToConsole: "Zurück zum Dashboard"
   },
   contactPage: {
     "title": "Kontakt",
@@ -317,49 +318,26 @@ const de = {
     "freeTier": "Kostenlose Stufe",
     "mostPopular": "Bestes Angebot",
     "perPack": "/ Paket",
-    "descriptionLine1": "Kaufen Sie Token, um Ihre KI-Debatten und die Generierung von Inhalten voranzutreiben.",
-    "tokensNeverExpire": "Token laufen nie ab",
-    "descriptionLine2": "und Sie können Ihr Guthaben sofort aufladen.",
-    "enterpriseTitle": "Individuelle Enterprise-Lösung",
+    "descriptionLine1": "Kaufen Sie Token, um dem LLM-Orchester die Generierung Ihrer Inhalte zu ermöglichen.",
+    "tokensNeverExpire": "Token bleiben für immer bei Ihnen und laufen nie ab",
+    "descriptionLine2": "und Sie können Ihr Guthaben jederzeit aufladen.",
+    "enterpriseTitle": "Individuelle Enterprise-Lösungen",
     "enterpriseSubtitle": "Erwerben Sie eine maßgeschneiderte Menge an Token für Ihr Unternehmen.",
     "tokenAmount": "Token-Menge",
     "totalPrice": "Gesamtpreis",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Token)",
-    "buyNow": "Paket kaufen",
-    "minimumPurchase": "Der Mindestkaufbetrag beträgt ${min}.",
+    "buyNow": "Jetzt kaufen",
+    "minimumPurchase": "Der Mindestkaufbetrag beträgt {min}.",
     "plans": {
       "starter": {
-        "name": "Starter-Paket",
-        "description": "Ideal für gelegentliche Debatten und Experimente.",
+        "name": "Schnelle Token-Aufladung",
+        "description": "Perfekt für sofortige Experimente und Debatten.",
         "features": [
-          "42.000 Konsens-Token",
-          "Zugriff auf GPT-4o & Claude 3",
-          "Grundlegende Bildgenerierung",
-          "Token laufen nie ab",
-          "Dauerhafte Wallet-Präsenz"
-        ]
-      },
-      "producer": {
-        "name": "Producer-Paket",
-        "description": "Für regelmäßige Power-User.",
-        "features": [
-          "150.000 Konsens-Token",
+          "Flexible Guthabensteuerung",
           "Zugriff auf alle Neural Nodes",
-          "HD-Bildgenerierung",
-          "Priorisierte Verarbeitung",
-          "Token laufen nie ab"
-        ]
-      },
-      "creator": {
-        "name": "Creator Pro Paket",
-        "description": "Das ultimative Toolkit für professionelle Erstellung.",
-        "features": [
-          "990.000 Konsens-Token",
-          "Tier-1-Prioritätszugriff",
-          "4K-Videoproduktionszugang",
-          "Engagierter Prioritätssupport",
-          "Kommerzielle Nutzungsrechte",
-          "Token laufen nie ab"
+          "Produktionsqualität auf Kinoniveau",
+          "Token laufen nie ab",
+          "Intelligentes Budgetmanagement"
         ]
       }
     }
@@ -479,7 +457,8 @@ const de = {
     deleteConfirm: "Geben Sie \"DELETE\" ein, um zu bestätigen.",
     userDeleted: "Benutzer gelöscht",
     settings: "Einstellungen",
-    delete: "Löschen"
+    delete: "Löschen",
+    buyTokens: "Token kaufen"
   },
   adminModels: {
     title: "Modell-Register",

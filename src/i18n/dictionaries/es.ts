@@ -194,15 +194,19 @@ const es = {
     rateLimitGlobal: "Límite de Tasa (Global)",
     concurrentDebates: "Debates Simultáneos",
     active: "ACTIVO",
+    buyTokens: "Comprar Tokens",
+    enterAmount: "Ingrese cualquier monto (mín {min})",
+    tokensReceive: "Su nuevo saldo será de",
+    payWithStripe: "Pagar y Recargar Saldo",
+    payWithCrypto: "Pagar con Cripto (NOWPayments)",
+    insufficientTokensPrefill: "Hemos pre-llenado un monto para cubrir los tokens necesarios para su sesión.",
+    stripeDisabled: "Los pagos con Stripe están actualmente deshabilitados.",
+    invalidAmount: "Monto inválido. El mínimo es {min}.",
     unlimited: "ILIMITADO",
-    enterAmount: "Ingrese cantidad (min ${min})",
-    tokensReceive: "Recibirá",
-    payWithStripe: "Pagar con Stripe",
-    payWithCrypto: "Pagar con Crypto",
-    signInFirst: "Por favor inicie sesión primero",
-    checkoutFailed: "Fallo en el pago",
-    underConstruction: "Este módulo está actualmente en construcción.",
-    returnToConsole: "Volver a la Consola"
+    signInFirst: "Por favor, inicie sesión primero",
+    checkoutFailed: "El pago falló, por favor intente de nuevo.",
+    underConstruction: "Este módulo está actualmente en desarrollo. Neural Hub servirá como capa de orquestación central.",
+    returnToConsole: "Volver al Tablero"
   },
   contactPage: {
     "title": "Contáctanos",
@@ -250,52 +254,29 @@ const es = {
     "availableBalance": "Saldo Disponible",
     "tokensLabel": "Tokens",
     "packSuffix": "Paquete",
-    "freeTier": "Nivel Gratuito",
+    "freeTier": "Nivel Gratis",
     "mostPopular": "Mejor Valor",
     "perPack": "/ paquete",
-    "descriptionLine1": "Compra tokens para impulsar debates de IA y generación de contenido.",
-    "tokensNeverExpire": "Los tokens no caducan",
-    "descriptionLine2": "y puedes recargarlos al instante.",
-    "enterpriseTitle": "Empresa Personalizada",
-    "enterpriseSubtitle": "Compra una cantidad de tokens a medida para tu organización.",
+    "descriptionLine1": "Compre tokens para permitir que la Orquesta LLM genere su contenido.",
+    "tokensNeverExpire": "Los tokens se quedan con usted para siempre y nunca caducan",
+    "descriptionLine2": "y puede recargar su saldo en cualquier momento.",
+    "enterpriseTitle": "Soluciones Enterprise Personalizadas",
+    "enterpriseSubtitle": "Compre una cantidad de tokens a medida para su organización.",
     "tokenAmount": "Cantidad de Tokens",
     "totalPrice": "Precio Total",
     "enterpriseCustomLabel": "Enterprise Custom ({tokens} Tokens)",
-    "buyNow": "Comprar Paquete",
-    "minimumPurchase": "La compra mínima es de ${min}.",
+    "buyNow": "Comprar Ahora",
+    "minimumPurchase": "La compra mínima es de {min}.",
     "plans": {
       "starter": {
-        "name": "Paquete Starter",
-        "description": "Perfecto para debates casuales y experimentos.",
+        "name": "Recarga Rápida de Tokens",
+        "description": "Perfecto para experimentos y debates inmediatos.",
         "features": [
-          "42,000 Tokens de Consenso",
-          "Acceso a GPT-4o & Claude 3",
-          "Generación básica de imágenes",
-          "Los tokens no caducan",
-          "Presencia permanente en cartera"
-        ]
-      },
-      "producer": {
-        "name": "Paquete Producer",
-        "description": "Para usuarios avanzados de alta frecuencia.",
-        "features": [
-          "150,000 Tokens de Consenso",
-          "Acceso a todos los Nodos Neurales",
-          "Imágenes en calidad HD",
-          "Procesamiento prioritario",
-          "Los tokens no caducan"
-        ]
-      },
-      "creator": {
-        "name": "Paquete Creator Pro",
-        "description": "El kit definitivo para creación profesional.",
-        "features": [
-          "990,000 Tokens de Consenso",
-          "Acceso Prioritario Nivel 1",
-          "Acceso a producción de video 4K",
-          "Soporte prioritario dedicado",
-          "Derechos de uso comercial",
-          "Los tokens no caducan"
+          "Control de saldo flexible",
+          "Acceso a todos los Neural Nodes",
+          "Calidad de producción cine",
+          "Los tokens nunca caducan",
+          "Gestión de presupuesto inteligente"
         ]
       }
     }
@@ -393,7 +374,8 @@ const es = {
     deleteConfirm: "Escriba \"DELETE\" para confirmar.",
     userDeleted: "Usuario eliminado",
     settings: "Ajustes",
-    delete: "Eliminar"
+    delete: "Eliminar",
+    buyTokens: "Comprar Tokens"
   },
   adminModels: {
     title: "Registro de Modelos",
@@ -485,13 +467,13 @@ const es = {
   },
   pricingInfoPage: {
     title: "Precios y Facturación",
-    subtitle: "Tienes control total sobre tu presupuesto con nuestro modelo Pay-As-You-Go. Creemos en la flexibilidad total y en rechazar las limitaciones mensuales.",
-    noSubscriptions: "Adiós a las Suscripciones Complejas",
-    noSubscriptionsDesc: "No creemos en compromisos mensuales que agotan tu cartera. Con nosotros, compras tokens solo cuando realmente los necesitas, lo que convierte a Jarnazi en la opción más inteligente y rentable para creadores y empresas.",
-    customAmount: "Flexibilidad Total de Compra",
-    customAmountDesc: "El valor del token es flexible y simple. Ingresa la cantidad en dólares que deseas invertir y el sistema calculará instantáneamente los tokens agregados a tu saldo.",
-    tokensNeverExpire: "Tokens que Nunca Caducan",
-    tokensNeverExpireDesc: "Los tokens que compras permanecen en tu cartera para siempre. Úsalos hoy, mañana o en un año: tu combustible creativo siempre estará allí cuando lo necesites."
+    subtitle: "Libertad total para gestionar su presupuesto de producción a través de nuestro modelo Pay-As-You-Go. Apoyamos a los creadores sin restricciones mensuales.",
+    noSubscriptions: "Adiós a los Abonos y Compromisos",
+    noSubscriptionsDesc: "En Jarnazi, no creemos en modelos mensuales que agotan innecesariamente su bolsillo. Compre tokens solo cuando quiera producir, y manténgalos en su saldo el tiempo que desee. Esta es la economía inteligente para los creadores de contenido.",
+    customAmount: "Flexibilidad de Compra Absoluta",
+    customAmountDesc: "Nuestro sistema es extremadamente fácil y flexible. Ingrese cualquier monto a partir de 14$, y el sistema convertirá instantáneamente su inversión en tokens añadidos a su saldo para una deliberación o producción inmediata.",
+    tokensNeverExpire: "Su Saldo es Permanente",
+    tokensNeverExpireDesc: "Los tokens que compre hoy permanecen en su 'Billetera Digital' para siempre. Úselos hoy, mañana o en un año; su combustible creativo siempre le esperará cuando lo necesite."
   }
 } as const;
 
