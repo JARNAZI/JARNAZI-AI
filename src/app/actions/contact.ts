@@ -8,10 +8,15 @@ import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 
 const contactSchema = z.object({
-    name: z.string().max(25),
+    name: z.string().max(25).refine(val => !val.split(/\s+/).some(w => w.length > 20), { message: "Invalid name format." }),
     email: z.string().email(),
     subject: z.string().max(20),
-    message: z.string().max(250),
+    message: z.string().max(250).refine((val) => {
+        // Block extremely long strings without spaces (gibberish/bot spam)
+        if (val.split(/\s+/).some(word => word.length > 40)) return false;
+        if (!val.includes(' ') && val.length > 25) return false;
+        return true;
+    }, { message: "Message contains invalid formatting or appears to be spam." }),
 });
 
 export async function submitContactForm(prevState: unknown, formData: FormData) {
