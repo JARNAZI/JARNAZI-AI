@@ -25,7 +25,38 @@ function getBaseUrl(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { email, password, fullName, lang } = await req.json();
+    const { email, password, fullName, lang, turnstileToken } = await req.json();
+
+    // 1. Verify Turnstile (Human Check) - CRITICAL SECURITY FIX
+    const turnstileSecret = process.env.CLOUDFLARE_TURNSTILE_API_SECRET_KEY || process.env.TURNSTILE_SECRET_KEY;
+    if (turnstileSecret) {
+      if (!turnstileToken) {
+        return NextResponse.json({ error: 'Security evaluation failed (Turnstile token missing).' }, { status: 400 });
+      }
+      try {
+        const formData = new FormData();
+        formData.append('secret', turnstileSecret);
+        formData.append('response', turnstileToken);
+        
+        // Optional: Include client IP for better bot detection
+        const headersList = req.headers;
+        const ip = headersList.get('x-forwarded-for') || 'unknown';
+        if (ip !== 'unknown') formData.append('remoteip', ip);
+
+        const tRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+          method: 'POST',
+          body: formData
+        });
+        const tData = await tRes.json();
+        if (!tData.success) {
+          console.error('[AUTH REGISTER] Turnstile verification failed:', tData);
+          return NextResponse.json({ error: 'Security check failed. Please refresh and try again.' }, { status: 400 });
+        }
+      } catch (e) {
+        console.error('[AUTH REGISTER] Turnstile error:', e);
+        return NextResponse.json({ error: 'Internal security gateway timeout.' }, { status: 500 });
+      }
+    }
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
