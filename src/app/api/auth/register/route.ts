@@ -25,7 +25,25 @@ function getBaseUrl(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { email, password, fullName, lang, turnstileToken } = await req.json();
+    const { email, password, fullName, lang, turnstileToken, honeypot } = await req.json();
+
+    const headersList = req.headers;
+    const ip = headersList.get('x-forwarded-for') || 'unknown';
+
+    // 0. Honeypot check - Trap bots
+    if (honeypot) {
+      console.warn(`[AUTH REGISTER] Honeypot triggered by IP: ${ip}`);
+      try {
+        const { createClient: createAdminClient } = await import('@supabase/supabase-js');
+        const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+        const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        if (url && key) {
+          const admin = createAdminClient(url, key);
+          await admin.from('banned_ips').insert({ ip, reason: 'Caught in register honeypot' });
+        }
+      } catch (e) { }
+      return NextResponse.json({ error: 'System is receiving too many requests. Please try again later.' }, { status: 400 });
+    }
 
     // 1. Verify Turnstile (Human Check) - CRITICAL SECURITY FIX
     const turnstileSecret = process.env.CLOUDFLARE_TURNSTILE_API_SECRET_KEY || process.env.TURNSTILE_SECRET_KEY;

@@ -32,13 +32,17 @@ export default function ForgotPasswordClient({ lang, dict, supabaseUrl, supabase
         setLoading(true);
 
         try {
+            const formData = new FormData(e.currentTarget as HTMLFormElement);
+            const honeypot = formData.get('website_url') as string;
+
             const response = await fetch('/api/auth/reset-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email,
                     lang,
-                    turnstileToken
+                    turnstileToken,
+                    honeypot
                 })
             });
 
@@ -84,6 +88,11 @@ export default function ForgotPasswordClient({ lang, dict, supabaseUrl, supabase
                     </div>
                 ) : (
                     <form onSubmit={handleReset} className="space-y-6">
+                        {/* Honeypot field (hidden from users, filled by bot scrapers) */}
+                        <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                            <input type="text" name="website_url" id="website_url" autoComplete="off" tabIndex={-1} />
+                        </div>
+
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-muted-foreground">{dict.auth.email}</label>
                             <div className="relative">

@@ -25,7 +25,25 @@ function getBaseUrl(req: Request) {
 
 export async function POST(req: Request) {
     try {
-        const { email, lang, turnstileToken } = await req.json();
+        const { email, lang, turnstileToken, honeypot } = await req.json();
+
+        const headersList = req.headers;
+        const ip = headersList.get('x-forwarded-for') || 'unknown';
+
+        // 0. Honeypot check - Trap bots
+        if (honeypot) {
+            console.warn(`[AUTH RESET PASSWORD] Honeypot triggered by IP: ${ip}`);
+            try {
+                const { createClient: createAdminClient } = await import('@supabase/supabase-js');
+                const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+                const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+                if (url && key) {
+                    const admin = createAdminClient(url, key);
+                    await admin.from('banned_ips').insert({ ip, reason: 'Caught in reset-password honeypot' });
+                }
+            } catch (e) { }
+            return NextResponse.json({ error: 'System is receiving too many requests. Please try again later.' }, { status: 400 });
+        }
 
         // Verify Turnstile
         const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;

@@ -37,6 +37,9 @@ export default function RegisterClient({ dict, lang, siteKey, supabaseUrl, supab
         setError(null)
 
         try {
+            const formData = new FormData(e.currentTarget as HTMLFormElement);
+            const honeypot = formData.get('website_url') as string;
+
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -45,7 +48,8 @@ export default function RegisterClient({ dict, lang, siteKey, supabaseUrl, supab
                     password,
                     fullName,
                     lang,
-                    turnstileToken
+                    turnstileToken,
+                    honeypot
                 })
             });
 
@@ -106,6 +110,11 @@ export default function RegisterClient({ dict, lang, siteKey, supabaseUrl, supab
                 )}
 
                 <form onSubmit={handleRegister} className="space-y-6">
+                    {/* Honeypot field (hidden from users, filled by bot scrapers) */}
+                    <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                        <input type="text" name="website_url" id="website_url" autoComplete="off" tabIndex={-1} />
+                    </div>
+
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{d.fullName || "Full Name"}</label>
                         <div className="relative">
