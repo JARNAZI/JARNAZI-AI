@@ -108,6 +108,8 @@ const ja = {
     desc3: "長編動画—映画、シリーズ、またはテレビ番組—をシーンごとに生成し、ダウンロード可能な1つのMP4に合成します。"
   },
   footer: {
+    about: "このサイトについて",
+    companyName: "JARNAZI OU",
     privacy: "プライバシーポリシー",
     terms: "利用規約",
     rights: "All rights reserved."
@@ -123,6 +125,10 @@ const ja = {
     securityCheck: "セキュリティチェックを完了してください。"
   },
   howItWorks: {
+    orchestraTitle: "LLMオーケストラ",
+    orchestraDesc: "当サイトでは、AIモデルが同じセッション内で議論し、最終的な回答を提供するという新しいコンセプト「LLMオーケストラ」を導入しています。",
+    pricingTitle: "欲しい分だけトークンを購入",
+    pricingDesc: "複雑なサブスクリプションプランは提供していません。購入したい分だけを決め、サイトで使用できます。購入ボックスに金額を入力するだけで、すぐにトークンを受け取れます。",
     title: "仕組み",
     step1Title: "マルチエージェント・ディベート",
     step1Desc: "複数のAIモデルを構造化された議論に参加させ、最も正確でクリエイティブな結果を得ます。",

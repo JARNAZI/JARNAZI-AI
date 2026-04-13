@@ -187,9 +187,9 @@ const en = {
   },
   howItWorks: {
     orchestraTitle: "LLM Orchestra",
-    orchestraDesc: "The site offers a new concept: an LLM orchestra where AIs deliberate and provide final answers and solutions all in the same session.",
-    pricingTitle: "Custom Token Purchases",
-    pricingDesc: "We do not offer subscriptions. You decide exactly how much you want to spend. Simply enter the desired amount, and we will give you the corresponding tokens based on the amount entered.",
+    orchestraDesc: "Our website introduces a new concept: an LLM orchestra, where AI models discuss and provide final answers in the same session.",
+    pricingTitle: "Buy Tokens as You Wish",
+    pricingDesc: "We do not offer complex subscription plans. You decide how much you want to buy and use it on the site. Simply enter the amount in the purchase box and receive tokens immediately.",
     title: "How It Works",
     step1Title: "Multi-Agent Debate",
     step1Desc: "Engage multiple AI models in a structured deliberation to get the most accurate and creative results.",

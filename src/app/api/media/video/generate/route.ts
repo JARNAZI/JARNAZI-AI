@@ -184,7 +184,7 @@ export async function POST(req: Request) {
     let providers = await getActiveProvidersFor(admin, 'video');
 
     if (provider_preference) {
-      const prefMatch = providers.filter(p => p.name.toLowerCase().includes(provider_preference.toLowerCase()) || p.provider.toLowerCase().includes(provider_preference.toLowerCase()));
+      const prefMatch = providers.filter((p: any) => p.name.toLowerCase().includes(provider_preference.toLowerCase()) || p.provider?.toLowerCase().includes(provider_preference.toLowerCase()));
       if (prefMatch.length > 0) {
         providers = prefMatch;
       }

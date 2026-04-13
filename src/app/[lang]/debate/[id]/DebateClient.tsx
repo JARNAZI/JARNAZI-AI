@@ -1728,7 +1728,7 @@ Suggested amount: $${amount}`
                                                             {consensusRequestType === 'video' && (
                                                                 <button
                                                                     onClick={() => {
-                                                                        const plan = extractVideoPlan(consensusMsg.content);
+                                                                        const plan = extractVideoPlan(finalConsensus.content);
                                                                         setPendingVideoPrompt(finalPrompt);
                                                                         setPendingVideoCanon(plan?.canon || null);
                                                                         setPendingVideoProviderPreference(plan?.provider || null);

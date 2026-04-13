@@ -10,7 +10,6 @@ interface ForgotPasswordClientProps {
     lang: string;
     dict: any;
     supabaseUrl?: string;
-    supabaseUrl?: string;
     supabaseAnonKey?: string;
     siteKey?: string;
 }

@@ -233,7 +233,12 @@ const sv = {
     "security": "Säkerhet",
     "changePassword": "Byt lösenord",
     "dangerZone": "Farozon",
-    "dangerText": "När du väl tagit bort ditt konto finns ingen återvän  "pricingPage": {
+    "dangerText": "När du väl tagit bort ditt konto finns ingen återvändo.",
+    "deleteAccount": "Radera konto",
+    "emailPlaceholder": "user@example.com",
+    "displayNamePlaceholder": "Jarnazi Användare"
+  },
+  "pricingPage": {
     "investIn": "Investera i",
     "intelligence": "Intelligens",
     "currentPack": "Aktuellt Paket",
@@ -263,13 +268,6 @@ const sv = {
           "Produktionskvalitet i bioklass",
           "Tokens går aldrig ut",
           "Smart budgethantering"
-        ]
-      }
-    }
-  },ll 4K-videoproduktion",
-          "Dedikerad prioriterad support",
-          "Kommersiella användarrättigheter",
-          "Tokens löper aldrig ut"
         ]
       }
     }
